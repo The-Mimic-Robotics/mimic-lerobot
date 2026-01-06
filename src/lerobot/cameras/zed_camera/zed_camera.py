@@ -12,7 +12,7 @@ from lerobot.cameras.opencv import OpenCVCamera, OpenCVCameraConfig
 
 logger = logging.getLogger(__name__)
 
-@CameraConfig.register_subclass("zed")
+@CameraConfig.register_subclass("zed_camera")
 @dataclass
 class ZedCameraConfig(OpenCVCameraConfig):
     """

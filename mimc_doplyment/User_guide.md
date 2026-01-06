@@ -36,8 +36,8 @@ lerobot-teleoperate \
 
   python mimc_doplyment/screenshot/test_camera.py
 
-  Right camera -> video 0
-  left camera -> video 2
+  Right_wrist camera -> video 0
+  left_wrist camera -> video 2
   zed camera -> video 4
 
 
@@ -60,14 +60,35 @@ lerobot-teleoperate \
   --robot.right_arm_port=/dev/ttyACM2 \
   --robot.base_port=/dev/ttyUSB0 \
   --robot.id=mimic_follower \
-  --robot.cameras='{}' \
+  --robot.cameras='{
+    "right_wrist": {
+      "type": "opencv",
+      "index_or_path": 0,
+      "width": 640,
+      "height": 480,
+      "fps": 30
+    },
+    "left_wrist": {
+      "type": "opencv",
+      "index_or_path": 2,
+      "width": 640,
+      "height": 480,
+      "fps": 30
+    },
+    "head": {
+      "type": "zed_camera",
+      "index_or_path": 4,
+      "width": 1280,
+      "height": 720,
+      "fps": 30
+    }
+  }' \
   --teleop.type=mimic_leader \
   --teleop.left_arm_port=/dev/ttyACM0 \
   --teleop.right_arm_port=/dev/ttyACM1 \
   --teleop.base_control_mode=keyboard \
   --teleop.id=mimic_leader \
   --display_data=true
-
 
 
   record
