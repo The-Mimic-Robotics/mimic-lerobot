@@ -1,3 +1,6 @@
+
+Mathias work on the 5-6 January
+
 1. created the Mecanum base class
 src/lerobot/motors/mecanum_base/mecanum.py
 2. Test file for the class
@@ -19,3 +22,7 @@ TODO implement the xbox controller then joystick
 6. add Zed camera support
 only using left eye . no filtering for better accurary
 classic pi0 setup
+7. set up teleop, record, replay done 
+
+8. Old recordings?
+-> what to do? 
