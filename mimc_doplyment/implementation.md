@@ -25,4 +25,8 @@ classic pi0 setup
 7. set up teleop, record, replay done 
 
 8. Old recordings?
--> what to do? 
+-> should be possible , TASk TODO
+
+9. training 
+TODO 
+use lora 3090ti
