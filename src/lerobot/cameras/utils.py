@@ -37,6 +37,10 @@ def make_cameras_from_configs(camera_configs: dict[str, CameraConfig]) -> dict[s
             from .realsense.camera_realsense import RealSenseCamera
 
             cameras[key] = RealSenseCamera(cfg)
+        elif cfg.type == "zed":
+            from .zed_camera.zed import ZedCamera
+
+            cameras[key] = ZedCamera(cfg)
 
         elif cfg.type == "reachy2_camera":
             from .reachy2_camera.reachy2_camera import Reachy2Camera
