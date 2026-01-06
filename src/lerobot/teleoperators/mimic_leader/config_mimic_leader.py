@@ -16,10 +16,10 @@ class MimicLeaderConfig(TeleoperatorConfig):
     
     # Base Control Settings
     # Options: 'keyboard', 'xbox', 'joystick', 'none'
-    base_control_mode: Literal["keyboard", "xbox", "joystick", "none"] = "keyboard"
+    base_control_mode: str = "keyboard"
     
     # Max speeds for the base
-    max_linear_speed: float = 0.5   # m/s
-    max_angular_speed: float = 1.0  # rad/s
+    max_linear_speed: float = 0.1   # m/s
+    max_angular_speed: float = 0.2  # rad/s
 
     #TODO add port for the controller

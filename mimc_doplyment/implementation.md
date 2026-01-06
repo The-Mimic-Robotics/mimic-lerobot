@@ -14,3 +14,8 @@ pi0 using encoders as secondary inputss
 same as before, added the choice of controller
 keyboard for simple
 TODO implement the xbox controller then joystick
+
+5. testing 2 camera on the usb -> good 
+6. add Zed camera support
+only using left eye . no filtering for better accurary
+classic pi0 setup
