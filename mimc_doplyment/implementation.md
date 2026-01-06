@@ -8,4 +8,4 @@ python test_base.py
 src/lerobot/robots/mimic_follower
 important -> using the encoders to get the observation
 need to verify the encoder accurancy to make suere viable
-pi0 using encoders as secondary inputs
+pi0 using encoders as secondary inputss
