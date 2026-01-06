@@ -45,6 +45,10 @@ def make_teleoperator_from_config(config: TeleoperatorConfig) -> Teleoperator:
         from .omx_leader import OmxLeader
 
         return OmxLeader(config)
+    elif config.type == "mimic_leader":
+        from .mimic_leader import MimicLeader
+
+        return MimicLeader(config)
     elif config.type == "so100_leader":
         from .so100_leader import SO100Leader
 

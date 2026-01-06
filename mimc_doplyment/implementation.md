@@ -9,3 +9,8 @@ src/lerobot/robots/mimic_follower
 important -> using the encoders to get the observation
 need to verify the encoder accurancy to make suere viable
 pi0 using encoders as secondary inputss
+4. added it to all the scripts and the utils
+5. Create leader arm 
+same as before, added the choice of controller
+keyboard for simple
+TODO implement the xbox controller then joystick
