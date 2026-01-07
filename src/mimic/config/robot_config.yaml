@@ -1,0 +1,76 @@
+# Mimic Robot Configuration
+# Edit this file to match your robot setup
+
+# Robot Configuration
+robot:
+  type: mimic_follower
+  id: mimic_follower
+  
+  # Serial Ports (use persistent names after running setup_udev_rules.py)
+  left_arm_port: /dev/arm_left_follower
+  right_arm_port: /dev/arm_right_follower
+  base_port: /dev/mecanum_base
+  
+  # Camera Configuration
+  cameras:
+    right_wrist:
+      type: opencv
+      index_or_path: /dev/camera_right_wrist
+      width: 640
+      height: 480
+      fps: 30
+      fourcc: MJPG  # Use MJPEG compression to reduce USB bandwidth
+      warmup_s: 0  # Reduced warmup for faster startup
+    
+    left_wrist:
+      type: opencv
+      index_or_path: /dev/camera_left_wrist
+      width: 640
+      height: 480
+      fps: 30
+      fourcc: MJPG  # Use MJPEG compression to reduce USB bandwidth
+      warmup_s: 0  # Reduced warmup for faster startup
+    
+    top:
+      type: zed_camera
+      index_or_path: 23081456  # ZED camera serial number
+      width: 1280  # HD720 resolution
+      height: 720
+      fps: 30
+      warmup_s: 0  # Reduced warmup for faster startup
+    
+    # front:  # DISABLED - requires serial_number_or_name, not index_or_path
+    #   type: intelrealsense
+    #   serial_number_or_name: "YOUR_CAMERA_SERIAL"  # Find with: rs-enumerate-devices
+    #   width: 640
+    #   height: 480
+    #   fps: 30
+
+# Teleoperation Configuration
+teleop:
+  type: mimic_leader
+  id: mimic_leader
+  
+  # Leader Arm Ports
+  left_arm_port: /dev/arm_left_leader
+  right_arm_port: /dev/arm_right_leader
+  
+  # Base Control Mode
+  base_control_mode: xbox  # Options: keyboard, xbox, joystick
+
+# Dataset Configuration
+dataset:
+  repo_id: Mimic-Robotics/mimic_zed_data_test
+  fps: 30
+  num_image_writer_processes: 1
+  video: true
+  
+  # Recording Settings
+  recording:
+    num_episodes: 5
+    episode_time_s: 60
+    reset_time_s: 10
+    single_task: "Default task description"
+
+# Display Settings
+display_data: true
