@@ -2,13 +2,8 @@
 
 # mimic mathias Desrochers eltopchi1@gmail.com
 
-#TODO add xbox ctr, and joystick implementation
-
 import logging
-import time
 from functools import cached_property
-import os
-import sys
 
 # Import standard Leader parts
 from lerobot.teleoperators.so100_leader.config_so100_leader import SO100LeaderConfig
@@ -16,23 +11,9 @@ from lerobot.teleoperators.so100_leader.so100_leader import SO100Leader
 
 from ..teleoperator import Teleoperator
 from .config_mimic_leader import MimicLeaderConfig
+from .base_controllers import create_base_controller
 
 logger = logging.getLogger(__name__)
-
-# Handle Pynput import safely (like the original keyboard teleop)
-PYNPUT_AVAILABLE = True
-try:
-    if ("DISPLAY" not in os.environ) and ("linux" in sys.platform):
-        logging.info("No DISPLAY set. Skipping pynput import.")
-        raise ImportError("pynput blocked intentionally due to no display.")
-    from pynput import keyboard
-except ImportError:
-    keyboard = None
-    PYNPUT_AVAILABLE = False
-except Exception as e:
-    keyboard = None
-    PYNPUT_AVAILABLE = False
-    logging.info(f"Could not import pynput: {e}")
 
 
 class MimicLeader(Teleoperator):
@@ -64,12 +45,14 @@ class MimicLeader(Teleoperator):
         self.left_arm = SO100Leader(left_arm_config)
         self.right_arm = SO100Leader(right_arm_config)
 
-        # 3. Setup Base Control State
-        self.base_pressed_keys = set()
-        self.key_listener = None
-        
-        if self.config.base_control_mode == "keyboard" and not PYNPUT_AVAILABLE:
-            logger.warning("Keyboard control requested but pynput not available. Base will not move.")
+        # 3. Setup Base Controller based on mode
+        self.base_controller = create_base_controller(
+            mode=config.base_control_mode,
+            max_linear_speed=config.max_linear_speed,
+            max_angular_speed=config.max_angular_speed,
+            device_path="/dev/input/js0"  # Default gamepad/joystick path
+        )
+        logger.info(f"Base control mode: {config.base_control_mode}")
 
     @cached_property
     def action_features(self) -> dict[str, type]:
@@ -88,38 +71,16 @@ class MimicLeader(Teleoperator):
     @property
     def is_connected(self) -> bool:
         arms_connected = self.left_arm.is_connected and self.right_arm.is_connected
-        if self.config.base_control_mode == "keyboard":
-            return arms_connected and self.key_listener is not None and self.key_listener.is_alive()
-        return arms_connected
+        base_connected = self.base_controller.is_connected()
+        return arms_connected and base_connected
 
     def connect(self, calibrate: bool = True) -> None:
         # Connect Arms
         self.left_arm.connect(calibrate)
         self.right_arm.connect(calibrate)
         
-        # Connect Keyboard Listener if needed
-        if self.config.base_control_mode == "keyboard" and PYNPUT_AVAILABLE:
-            if self.key_listener is None:
-                self.key_listener = keyboard.Listener(
-                    on_press=self._on_key_press,
-                    on_release=self._on_key_release
-                )
-                self.key_listener.start()
-                logger.info("MimicLeader: Keyboard listener started for Base control.")
-
-    def _on_key_press(self, key):
-        try:
-            if hasattr(key, 'char') and key.char:
-                self.base_pressed_keys.add(key.char.lower())
-        except AttributeError:
-            pass
-
-    def _on_key_release(self, key):
-        try:
-            if hasattr(key, 'char') and key.char:
-                self.base_pressed_keys.discard(key.char.lower())
-        except AttributeError:
-            pass
+        # Connect base controller
+        self.base_controller.connect()
 
     @property
     def is_calibrated(self) -> bool:
@@ -137,49 +98,25 @@ class MimicLeader(Teleoperator):
         self.left_arm.setup_motors()
         self.right_arm.setup_motors()
 
-    def _get_base_action(self) -> dict[str, float]:
-        vx, vy, omega = 0.0, 0.0, 0.0
-        
-        if self.config.base_control_mode == "keyboard":
-            # Simple Mecanum Mapping
-            # W/S = Forward/Back (X)
-            if 'w' in self.base_pressed_keys: vx += self.config.max_linear_speed
-            if 's' in self.base_pressed_keys: vx -= self.config.max_linear_speed
-            
-            # A/D = Left/Right (Y - Strafing)
-            if 'a' in self.base_pressed_keys: vy += self.config.max_linear_speed
-            if 'd' in self.base_pressed_keys: vy -= self.config.max_linear_speed
-            
-            # Q/E = Rotate (Omega)
-            if 'q' in self.base_pressed_keys: omega += self.config.max_angular_speed
-            if 'e' in self.base_pressed_keys: omega -= self.config.max_angular_speed
-            
-        elif self.config.base_control_mode == "xbox":
-            # Placeholder for XBox Controller
-            # TODO: Implement XInput or pygame joystick logic here
-            pass
-            
-        elif self.config.base_control_mode == "joystick":
-            # Placeholder for generic joystick
-            pass
-
-        return {"base_vx": vx, "base_vy": vy, "base_omega": omega}
-
     def get_action(self) -> dict[str, float]:
+        """Get combined action from both arms and base controller."""
         action_dict = {}
 
-        # 1. Get Base Action
-        base_action = self._get_base_action()
-        action_dict.update(base_action)
-
-        # 2. Get Arm Actions
-        # Add "left_" prefix
+        # Add "left_" prefix for left arm actions
         left_action = self.left_arm.get_action()
         action_dict.update({f"left_{key}": value for key, value in left_action.items()})
 
-        # Add "right_" prefix
+        # Add "right_" prefix for right arm actions
         right_action = self.right_arm.get_action()
         action_dict.update({f"right_{key}": value for key, value in right_action.items()})
+
+        # Add base velocities
+        vx, vy, omega = self.base_controller.get_velocities()
+        action_dict.update({
+            "base_vx": vx,
+            "base_vy": vy,
+            "base_omega": omega,
+        })
 
         return action_dict
 
@@ -201,7 +138,4 @@ class MimicLeader(Teleoperator):
     def disconnect(self) -> None:
         self.left_arm.disconnect()
         self.right_arm.disconnect()
-        
-        if self.key_listener:
-            self.key_listener.stop()
-            self.key_listener = None
+        self.base_controller.disconnect()
