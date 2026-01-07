@@ -1,0 +1,84 @@
+#!/bin/bash
+# Mimic Robot Replay Wrapper Script
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_FILE="${SCRIPT_DIR}/../config/robot_config.yaml"
+
+# Check if config exists
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Error: Configuration file not found: $CONFIG_FILE"
+    exit 1
+fi
+
+# Default values
+EPISODE=""
+REPO_ID=""
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --episode)
+            EPISODE="$2"
+            shift 2
+            ;;
+        --repo)
+            REPO_ID="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            echo "Usage: mimic-replay --episode N [--repo repo_id]"
+            exit 1
+            ;;
+    esac
+done
+
+# Check if episode is provided
+if [ -z "$EPISODE" ]; then
+    echo "Error: --episode is required"
+    echo "Usage: mimic-replay --episode N [--repo repo_id]"
+    exit 1
+fi
+
+# Parse YAML config
+parse_yaml() {
+    python3 -c "
+import yaml
+
+with open('$CONFIG_FILE', 'r') as f:
+    config = yaml.safe_load(f)
+
+robot = config['robot']
+dataset = config['dataset']
+
+repo_id = '$REPO_ID' if '$REPO_ID' else dataset['repo_id']
+
+print(f'ROBOT_TYPE={robot[\"type\"]}')
+print(f'ROBOT_ID={robot[\"id\"]}')
+print(f'ROBOT_LEFT_ARM={robot[\"left_arm_port\"]}')
+print(f'ROBOT_RIGHT_ARM={robot[\"right_arm_port\"]}')
+print(f'ROBOT_BASE={robot[\"base_port\"]}')
+print(f'REPO_ID={repo_id}')
+print(f'FPS={dataset[\"fps\"]}')
+"
+}
+
+# Get config values
+eval "$(parse_yaml)"
+
+# Build command
+CMD="lerobot-replay \
+  --robot.type=$ROBOT_TYPE \
+  --robot.left_arm_port=$ROBOT_LEFT_ARM \
+  --robot.right_arm_port=$ROBOT_RIGHT_ARM \
+  --robot.base_port=$ROBOT_BASE \
+  --robot.id=$ROBOT_ID \
+  --dataset.repo_id=$REPO_ID \
+  --dataset.episode=$EPISODE \
+  --dataset.fps=$FPS"
+
+echo "Running: lerobot-replay ..."
+echo "  Episode: $EPISODE"
+echo "  Repo: $REPO_ID"
+echo ""
+eval "$CMD"

@@ -1,0 +1,89 @@
+#!/bin/bash
+# Mimic Robot Teleoperation Wrapper Script
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG_FILE="${SCRIPT_DIR}/../config/robot_config.yaml"
+
+# Check if config exists
+if [ ! -f "$CONFIG_FILE" ]; then
+    echo "Error: Configuration file not found: $CONFIG_FILE"
+    exit 1
+fi
+
+# Check if --without-cameras flag is present
+USE_CAMERAS="yes"
+for arg in "$@"; do
+    if [[ "$arg" == "--without-cameras" ]] || [[ "$arg" == "--no-cameras" ]]; then
+        USE_CAMERAS="no"
+        break
+    fi
+done
+
+# Parse YAML config and write to temp file to avoid shell escaping issues
+TEMP_CONFIG=$(mktemp)
+python3 << PYEOF > "$TEMP_CONFIG"
+import yaml
+import json
+
+with open('$CONFIG_FILE', 'r') as f:
+    config = yaml.safe_load(f)
+
+# Robot config
+robot = config['robot']
+teleop = config['teleop']
+
+# Cameras (default ON unless --without-cameras)
+use_cameras = ('$USE_CAMERAS' == 'yes')
+
+cameras_json = json.dumps(robot['cameras']) if use_cameras else '{}'
+
+# Write all configs as KEY=VALUE pairs
+print(f'CAMERAS="{cameras_json}"')
+print(f'ROBOT_TYPE="{robot["type"]}"')
+print(f'ROBOT_ID="{robot["id"]}"')
+print(f'ROBOT_LEFT_ARM="{robot["left_arm_port"]}"')
+print(f'ROBOT_RIGHT_ARM="{robot["right_arm_port"]}"')
+print(f'ROBOT_BASE="{robot["base_port"]}"')
+print(f'TELEOP_TYPE="{teleop["type"]}"')
+print(f'TELEOP_ID="{teleop["id"]}"')
+print(f'TELEOP_LEFT_ARM="{teleop["left_arm_port"]}"')
+print(f'TELEOP_RIGHT_ARM="{teleop["right_arm_port"]}"')
+print(f'TELEOP_BASE_MODE="{teleop["base_control_mode"]}"')
+print(f'DISPLAY_DATA="{str(config["display_data"]).lower()}"')
+PYEOF
+
+# Get config values
+source "$TEMP_CONFIG"
+rm "$TEMP_CONFIG"
+
+# Build command - cameras are included by default
+# Note: CAMERAS variable is properly quoted in the variable itself
+CMD="lerobot-teleoperate \
+  --robot.type=$ROBOT_TYPE \
+  --robot.left_arm_port=$ROBOT_LEFT_ARM \
+  --robot.right_arm_port=$ROBOT_RIGHT_ARM \
+  --robot.base_port=$ROBOT_BASE \
+  --robot.id=$ROBOT_ID \
+  --robot.cameras='$CAMERAS' \
+  --teleop.type=$TELEOP_TYPE \
+  --teleop.left_arm_port=$TELEOP_LEFT_ARM \
+  --teleop.right_arm_port=$TELEOP_RIGHT_ARM \
+  --teleop.base_control_mode=$TELEOP_BASE_MODE \
+  --teleop.id=$TELEOP_ID \
+  --display_data=$DISPLAY_DATA"
+
+# Add any additional arguments (except camera flags which we handle above)
+for arg in "$@"; do
+    if [[ "$arg" != "--cameras" ]] && [[ "$arg" != "--with-cameras" ]] && [[ "$arg" != "--without-cameras" ]] && [[ "$arg" != "--no-cameras" ]]; then
+        CMD="$CMD $arg"
+    fi
+done
+
+echo "Running: lerobot-teleoperate ..."
+if [ "$USE_CAMERAS" = "yes" ]; then
+    echo "Cameras: ENABLED (use --without-cameras to disable)"
+else
+    echo "Cameras: DISABLED"
+fi
+echo ""
+eval "$CMD"

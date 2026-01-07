@@ -1,0 +1,95 @@
+# Xbox Controller Configuration
+# Similar to ROS2 joy_node configuration format
+# Device: Xbox Series S|X Controller at /dev/input/js0
+
+joy_node:
+  ros__parameters:
+    device_id: 0           # /dev/input/js0
+    deadzone: 0.05         # Ignore inputs below this threshold
+    autorepeat_rate: 20.0  # Hz - rate to republish last command
+
+teleop_node:
+  ros__parameters:
+    # Axis mappings for movement
+    axis_linear:
+      x: 1  # Left stick vertical - forward/backward
+      y: 0  # Left stick horizontal - strafe left/right
+    
+    # Speed scaling
+    scale_linear:
+      x: 0.1   # 0.1 m/s forward/backward
+      y: 0.1   # 0.1 m/s strafe
+    
+    scale_linear_turbo:
+      x: 0.2   # 0.2 m/s with turbo
+      y: 0.2   # 0.2 m/s with turbo
+    
+    # Axis mapping for rotation
+    axis_angular:
+      yaw: 2  # Right stick horizontal - rotation
+    
+    scale_angular:
+      yaw: 0.2  # 0.2 rad/s rotation
+    
+    scale_angular_turbo:
+      yaw: 0.4  # 0.4 rad/s with turbo
+    
+    enable_button: 5  # RB/R1 - hold to enable control
+    enable_turbo_button: 4  # LB/L1 - hold for turbo speeds
+
+# Button Mappings
+# Button events are binary (0 = released, 1 = pressed)
+button_mappings:
+  # Face buttons (future use)
+  # a_button: BTN_SOUTH       # A/Cross - confirm
+  # b_button: BTN_EAST        # B/Circle - cancel
+  # x_button: BTN_NORTH       # X/Square
+  # y_button: BTN_WEST        # Y/Triangle
+  
+  # Shoulder buttons (future use)
+  # lb_button: BTN_TL         # L1/LB - turbo mode
+  # rb_button: BTN_TR         # R1/RB - enable motion
+  # lt_button: BTN_TL2        # L2/LT (button press)
+  # rt_button: BTN_TR2        # R2/RT (button press)
+  
+  # Special buttons (future use)
+  # start_button: BTN_START   # Start/Options
+  # back_button: BTN_SELECT   # Back/Share
+  # xbox_button: BTN_MODE     # Xbox button
+  
+  # Stick clicks (future use)
+  # left_stick_click: BTN_THUMBL
+  # right_stick_click: BTN_THUMBR
+
+# Safety Features (future implementation)
+safety:
+  require_enable_button: true  # Require holding a button to enable motion
+  enable_button: rb_button      # Right bumper (RB) as dead-man switch
+  timeout_ms: 500               # Timeout after button release
+
+# Inversion Settings
+# Set to true to invert axis direction
+invert:
+  linear_x: true    # True = up on stick = forward (more intuitive)
+  linear_y: false
+  angular_z: false
+
+# Additional Settings
+settings:
+  # Combine axes for omnidirectional movement
+  allow_mixed_control: true     # Allow simultaneous linear + angular
+  
+  # Vibration feedback (future)
+  enable_rumble: false
+  rumble_on_collision: false
+
+# Notes:
+# - Controller must be paired (Bluetooth) or connected (USB-C)
+# - Check device appears at /dev/input/js0 (ls -l /dev/input/js*)
+# - Adjust deadzone if you experience stick drift
+# - Works perfectly over SSH (unlike keyboard mode)
+#
+# Troubleshooting:
+# - Test controller: jstest /dev/input/js0
+# - Check permissions: sudo chmod 666 /dev/input/js0
+# - Install inputs library: pip install inputs

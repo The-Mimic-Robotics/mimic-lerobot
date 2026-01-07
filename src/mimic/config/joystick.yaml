@@ -1,0 +1,132 @@
+# Joystick Configuration
+# Similar to ROS2 joy_node configuration format  
+# Device: Custom joystick/flight stick at /dev/input/js1
+
+joy_node:
+  ros__parameters:
+    device_id: 1           # /dev/input/js1
+    deadzone: 0.05         # Ignore inputs below this threshold
+    autorepeat_rate: 20.0  # Hz - rate to republish last command
+
+teleop_node:
+  ros__parameters:
+    # Axis mappings for movement
+    # Note: Run 'jstest /dev/input/js1' to verify your joystick's axis numbers
+    axis_linear:
+      x: 1  # Main stick vertical - forward/backward
+      y: 0  # Main stick horizontal - strafe left/right
+    
+    # Speed scaling
+    scale_linear:
+      x: 0.1   # 0.1 m/s forward/backward
+      y: 0.1   # 0.1 m/s strafe
+    
+    scale_linear_turbo:
+      x: 0.2   # 0.2 m/s with turbo
+      y: 0.2   # 0.2 m/s with turbo
+    
+    # Axis mapping for rotation
+    axis_angular:
+      yaw: 2  # Twist axis or secondary stick - rotation
+    
+    scale_angular:
+      yaw: 0.2  # 0.2 rad/s rotation
+    
+    scale_angular_turbo:
+      yaw: 0.4  # 0.4 rad/s with turbo
+    
+    enable_button: 6  # Trigger button - hold to enable control
+    enable_turbo_button: 7  # Thumb button - hold for turbo speeds
+
+# Button Mappings
+# Run 'jstest /dev/input/js0' to identify button numbers
+button_mappings:
+  # Trigger buttons (future use)
+  # trigger: BTN_TRIGGER      # Main trigger (button 0)
+  # thumb_button: BTN_THUMB   # Thumb button (button 1)
+  # thumb2_button: BTN_THUMB2 # Second thumb button
+  
+  # Enable/safety buttons (future use)
+  # enable_button: BTN_TRIGGER  # Dead-man switch
+  # turbo_button: BTN_THUMB     # Turbo mode
+  
+  # Base buttons (future use)
+  # base_button_1: BTN_BASE
+  # base_button_2: BTN_BASE2
+  # base_button_3: BTN_BASE3
+  # base_button_4: BTN_BASE4
+
+# Safety Features (future implementation)
+safety:
+  require_enable_button: false  # Require holding trigger to enable motion
+  enable_button: trigger        # Main trigger as dead-man switch
+  timeout_ms: 500               # Timeout after button release
+
+# Inversion Settings
+# Set to true to invert axis direction
+invert:
+  linear_x: true    # True = forward on stick = forward motion
+  linear_y: false   # False = left on stick = left motion
+  angular_z: false  # False = left twist/rudder = counter-clockwise
+
+# Scaling Curves (future implementation)
+# Apply non-linear scaling for finer control at low speeds
+scaling:
+  curve_type: linear  # Options: linear, quadratic, cubic, exponential
+  linear_exponent: 1.0
+  angular_exponent: 1.0
+
+# Additional Settings
+settings:
+  # Combine axes for omnidirectional movement
+  allow_mixed_control: true
+  
+  # Force feedback (if supported)
+  enable_force_feedback: false
+  
+  # Auto-center on disconnect
+  auto_center: true
+
+# Device-Specific Presets
+# Uncomment and modify for your specific joystick model
+
+# # Logitech Extreme 3D Pro
+# logitech_extreme_3d:
+#   axis_mappings:
+#     linear_x: ABS_Y
+#     linear_y: ABS_X
+#     angular_z: ABS_RZ  # Twist grip
+#   button_mappings:
+#     enable_button: BTN_TRIGGER
+
+# # Thrustmaster T.16000M
+# thrustmaster_t16000m:
+#   axis_mappings:
+#     linear_x: ABS_Y
+#     linear_y: ABS_X
+#     angular_z: ABS_RZ  # Twist grip
+#   button_mappings:
+#     enable_button: BTN_TRIGGER
+
+# # CH Products Fighterstick
+# ch_fighterstick:
+#   axis_mappings:
+#     linear_x: ABS_Y
+#     linear_y: ABS_X
+#     angular_z: ABS_RUDDER  # Requires rudder pedals
+#   button_mappings:
+#     enable_button: BTN_TRIGGER
+
+# Notes:
+# - Works over SSH (unlike keyboard mode)
+# - Requires 'inputs' library: pip install inputs
+# - Check device: ls -l /dev/input/js*
+# - Test axes: jstest /dev/input/js0
+# - Some joysticks may require driver installation
+# - Adjust deadzone if experiencing drift
+#
+# Troubleshooting:
+# - Test joystick: jstest /dev/input/js0
+# - Check permissions: sudo chmod 666 /dev/input/js0
+# - Verify axis names match your device
+# - Increase deadzone if stick drifts
