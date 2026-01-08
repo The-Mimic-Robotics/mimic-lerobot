@@ -22,14 +22,15 @@ except ImportError:
     pynput_keyboard = None
     PYNPUT_AVAILABLE = False
 
-# Try importing inputs library for gamepad/joystick
-INPUTS_AVAILABLE = True
+# Try importing pygame for gamepad/joystick
+PYGAME_AVAILABLE = True
 try:
-    import inputs
+    import pygame
+    import pygame.joystick
 except ImportError:
-    inputs = None
-    INPUTS_AVAILABLE = False
-    logger.info("inputs library not available. Install with: pip install inputs")
+    pygame = None
+    PYGAME_AVAILABLE = False
+    logger.info("pygame library not available. Install with: pip install pygame")
 
 
 class BaseController(ABC):
@@ -135,139 +136,165 @@ class KeyboardBaseController(BaseController):
 
 
 class XboxBaseController(BaseController):
-    """Xbox controller-based base controller using inputs library."""
+    """Simple Xbox controller using pygame - loads config from YAML."""
     
-    def __init__(self, max_linear_speed: float = 0.1, max_angular_speed: float = 0.2, device_path: str = None):
-        super().__init__(max_linear_speed, max_angular_speed)
-        self.device_path = device_path  # e.g., "/dev/input/js0"
-        self.gamepad = None
-        self.left_stick_x = 0.0
-        self.left_stick_y = 0.0
-        self.right_stick_x = 0.0
-        self.deadzone = 0.15  # Ignore inputs below this threshold
+    def __init__(self, config_path: str = None, **kwargs):
+        # Load config from YAML if provided
+        if config_path:
+            import yaml
+            with open(config_path, 'r') as f:
+                config = yaml.safe_load(f)
+                teleop = config['teleop_node']['ros__parameters']
+                
+                # Extract settings from YAML
+                max_linear_speed = teleop['scale_linear']['x']
+                max_angular_speed = teleop['scale_angular']['yaw']
+                max_linear_speed_turbo = teleop['scale_linear_turbo']['x']
+                max_angular_speed_turbo = teleop['scale_angular_turbo']['yaw']
+                self.enable_button = teleop['enable_button']
+                self.enable_turbo_button = teleop['enable_turbo_button']
+                self.deadzone = config['joy_node']['ros__parameters']['deadzone']
+                
+                # Axis mappings
+                self.axis_linear_x = teleop['axis_linear']['x']
+                self.axis_linear_y = teleop['axis_linear']['y']
+                self.axis_angular_yaw = teleop['axis_angular']['yaw']
+        else:
+            # Use kwargs or defaults
+            max_linear_speed = kwargs.get('max_linear_speed', 0.1)
+            max_angular_speed = kwargs.get('max_angular_speed', 0.2)
+            max_linear_speed_turbo = kwargs.get('max_linear_speed_turbo', 0.2)
+            max_angular_speed_turbo = kwargs.get('max_angular_speed_turbo', 0.4)
+            self.enable_button = kwargs.get('enable_button', 4)  # LB = safety
+            self.enable_turbo_button = kwargs.get('enable_turbo_button', 5)  # RB = turbo
+            self.deadzone = kwargs.get('deadzone', 0.15)
+            self.axis_linear_x = 1  # Left stick Y (forward/back)
+            self.axis_linear_y = 0  # Left stick X (strafe left/right)
+            self.axis_angular_yaw = 3  # Right stick X (rotation)
         
-        if not INPUTS_AVAILABLE:
-            logger.warning("inputs library not available. Xbox controller will not work.")
+        super().__init__(max_linear_speed, max_angular_speed)
+        self.max_linear_speed_turbo = max_linear_speed_turbo
+        self.max_angular_speed_turbo = max_angular_speed_turbo
+        self.joystick = None
+        
+        if not PYGAME_AVAILABLE:
+            logger.error("pygame not available. Install: conda install pygame -c conda-forge")
     
     def connect(self) -> None:
-        if not INPUTS_AVAILABLE:
-            logger.error("Cannot connect Xbox controller: inputs library not available")
-            logger.info("Install with: pip install inputs")
+        if not PYGAME_AVAILABLE:
             return
         
-        try:
-            # Try to find Xbox controller
-            devices = inputs.devices.gamepads
-            if not devices:
-                logger.error("No gamepad devices found")
-                return
-            
-            # Use first gamepad found
-            # Note: inputs library returns device name (e.g., "Microsoft Xbox Series S|X Controller")
-            # when converting to string, not the /dev/input/js0 path
-            self.gamepad = devices[0]
-            logger.info(f"Xbox controller connected: {self.gamepad}")
+        pygame.init()
+        pygame.joystick.init()
         
-        except Exception as e:
-            logger.error(f"Failed to connect Xbox controller: {e}")
-            self.gamepad = None
+        if pygame.joystick.get_count() == 0:
+            logger.error("No gamepad found")
+            return
+        
+        self.joystick = pygame.joystick.Joystick(0)
+        self.joystick.init()
+        logger.info(f"Connected: {self.joystick.get_name()}")
     
     def disconnect(self) -> None:
-        self.gamepad = None
-        logger.info("Xbox controller disconnected")
-    
-    def _apply_deadzone(self, value: float) -> float:
-        """Apply deadzone to joystick value."""
-        if abs(value) < self.deadzone:
-            return 0.0
-        return value
+        if self.joystick:
+            self.joystick.quit()
+        pygame.joystick.quit()
     
     def get_velocities(self) -> Tuple[float, float, float]:
-        if not self.gamepad or not INPUTS_AVAILABLE:
+        if not self.joystick:
             return 0.0, 0.0, 0.0
         
-        try:
-            # Read all pending events
-            events = inputs.get_gamepad()
-            for event in events:
-                if event.ev_type == "Absolute":
-                    # Xbox controller mapping
-                    if event.code == "ABS_X":  # Left stick X
-                        self.left_stick_x = event.state / 32768.0
-                    elif event.code == "ABS_Y":  # Left stick Y
-                        self.left_stick_y = event.state / 32768.0
-                    elif event.code == "ABS_RX":  # Right stick X
-                        self.right_stick_x = event.state / 32768.0
+        pygame.event.pump()
         
-        except Exception as e:
-            logger.debug(f"Error reading Xbox controller: {e}")
+        # Read buttons: LB=4 (enable normal speed), RB=5 (enable turbo speed)
+        enable_normal = self.joystick.get_button(self.enable_button)
+        enable_turbo = self.joystick.get_button(self.enable_turbo_button)
         
-        # Apply deadzones
-        left_x = self._apply_deadzone(self.left_stick_x)
-        left_y = self._apply_deadzone(self.left_stick_y)
-        right_x = self._apply_deadzone(self.right_stick_x)
+        # SAFETY: Must hold at least one enable button (either normal OR turbo)
+        if not enable_normal and not enable_turbo:
+            return 0.0, 0.0, 0.0
         
-        # Map to robot velocities
-        # Left stick: forward/back and strafe
-        # Right stick X: rotation
-        vx = -left_y * self.max_linear_speed  # Invert Y for forward
-        vy = -left_x * self.max_linear_speed  # Invert X for strafe right
-        omega = -right_x * self.max_angular_speed  # Right stick for rotation
+        # Determine which speed to use: turbo if RB pressed, normal if only LB pressed
+        use_turbo = enable_turbo
+        
+        # Read axes
+        left_x = self.joystick.get_axis(self.axis_linear_y)
+        left_y = self.joystick.get_axis(self.axis_linear_x)
+        right_x = self.joystick.get_axis(self.axis_angular_yaw)
+        
+        # Apply deadzone
+        if abs(left_x) < self.deadzone: left_x = 0.0
+        if abs(left_y) < self.deadzone: left_y = 0.0
+        if abs(right_x) < self.deadzone: right_x = 0.0
+        
+        # Select speed: turbo if RB pressed, normal otherwise
+        linear_speed = self.max_linear_speed_turbo if use_turbo else self.max_linear_speed
+        angular_speed = self.max_angular_speed_turbo if use_turbo else self.max_angular_speed
+        
+        # Calculate velocities
+        vx = -left_y * linear_speed  # Forward/back (axis 1)
+        vy = -left_x * linear_speed  # Strafe left/right (axis 0) - NEGATED to fix reversed direction
+        omega = -right_x * angular_speed  # Rotation (axis 3)
         
         return vx, vy, omega
     
     def is_connected(self) -> bool:
-        return INPUTS_AVAILABLE and self.gamepad is not None
+        return self.joystick is not None
 
 
 class JoystickBaseController(BaseController):
-    """Custom joystick-based base controller using inputs library."""
+    """Generic joystick-based base controller using pygame library."""
     
-    def __init__(self, max_linear_speed: float = 0.1, max_angular_speed: float = 0.2, device_path: str = None):
+    def __init__(self, max_linear_speed: float = 0.1, max_angular_speed: float = 0.2,
+                 max_linear_speed_turbo: float = 0.2, max_angular_speed_turbo: float = 0.4,
+                 device_path: str = None, enable_button: int = 6, enable_turbo_button: int = 7):
         super().__init__(max_linear_speed, max_angular_speed)
-        self.device_path = device_path
+        self.device_index = 0
         self.joystick = None
-        self.axis_x = 0.0
-        self.axis_y = 0.0
-        self.axis_twist = 0.0
         self.deadzone = 0.15
         
-        if not INPUTS_AVAILABLE:
-            logger.warning("inputs library not available. Joystick control will not work.")
+        # Speed settings
+        self.max_linear_speed_turbo = max_linear_speed_turbo
+        self.max_angular_speed_turbo = max_angular_speed_turbo
+        
+        # Button states
+        self.enable_button = enable_button
+        self.enable_turbo_button = enable_turbo_button
+        
+        if not PYGAME_AVAILABLE:
+            logger.warning("pygame library not available. Joystick controller will not work.")
     
     def connect(self) -> None:
-        if not INPUTS_AVAILABLE:
-            logger.error("Cannot connect joystick: inputs library not available")
-            logger.info("Install with: pip install inputs")
+        if not PYGAME_AVAILABLE:
+            logger.error("Cannot connect joystick: pygame library not available")
+            logger.info("Install with: pip install pygame")
             return
         
         try:
-            # Try to find joystick
-            devices = inputs.devices.gamepads
-            if not devices:
+            if not pygame.get_init():
+                pygame.init()
+            pygame.joystick.init()
+            
+            joystick_count = pygame.joystick.get_count()
+            if joystick_count == 0:
                 logger.error("No joystick devices found")
                 return
             
-            # Use first device, or specified device
-            if self.device_path:
-                for device in devices:
-                    if self.device_path in str(device):
-                        self.joystick = device
-                        break
-            else:
-                self.joystick = devices[0]
+            self.joystick = pygame.joystick.Joystick(self.device_index)
+            self.joystick.init()
             
-            if self.joystick:
-                logger.info(f"Joystick connected: {self.joystick}")
-            else:
-                logger.error(f"Joystick not found at {self.device_path}")
+            logger.info(f"Joystick connected: {self.joystick.get_name()}")
+            logger.info(f"  Axes: {self.joystick.get_numaxes()}, Buttons: {self.joystick.get_numbuttons()}")
         
         except Exception as e:
             logger.error(f"Failed to connect joystick: {e}")
             self.joystick = None
     
     def disconnect(self) -> None:
-        self.joystick = None
+        if self.joystick:
+            self.joystick.quit()
+            self.joystick = None
+        pygame.joystick.quit()
         logger.info("Joystick disconnected")
     
     def _apply_deadzone(self, value: float) -> float:
@@ -277,46 +304,63 @@ class JoystickBaseController(BaseController):
         return value
     
     def get_velocities(self) -> Tuple[float, float, float]:
-        if not self.joystick or not INPUTS_AVAILABLE:
+        if not self.joystick or not PYGAME_AVAILABLE:
             return 0.0, 0.0, 0.0
         
         try:
-            # Read all pending events
-            events = inputs.get_gamepad()
-            for event in events:
-                if event.ev_type == "Absolute":
-                    # Generic joystick mapping (may need adjustment)
-                    if event.code == "ABS_X":
-                        self.axis_x = event.state / 32768.0
-                    elif event.code == "ABS_Y":
-                        self.axis_y = event.state / 32768.0
-                    elif event.code == "ABS_RZ" or event.code == "ABS_Z":  # Twist axis
-                        self.axis_twist = event.state / 32768.0
+            pygame.event.pump()
+            
+            # Read button states
+            enable_button_pressed = self.joystick.get_button(self.enable_button)
+            turbo_button_pressed = self.joystick.get_button(self.enable_turbo_button)
+            
+            # SAFETY: Only output velocities if enable button is pressed
+            if not enable_button_pressed:
+                return 0.0, 0.0, 0.0
+            
+            # Read joystick axes
+            axis_x = self.joystick.get_axis(0)
+            axis_y = self.joystick.get_axis(1)
+            axis_twist = self.joystick.get_axis(2) if self.joystick.get_numaxes() > 2 else 0.0
+            
+            # Apply deadzones
+            axis_x = self._apply_deadzone(axis_x)
+            axis_y = self._apply_deadzone(axis_y)
+            axis_twist = self._apply_deadzone(axis_twist)
+            
+            # Select speed based on turbo button
+            if turbo_button_pressed:
+                linear_speed = self.max_linear_speed_turbo
+                angular_speed = self.max_angular_speed_turbo
+            else:
+                linear_speed = self.max_linear_speed
+                angular_speed = self.max_angular_speed
+            
+            # Map to robot velocities
+            vx = -axis_y * linear_speed
+            vy = axis_x * linear_speed
+            omega = -axis_twist * angular_speed
+            
+            return vx, vy, omega
         
         except Exception as e:
             logger.debug(f"Error reading joystick: {e}")
-        
-        # Apply deadzones
-        x = self._apply_deadzone(self.axis_x)
-        y = self._apply_deadzone(self.axis_y)
-        twist = self._apply_deadzone(self.axis_twist)
-        
-        # Map to robot velocities
-        vx = -y * self.max_linear_speed
-        vy = -x * self.max_linear_speed
-        omega = -twist * self.max_angular_speed
-        
-        return vx, vy, omega
+            return 0.0, 0.0, 0.0
     
     def is_connected(self) -> bool:
-        return INPUTS_AVAILABLE and self.joystick is not None
+        return PYGAME_AVAILABLE and self.joystick is not None and self.joystick.get_init()
 
 
 def create_base_controller(
     mode: str,
     max_linear_speed: float = 0.1,
     max_angular_speed: float = 0.2,
-    device_path: str = None
+    max_linear_speed_turbo: float = 0.2,
+    max_angular_speed_turbo: float = 0.4,
+    device_path: str = None,
+    enable_button: int = None,
+    enable_turbo_button: int = None,
+    config_path: str = None
 ) -> BaseController:
     """
     Factory function to create appropriate base controller.
@@ -325,16 +369,42 @@ def create_base_controller(
         mode: "keyboard", "xbox", or "joystick"
         max_linear_speed: Maximum linear velocity (m/s)
         max_angular_speed: Maximum angular velocity (rad/s)
+        max_linear_speed_turbo: Maximum linear velocity with turbo (m/s)
+        max_angular_speed_turbo: Maximum angular velocity with turbo (rad/s)
         device_path: Device path for gamepad/joystick (e.g., "/dev/input/js0")
+        enable_button: Button number for safety enable (LB=4 for Xbox, 6 for joystick)
+        enable_turbo_button: Button number for turbo mode (RB=5 for Xbox, 7 for joystick)
+        config_path: Path to YAML config file (for Xbox controller)
     
     Returns:
         BaseController instance
     """
     if mode == "keyboard":
         return KeyboardBaseController(max_linear_speed, max_angular_speed)
+    
     elif mode == "xbox":
-        return XboxBaseController(max_linear_speed, max_angular_speed, device_path)
+        # If config_path provided, load from YAML. Otherwise use kwargs
+        if config_path:
+            return XboxBaseController(config_path=config_path)
+        else:
+            return XboxBaseController(
+                max_linear_speed=max_linear_speed,
+                max_angular_speed=max_angular_speed,
+                max_linear_speed_turbo=max_linear_speed_turbo,
+                max_angular_speed_turbo=max_angular_speed_turbo,
+                enable_button=enable_button if enable_button is not None else 4,  # LB
+                enable_turbo_button=enable_turbo_button if enable_turbo_button is not None else 5  # RB
+            )
+    
     elif mode == "joystick":
-        return JoystickBaseController(max_linear_speed, max_angular_speed, device_path)
+        return JoystickBaseController(
+            max_linear_speed=max_linear_speed,
+            max_angular_speed=max_angular_speed,
+            max_linear_speed_turbo=max_linear_speed_turbo,
+            max_angular_speed_turbo=max_angular_speed_turbo,
+            enable_button=enable_button if enable_button is not None else 6,
+            enable_turbo_button=enable_turbo_button if enable_turbo_button is not None else 7
+        )
+    
     else:
         raise ValueError(f"Unknown base control mode: {mode}. Use 'keyboard', 'xbox', or 'joystick'")

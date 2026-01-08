@@ -1,5 +1,6 @@
 #!/bin/bash
 # Mimic Robot Recording Wrapper Script
+# Simplified interface for recording robot demonstrations
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_FILE="${SCRIPT_DIR}/../config/robot_config.yaml"
@@ -10,16 +11,87 @@ if [ ! -f "$CONFIG_FILE" ]; then
     exit 1
 fi
 
-# Default values (can be overridden by command line)
+# Default values - all come from YAML unless overridden
 NUM_EPISODES=""
 EPISODE_TIME=""
 RESET_TIME=""
+TASK_NAME=""
 TASK_DESC=""
-REPO_ID=""
+REPO_ID=""  # Can override full repo_id
+VERSION=""
+FPS=""
+VIDEO=""
+DISPLAY=""
+RESUME="false"
+CLEAN="false"
+
+# Show help
+show_help() {
+    cat << EOF
+Mimic Robot Recording Script
+
+Usage: mimic-record [OPTIONS]
+
+Optional Arguments:
+  --task-name NAME          Task name for repo ID generation (default: from YAML)
+  --version N               Dataset version number (default: from YAML repo_id)
+  --repo-id FULL_ID         Override full repository ID (default: from YAML)
+  --episodes N              Number of episodes to record (default: from YAML)
+  --episode-time S          Duration of each episode in seconds (default: from YAML)
+  --reset-time S            Reset time between episodes in seconds (default: from YAML)
+  --task-desc "TEXT"        Custom task description for VLA training (default: from YAML)
+  --fps N                   Frames per second (default: from YAML)
+  --no-video                Disable video recording (default: from YAML)
+  --no-display              Disable data display (default: from YAML)
+  --resume                  Resume recording on existing dataset (add more episodes)
+  --clean                   Delete existing dataset before recording (use with caution!)
+  -h, --help                Show this help message
+
+Configuration:
+  All settings are read from: src/mimic/config/robot_config.yaml
+  Command line arguments override YAML values.
+
+Examples:
+  # Use all YAML defaults
+  mimic-record
+
+  # Override just episodes and reset time
+  mimic-record --episodes 10 --reset-time 2
+
+  # Custom repo and task
+  mimic-record --repo-id Mimic-Robotics/my_custom_task_v1 --task-desc "Pick red cube"
+
+Output:
+  Dataset will be saved to: Mimic-Robotics/mobile_bimanual_TASKNAME_vN
+  
+Default Task: Mobile bimanual blue block handover with navigation
+  - Robot navigates from table side to front (strafe left + clockwise turn)
+  - Picks blue block with appropriate arm based on block position
+  - Transfers block mid-air to opposite arm
+  - Places block in designated area
+
+EOF
+    exit 0
+}
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
+        -h|--help)
+            show_help
+            ;;
+        --task-name)
+            TASK_NAME="$2"
+            shift 2
+            ;;
+        --repo-id)
+            REPO_ID="$2"
+            shift 2
+            ;;
+        --version)
+            VERSION="$2"
+            shift 2
+            ;;
         --episodes)
             NUM_EPISODES="$2"
             shift 2
@@ -32,97 +104,230 @@ while [[ $# -gt 0 ]]; do
             RESET_TIME="$2"
             shift 2
             ;;
-        --task)
+        --task-desc)
             TASK_DESC="$2"
             shift 2
             ;;
-        --repo)
-            REPO_ID="$2"
+        --repo-tag)
+            REPO_TAG="$2"
             shift 2
             ;;
+        --org)
+            ORG="$2"
+            shift 2
+            ;;
+        --fps)
+            FPS="$2"
+            shift 2
+            ;;
+        --no-video)
+            VIDEO="false"
+            shift
+            ;;
+        --no-display)
+            DISPLAY="false"
+            shift
+            ;;
+        --resume)
+            RESUME="true"
+            shift
+            ;;
+        --clean)
+            CLEAN="true"
+            shift
+            ;;
         *)
-            echo "Unknown option: $1"
-            echo "Usage: mimic-record [--episodes N] [--episode-time S] [--reset-time S] [--task \"description\"] [--repo repo_id]"
+            echo "Error: Unknown option: $1"
+            echo "Use --help for usage information"
             exit 1
             ;;
     esac
 done
 
 # Parse YAML config
+DATASET_DIR="$HOME/.cache/huggingface/lerobot/$REPO_ID"
+
+if [ -d "$DATASET_DIR" ]; then
+    if [ "$CLEAN" = "true" ]; then
+        echo "Deleting existing dataset: $DATASET_DIR"
+        rm -rf "$DATASET_DIR"
+        echo "Dataset deleted"
+        echo ""
+    elif [ "$RESUME" = "false" ]; then
+        echo ""
+        echo "Error: Dataset already exists at: $DATASET_DIR"
+        echo ""
+        echo "Options:"
+        echo "  1. Resume recording:  Add --resume flag to continue adding episodes"
+        echo "  2. Clean and restart: Add --clean flag to delete and start fresh"
+        echo "  3. Use new version:   Change --version to a new number"
+        echo ""
+        exit 1
+    else
+        echo "Resuming recording on existing dataset: $REPO_ID"
+        echo ""
+    fi
+else
+    if [ "$RESUME" = "true" ]; then
+        echo ""
+        echo "Error: Cannot resume - dataset does not exist: $DATASET_DIR"
+        echo ""
+        echo "Remove --resume flag to create a new dataset."
+        echo ""
+        exit 1
+    fi
+fi
+
+# Parse YAML config
 parse_yaml() {
     python3 -c "
 import yaml
 import json
+import sys
 
-with open('$CONFIG_FILE', 'r') as f:
-    config = yaml.safe_load(f)
+try:
+    with open('$CONFIG_FILE', 'r') as f:
+        config = yaml.safe_load(f)
 
-robot = config['robot']
-teleop = config['teleop']
-dataset = config['dataset']
-recording = dataset['recording']
+    robot = config['robot']
+    teleop = config['teleop']
+    dataset = config['dataset']
+    recording = dataset['recording']
 
-# Use command line args if provided, otherwise use config
-episodes = '$NUM_EPISODES' if '$NUM_EPISODES' else str(recording['num_episodes'])
-episode_time = '$EPISODE_TIME' if '$EPISODE_TIME' else str(recording['episode_time_s'])
-reset_time = '$RESET_TIME' if '$RESET_TIME' else str(recording['reset_time_s'])
-task = '$TASK_DESC' if '$TASK_DESC' else recording['single_task']
-repo_id = '$REPO_ID' if '$REPO_ID' else dataset['repo_id']
+    # Use command line args if provided, otherwise use YAML config
+    repo_id = '$REPO_ID' if '$REPO_ID' else dataset['repo_id']
+    episodes = '$NUM_EPISODES' if '$NUM_EPISODES' else str(recording['num_episodes'])
+    episode_time = '$EPISODE_TIME' if '$EPISODE_TIME' else str(recording['episode_time_s'])
+    reset_time = '$RESET_TIME' if '$RESET_TIME' else str(recording['reset_time_s'])
+    fps = '$FPS' if '$FPS' else str(dataset['fps'])
+    video = '$VIDEO' if '$VIDEO' else str(dataset['video']).lower()
+    display = '$DISPLAY' if '$DISPLAY' else str(config['display_data']).lower()
+    push_to_hub = str(dataset.get('push_to_hub', True)).lower()
 
-cameras = json.dumps(robot['cameras'])
-
-print(f'CAMERAS={cameras}')
-print(f'ROBOT_TYPE={robot[\"type\"]}')
-print(f'ROBOT_ID={robot[\"id\"]}')
-print(f'ROBOT_LEFT_ARM={robot[\"left_arm_port\"]}')
-print(f'ROBOT_RIGHT_ARM={robot[\"right_arm_port\"]}')
-print(f'ROBOT_BASE={robot[\"base_port\"]}')
-print(f'TELEOP_TYPE={teleop[\"type\"]}')
-print(f'TELEOP_ID={teleop[\"id\"]}')
-print(f'TELEOP_LEFT_ARM={teleop[\"left_arm_port\"]}')
-print(f'TELEOP_RIGHT_ARM={teleop[\"right_arm_port\"]}')
-print(f'TELEOP_BASE_MODE={teleop[\"base_control_mode\"]}')
-print(f'DISPLAY_DATA={str(config[\"display_data\"]).lower()}')
-print(f'REPO_ID={repo_id}')
-print(f'NUM_EPISODES={episodes}')
-print(f'EPISODE_TIME={episode_time}')
-print(f'RESET_TIME={reset_time}')
-print(f'TASK_DESC={task}')
-print(f'FPS={dataset[\"fps\"]}')
-print(f'NUM_WRITERS={dataset[\"num_image_writer_processes\"]}')
-print(f'VIDEO={str(dataset[\"video\"]).lower()}')
+    # Convert cameras dict to JSON string, then escape single quotes for bash
+    cameras_json = json.dumps(robot['cameras'])
+    
+    # Print as bash variable assignments
+    print(f'CAMERAS_JSON=\\'{cameras_json}\\'')
+    print(f'ROBOT_TYPE={robot[\"type\"]}')
+    print(f'ROBOT_ID={robot[\"id\"]}')
+    print(f'ROBOT_LEFT_ARM={robot[\"left_arm_port\"]}')
+    print(f'ROBOT_RIGHT_ARM={robot[\"right_arm_port\"]}')
+    print(f'ROBOT_BASE={robot[\"base_port\"]}')
+    print(f'TELEOP_TYPE={teleop[\"type\"]}')
+    print(f'TELEOP_ID={teleop[\"id\"]}')
+    print(f'TELEOP_LEFT_ARM={teleop[\"left_arm_port\"]}')
+    print(f'TELEOP_RIGHT_ARM={teleop[\"right_arm_port\"]}')
+    print(f'TELEOP_BASE_MODE={teleop[\"base_control_mode\"]}')
+    print(f'DISPLAY_DATA={display}')
+    print(f'REPO_ID={repo_id}')
+    print(f'TASK_DESC={recording[\"single_task\"]}')
+    print(f'NUM_EPISODES={episodes}')
+    print(f'EPISODE_TIME={episode_time}')
+    print(f'RESET_TIME={reset_time}')
+    print(f'FPS={fps}')
+    print(f'VIDEO={video}')
+    print(f'PUSH_TO_HUB={push_to_hub}')
+    
+except Exception as e:
+    print(f'Error parsing config: {{e}}', file=sys.stderr)
+    sys.exit(1)
 "
 }
 
 # Get config values
 eval "$(parse_yaml)"
 
-# Build command
-CMD="lerobot-record \
-  --robot.type=$ROBOT_TYPE \
-  --robot.left_arm_port=$ROBOT_LEFT_ARM \
-  --robot.right_arm_port=$ROBOT_RIGHT_ARM \
-  --robot.base_port=$ROBOT_BASE \
-  --robot.id=$ROBOT_ID \
-  --robot.cameras='$CAMERAS' \
-  --teleop.type=$TELEOP_TYPE \
-  --teleop.left_arm_port=$TELEOP_LEFT_ARM \
-  --teleop.right_arm_port=$TELEOP_RIGHT_ARM \
-  --teleop.base_control_mode=$TELEOP_BASE_MODE \
-  --teleop.id=$TELEOP_ID \
-  --dataset.repo_id=$REPO_ID \
-  --dataset.single_task=\"$TASK_DESC\" \
-  --dataset.num_episodes=$NUM_EPISODES \
-  --dataset.episode_time_s=$EPISODE_TIME \
-  --dataset.reset_time_s=$RESET_TIME \
-  --dataset.num_image_writer_processes=$NUM_WRITERS \
-  --dataset.video=$VIDEO \
-  --dataset.fps=$FPS \
-  --display_data=$DISPLAY_DATA"
+# Check if dataset already exists
+DATASET_DIR="$HOME/.cache/huggingface/lerobot/$REPO_ID"
 
-echo "Running: lerobot-record ..."
-echo "  Episodes: $NUM_EPISODES"
-echo "  Episode time: ${EPISODE_TIME}s"
-echo "  Task: $TASK_DESC"
+if [ -d "$DATASET_DIR" ]; then
+    if [ "$CLEAN" = "true" ]; then
+        echo "Deleting existing dataset: $DATASET_DIR"
+        rm -rf "$DATASET_DIR"
+        echo "Dataset deleted"
+        echo ""
+    elif [ "$RESUME" = "false" ]; then
+        echo ""
+        echo "Error: Dataset already exists at: $DATASET_DIR"
+        echo ""
+        echo "Options:"
+        echo "  1. Resume recording:  Add --resume flag to continue adding episodes"
+        echo "  2. Clean and restart: Add --clean flag to delete and start fresh"
+        echo "  3. Change repo ID:    Edit robot_config.yaml or use --repo-id"
+        echo ""
+        exit 1
+    else
+        echo "Resuming recording on existing dataset: $REPO_ID"
+        echo ""
+    fi
+else
+    if [ "$RESUME" = "true" ]; then
+        echo ""
+        echo "Error: Cannot resume - dataset does not exist: $DATASET_DIR"
+        echo ""
+        echo "Remove --resume flag to create a new dataset."
+        echo ""
+        exit 1
+    fi
+fi
+
+# Display recording session info
+echo "═══════════════════════════════════════════════════════════════════"
+echo "  Mimic Robot Recording Session"
+echo "═══════════════════════════════════════════════════════════════════"
+echo "  Config:        robot_config.yaml"
+echo "  Repository:    $REPO_ID"
+echo "  Episodes:      $NUM_EPISODES × ${EPISODE_TIME}s"
+echo "  Reset time:    ${RESET_TIME}s"
+echo "  FPS:           $FPS"
+echo "  Video:         $VIDEO"
+echo "  Push to Hub:   $PUSH_TO_HUB"
 echo ""
-eval "$CMD"
+echo "  Task Description:"
+echo "  $TASK_DESC"
+echo "═══════════════════════════════════════════════════════════════════"
+echo ""
+echo "Starting recording in 3 seconds..."
+sleep 3
+
+# Set X display environment variables for pynput (keyboard/display support)
+# These are needed for the camera display and keyboard control during recording
+if [ -z "$DISPLAY" ]; then
+    export DISPLAY=:1
+fi
+if [ -z "$XDG_RUNTIME_DIR" ]; then
+    export XDG_RUNTIME_DIR=/run/user/$(id -u)
+fi
+if [ -z "$XAUTHORITY" ]; then
+    export XAUTHORITY=$HOME/.Xauthority
+fi
+
+# Build lerobot-record command with proper escaping
+RESUME_FLAG=""
+if [ "$RESUME" = "true" ]; then
+    RESUME_FLAG="--resume"
+fi
+
+lerobot-record \
+  $RESUME_FLAG \
+  --robot.type="$ROBOT_TYPE" \
+  --robot.left_arm_port="$ROBOT_LEFT_ARM" \
+  --robot.right_arm_port="$ROBOT_RIGHT_ARM" \
+  --robot.base_port="$ROBOT_BASE" \
+  --robot.id="$ROBOT_ID" \
+  --robot.cameras="$CAMERAS_JSON" \
+  --teleop.type="$TELEOP_TYPE" \
+  --teleop.left_arm_port="$TELEOP_LEFT_ARM" \
+  --teleop.right_arm_port="$TELEOP_RIGHT_ARM" \
+  --teleop.base_control_mode="$TELEOP_BASE_MODE" \
+  --teleop.id="$TELEOP_ID" \
+  --dataset.repo_id="$REPO_ID" \
+  --dataset.single_task="$TASK_DESC" \
+  --dataset.num_episodes="$NUM_EPISODES" \
+  --dataset.episode_time_s="$EPISODE_TIME" \
+  --dataset.reset_time_s="$RESET_TIME" \
+  --dataset.video="$VIDEO" \
+  --dataset.fps="$FPS" \
+  --display_data="$DISPLAY_DATA"
+#   --dataset.push_to_hub="$PUSH_TO_HUB" \

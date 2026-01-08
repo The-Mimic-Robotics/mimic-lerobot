@@ -30,7 +30,16 @@ robot:
       fps: 30
       fourcc: MJPG  # Use MJPEG compression to reduce USB bandwidth
       warmup_s: 0  # Reduced warmup for faster startup
-    
+
+    front:  # DISABLED - requires serial_number_or_name, not index_or_path
+      type: opencv
+      index_or_path: /dev/camera_front  # Find with: rs-enumerate-devices
+      width: 640
+      height: 480
+      fps: 30
+      fourcc: MJPG  # Use MJPEG compression to reduce USB bandwidth
+
+
     top:
       type: zed_camera
       index_or_path: 23081456  # ZED camera serial number
@@ -60,17 +69,23 @@ teleop:
 
 # Dataset Configuration
 dataset:
-  repo_id: Mimic-Robotics/mimic_zed_data_test
-  fps: 30
-  num_image_writer_processes: 1
-  video: true
+  # Organization on HuggingFace Hub
+  organization: Mimic-Robotics
+  
+  # Repository ID (can be overridden with --repo-id in scripts)
+  repo_id: Mimic-Robotics/mimic_mobile_bimanual_handover_v1
   
   # Recording Settings
+  fps: 30
+  video: true
+  push_to_hub: true  # Always push to HuggingFace
+  
+  # Episode Settings
   recording:
     num_episodes: 5
     episode_time_s: 60
-    reset_time_s: 10
-    single_task: "Default task description"
+    reset_time_s: 3
+    single_task: "Navigate to table front. Pick up the blue block with the arm closest to it. Transfer the block mid-air to the opposite arm. Place the block in the designated target area using the receiving arm."
 
 # Display Settings
-display_data: true
+display_data: true  # Always show camera display and data

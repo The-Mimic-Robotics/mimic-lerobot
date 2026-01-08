@@ -27,23 +27,21 @@ while [[ $# -gt 0 ]]; do
             ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: mimic-replay --episode N [--repo repo_id]"
+            echo "Usage: mimic-replay [--episode N] [--repo repo_id]"
+            echo "  If no arguments provided, replays most recent episode from most recent dataset"
             exit 1
             ;;
     esac
 done
 
-# Check if episode is provided
-if [ -z "$EPISODE" ]; then
-    echo "Error: --episode is required"
-    echo "Usage: mimic-replay --episode N [--repo repo_id]"
-    exit 1
-fi
+# Episode and repo are now optional - will auto-detect most recent if not provided
 
 # Parse YAML config
 parse_yaml() {
     python3 -c "
 import yaml
+import os
+from pathlib import Path
 
 with open('$CONFIG_FILE', 'r') as f:
     config = yaml.safe_load(f)
@@ -51,7 +49,37 @@ with open('$CONFIG_FILE', 'r') as f:
 robot = config['robot']
 dataset = config['dataset']
 
-repo_id = '$REPO_ID' if '$REPO_ID' else dataset['repo_id']
+# If no repo specified, find most recent dataset in cache
+if not '$REPO_ID':
+    cache_dir = Path.home() / '.cache' / 'huggingface' / 'lerobot'
+    if cache_dir.exists():
+        # Get all dataset directories sorted by modification time
+        datasets = [d for d in cache_dir.rglob('*') if d.is_dir() and (d / 'meta' / 'info.json').exists()]
+        if datasets:
+            most_recent = max(datasets, key=lambda d: d.stat().st_mtime)
+            repo_id = str(most_recent.relative_to(cache_dir))
+        else:
+            repo_id = dataset['repo_id']
+    else:
+        repo_id = dataset['repo_id']
+else:
+    repo_id = '$REPO_ID'
+
+# If no episode specified, use the most recent episode from the dataset
+if not '$EPISODE':
+    dataset_dir = Path.home() / '.cache' / 'huggingface' / 'lerobot' / repo_id
+    if dataset_dir.exists():
+        # Find the highest episode number
+        episode_dirs = [d for d in dataset_dir.iterdir() if d.is_dir() and d.name.startswith('episode_')]
+        if episode_dirs:
+            episodes = [int(d.name.split('_')[1]) for d in episode_dirs]
+            episode = max(episodes)
+        else:
+            episode = 0
+    else:
+        episode = 0
+else:
+    episode = int('$EPISODE')
 
 print(f'ROBOT_TYPE={robot[\"type\"]}')
 print(f'ROBOT_ID={robot[\"id\"]}')
@@ -59,12 +87,24 @@ print(f'ROBOT_LEFT_ARM={robot[\"left_arm_port\"]}')
 print(f'ROBOT_RIGHT_ARM={robot[\"right_arm_port\"]}')
 print(f'ROBOT_BASE={robot[\"base_port\"]}')
 print(f'REPO_ID={repo_id}')
+print(f'EPISODE={episode}')
 print(f'FPS={dataset[\"fps\"]}')
 "
 }
 
 # Get config values
 eval "$(parse_yaml)"
+
+# Set X display environment variables for camera display
+if [ -z "$DISPLAY" ]; then
+    export DISPLAY=:1
+fi
+if [ -z "$XDG_RUNTIME_DIR" ]; then
+    export XDG_RUNTIME_DIR=/run/user/$(id -u)
+fi
+if [ -z "$XAUTHORITY" ]; then
+    export XAUTHORITY=$HOME/.Xauthority
+fi
 
 # Build command
 CMD="lerobot-replay \

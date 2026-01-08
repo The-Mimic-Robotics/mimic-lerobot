@@ -21,21 +21,21 @@ teleop_node:
       y: 0.1   # 0.1 m/s strafe
     
     scale_linear_turbo:
-      x: 0.2   # 0.2 m/s with turbo
-      y: 0.2   # 0.2 m/s with turbo
+      x: 0.15   # 0.2 m/s with turbo
+      y: 0.15   # 0.2 m/s with turbo
     
     # Axis mapping for rotation
     axis_angular:
-      yaw: 2  # Right stick horizontal - rotation
+      yaw: 3  # Right stick horizontal - rotation (axis 2 is LEFT TRIGGER!)
     
     scale_angular:
-      yaw: 0.2  # 0.2 rad/s rotation
+      yaw: 0.1  # 0.1 rad/s rotation
     
     scale_angular_turbo:
-      yaw: 0.4  # 0.4 rad/s with turbo
+      yaw: 0.15  # 0.15 rad/s with turbo
     
-    enable_button: 5  # RB/R1 - hold to enable control
-    enable_turbo_button: 4  # LB/L1 - hold for turbo speeds
+    enable_button: 4  # LB - LEFT BUMPER - hold to enable control (SAFETY)
+    enable_turbo_button: 5  # RB - RIGHT BUMPER - hold for turbo speeds
 
 # Button Mappings
 # Button events are binary (0 = released, 1 = pressed)
