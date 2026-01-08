@@ -1,0 +1,22 @@
+#!/bin/bash
+lerobot-record \
+  --robot.type=mimic_follower \
+  --robot.left_arm_port=/dev/arm_left_follower \
+  --robot.right_arm_port=/dev/arm_right_follower \
+  --robot.base_port=/dev/mecanum_base \
+  --robot.id=mimic_follower \
+  --robot.cameras='{"right_wrist": {"type": "opencv", "index_or_path": "/dev/camera_right_wrist", "width": 640, "height": 480, "fps": 30, "fourcc": "MJPG", "warmup_s": 0}, "left_wrist": {"type": "opencv", "index_or_path": "/dev/camera_left_wrist", "width": 640, "height": 480, "fps": 30, "fourcc": "MJPG", "warmup_s": 0}, "front": {"type": "opencv", "index_or_path": "/dev/camera_front", "width": 640, "height": 480, "fps": 30, "fourcc": "MJPG"}, "top": {"type": "zed_camera", "index_or_path": "23081456", "width": 1280, "height": 720, "fps": 30, "warmup_s": 0}}' \
+  --teleop.type=mimic_leader \
+  --teleop.left_arm_port=/dev/arm_left_leader \
+  --teleop.right_arm_port=/dev/arm_right_leader \
+  --teleop.base_control_mode=xbox \
+  --teleop.id=mimic_leader \
+  --dataset.repo_id=Mimic-Robotics/mimic_mobile_bimanual_drift_v2 \
+  --dataset.single_task="Navigate to the left side of the table until the blue block" \
+  --dataset.num_episodes=20 \
+  --dataset.episode_time_s=60 \
+  --dataset.reset_time_s=3 \
+  --dataset.video=true \
+  --dataset.fps=30 \
+  --dataset.push_to_hub=true \
+  --display_data=true
