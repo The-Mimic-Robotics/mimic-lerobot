@@ -15,7 +15,6 @@
 # limitations under the License.
 import concurrent.futures
 import contextlib
-import copy
 import logging
 import shutil
 import tempfile
@@ -1648,52 +1647,75 @@ class MultiLeRobotDataset(torch.utils.data.Dataset):
         # TODO(rcadene, aliberts): We should not perform this aggregation for datasets
         # with multiple robots of different ranges. Instead we should have one normalization
         # per robot.
-        self._common_feature_keys = intersection_features
         self.stats = aggregate_stats([dataset.meta.stats for dataset in self._datasets])
+
+        # Create merged meta for compatibility
+        self._create_merged_meta()
+
+    def _create_merged_meta(self):
+        """Create a merged metadata object from all datasets for policy compatibility."""
+        # Use first dataset's metadata as base
+        first_meta = self._datasets[0].meta
         
-        # Expose a metadata object so downstream code can keep working with the same API as LeRobotDataset.
-        primary_meta = copy.deepcopy(self._datasets[0].meta)
-        if isinstance(primary_meta.info, dict) and "features" in primary_meta.info:
-            primary_meta.info["features"] = {
-                key: value for key, value in primary_meta.info["features"].items() 
-                if key in self._common_feature_keys
-            }
-        primary_meta.stats = self.stats
-        primary_meta.repo_id = "multi:" + ",".join(self.repo_ids)
-        primary_meta.root = self.root
+        # Create merged info
+        merged_info = dict(first_meta.info)
         
-        # episodes_stats is a dict[int, stats_dict]; merge all episodes with offset keys to avoid collisions.
-        if hasattr(primary_meta, "episodes_stats") and primary_meta.episodes_stats is not None:
-            merged_episode_stats = {}
-            offset = 0
-            for dataset in self._datasets:
-                for ep_idx, stats in dataset.meta.episodes_stats.items():
-                    merged_episode_stats[offset + ep_idx] = stats
-                offset += len(dataset.meta.episodes_stats)
-            primary_meta.episodes_stats = merged_episode_stats
+        # Merge episodes from all datasets with offset episode indices
+        merged_episodes = []
+        episode_offset = 0
+        for ds in self._datasets:
+            for ep in ds.meta.episodes:
+                merged_ep = dict(ep)
+                merged_ep["episode_index"] = ep["episode_index"] + episode_offset
+                merged_episodes.append(merged_ep)
+            episode_offset += ds.num_episodes
         
-        # Merge episodes from all datasets with renumbered episode indices starting from 0
-        merged_episodes = {}
-        new_episode_idx = 0
-        for dataset in self._datasets:
-            for ep_idx, ep_dict in dataset.meta.episodes.items():
-                # Create a copy and renumber episodes starting from 0
-                new_ep_dict = ep_dict.copy()
-                new_ep_dict["episode_index"] = new_episode_idx
-                merged_episodes[new_episode_idx] = new_ep_dict
-                new_episode_idx += 1
+        # Create a metadata-like object that exposes the expected interface
+        class MergedMeta:
+            def __init__(self, info, episodes, features, stats, camera_keys):
+                self.info = info
+                self.episodes = merged_episodes
+                self.features = features
+                self.stats = stats
+                self.camera_keys = camera_keys
         
-        # Update the meta episodes with merged episodes
-        primary_meta.episodes = merged_episodes
+        self.meta = MergedMeta(
+            info=merged_info,
+            episodes=merged_episodes,
+            features=self.features,
+            stats=self.stats,
+            camera_keys=self.camera_keys,
+        )
         
-        self.meta = primary_meta
+        # Compatibility: expose repo_id as first dataset for backward compat
+        self.repo_id = self.repo_ids[0] if self.repo_ids else None
         
-        # Compute episode_data_index for training
-        from lerobot.datasets.utils import get_episode_data_index
-        self.episode_data_index = get_episode_data_index(merged_episodes)
+        # episode_data_index compatibility for samplers
+        self.episode_data_index = self._build_episode_data_index()
+    
+    def _build_episode_data_index(self):
+        """Build episode_data_index mapping for compatibility with EpisodeAwareSampler."""
+        episode_data_index = {}
+        frame_offset = 0
+        episode_offset = 0
         
-        # Store episodes list for compatibility - use None to indicate all episodes are used
-        self.episodes = None
+        for ds in self._datasets:
+            for local_ep_idx in range(ds.num_episodes):
+                global_ep_idx = local_ep_idx + episode_offset
+                # Map to frame indices in the concatenated dataset
+                if hasattr(ds, 'episode_data_index'):
+                    local_frames = ds.episode_data_index[local_ep_idx]
+                    episode_data_index[global_ep_idx] = [f + frame_offset for f in local_frames]
+                else:
+                    # Fallback: use episode length from metadata
+                    ep_length = ds.meta.episodes[local_ep_idx]["length"]
+                    start_frame = frame_offset + sum(ds.meta.episodes[i]["length"] for i in range(local_ep_idx))
+                    episode_data_index[global_ep_idx] = list(range(start_frame, start_frame + ep_length))
+            
+            frame_offset += ds.num_frames
+            episode_offset += ds.num_episodes
+        
+        return episode_data_index
 
     @property
     def repo_id_to_index(self):
@@ -1702,11 +1724,6 @@ class MultiLeRobotDataset(torch.utils.data.Dataset):
         This index is incorporated as a data key in the dictionary returned by `__getitem__`.
         """
         return {repo_id: i for i, repo_id in enumerate(self.repo_ids)}
-
-    @property
-    def repo_index_to_id(self):
-        """Return the inverse mapping of repo_id_to_index."""
-        return {v: k for k, v in self.repo_id_to_index.items()}
 
     @property
     def fps(self) -> int:
@@ -1792,22 +1809,8 @@ class MultiLeRobotDataset(torch.utils.data.Dataset):
             break
         else:
             raise AssertionError("We expect the loop to break out as long as the index is within bounds.")
-        
-        # Get item from the appropriate dataset
         item = self._datasets[dataset_idx][idx - start_idx]
-        
-        # Remap episode_index to global episode indexing
-        original_episode_idx = item["episode_index"].item()
-        
-        # Calculate global episode index based on dataset offset
-        global_episode_offset = sum(ds.num_episodes for ds in self._datasets[:dataset_idx])
-        global_episode_idx = global_episode_offset + original_episode_idx
-        
-        # Update the episode_index to global indexing
-        item["episode_index"] = torch.tensor(global_episode_idx)
         item["dataset_index"] = torch.tensor(dataset_idx)
-        
-        # Remove disabled features
         for data_key in self.disabled_features:
             if data_key in item:
                 del item[data_key]

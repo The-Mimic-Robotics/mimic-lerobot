@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import ast
 import dataclasses
 import logging
 import time
@@ -266,6 +267,10 @@ def train(cfg: TrainPipelineConfig, accelerator: Accelerator | None = None):
     # Determine if this is the main process (for logging and checkpointing)
     # When using accelerate, only the main process should log to avoid duplicate outputs
     is_main_process = accelerator.is_main_process
+
+    # Fix stringified list repo_id (can happen with CLI overrides)
+    if isinstance(cfg.dataset.repo_id, str) and cfg.dataset.repo_id.startswith('['):
+        cfg.dataset.repo_id = ast.literal_eval(cfg.dataset.repo_id)
 
     cfg.validate()
 

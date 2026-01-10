@@ -41,7 +41,7 @@ for dataset in "${OLD_DATASETS[@]}"; do
     INPUT_REPO="${ORG}/${dataset}"
     OUTPUT_REPO="${ORG}/mobile_${dataset}"
     
-    python3 ./src/mimic/scripts/convert_bimanual_to_mobile.py \
+    python3 ./mimic_deployment/convert_bimanual_to_mobile.py \
         --input-repo-id="$INPUT_REPO" \
         --output-repo-id="$OUTPUT_REPO"
     
