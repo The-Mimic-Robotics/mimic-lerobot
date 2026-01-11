@@ -30,10 +30,10 @@ teleop_node:
       yaw: 2  # Twist axis or secondary stick - rotation
     
     scale_angular:
-      yaw: 0.2  # 0.2 rad/s rotation
+      yaw: 0.1  # 0.2 rad/s rotation
     
     scale_angular_turbo:
-      yaw: 0.4  # 0.4 rad/s with turbo
+      yaw: 0.2  # 0.2 rad/s with turbo
     
     enable_button: 6  # Trigger button - hold to enable control
     enable_turbo_button: 7  # Thumb button - hold for turbo speeds

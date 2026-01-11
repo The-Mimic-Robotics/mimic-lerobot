@@ -247,7 +247,8 @@ class JoystickBaseController(BaseController):
     
     def __init__(self, max_linear_speed: float = 0.1, max_angular_speed: float = 0.2,
                  max_linear_speed_turbo: float = 0.2, max_angular_speed_turbo: float = 0.4,
-                 device_path: str = None, enable_button: int = 6, enable_turbo_button: int = 7):
+                 device_path: str = None, enable_button: int = 6, enable_turbo_button: int = 7,
+                 use_toggle_turbo: bool = True, require_safety_button: bool = False):
         super().__init__(max_linear_speed, max_angular_speed)
         self.device_index = 0
         self.joystick = None
@@ -260,6 +261,12 @@ class JoystickBaseController(BaseController):
         # Button states
         self.enable_button = enable_button
         self.enable_turbo_button = enable_turbo_button
+        
+        # Toggle turbo mode feature
+        self.use_toggle_turbo = use_toggle_turbo  # Enable/disable toggle functionality
+        self.require_safety_button = require_safety_button  # Require safety button to be held
+        self.turbo_toggled = False  # Current toggle state (turbo on/off)
+        self.both_buttons_pressed_last = False  # Track previous state for edge detection
         
         if not PYGAME_AVAILABLE:
             logger.warning("pygame library not available. Joystick controller will not work.")
@@ -314,9 +321,27 @@ class JoystickBaseController(BaseController):
             enable_button_pressed = self.joystick.get_button(self.enable_button)
             turbo_button_pressed = self.joystick.get_button(self.enable_turbo_button)
             
-            # SAFETY: Only output velocities if enable button is pressed
-            if not enable_button_pressed:
+            # SAFETY: Only output velocities if enable button is pressed (if required)
+            if self.require_safety_button and not enable_button_pressed:
                 return 0.0, 0.0, 0.0
+            
+            # Handle turbo mode selection
+            use_turbo = False
+            
+            if self.use_toggle_turbo:
+                # Toggle mode: Both buttons pressed together toggles turbo on/off
+                both_buttons_pressed = enable_button_pressed and turbo_button_pressed
+                
+                # Detect rising edge (buttons just pressed together)
+                if both_buttons_pressed and not self.both_buttons_pressed_last:
+                    self.turbo_toggled = not self.turbo_toggled
+                    logger.info(f"Turbo mode toggled: {'ON' if self.turbo_toggled else 'OFF'}")
+                
+                self.both_buttons_pressed_last = both_buttons_pressed
+                use_turbo = self.turbo_toggled
+            else:
+                # Original behavior: Turbo only when turbo button is held
+                use_turbo = turbo_button_pressed
             
             # Read joystick axes
             axis_x = self.joystick.get_axis(0)
@@ -328,8 +353,8 @@ class JoystickBaseController(BaseController):
             axis_y = self._apply_deadzone(axis_y)
             axis_twist = self._apply_deadzone(axis_twist)
             
-            # Select speed based on turbo button
-            if turbo_button_pressed:
+            # Select speed based on turbo mode
+            if use_turbo:
                 linear_speed = self.max_linear_speed_turbo
                 angular_speed = self.max_angular_speed_turbo
             else:
@@ -403,7 +428,9 @@ def create_base_controller(
             max_linear_speed_turbo=max_linear_speed_turbo,
             max_angular_speed_turbo=max_angular_speed_turbo,
             enable_button=enable_button if enable_button is not None else 6,
-            enable_turbo_button=enable_turbo_button if enable_turbo_button is not None else 7
+            enable_turbo_button=enable_turbo_button if enable_turbo_button is not None else 7,
+            use_toggle_turbo=True,  # Toggle turbo by pressing both buttons simultaneously
+            require_safety_button=False  # No safety button required for joystick
         )
     
     else:
