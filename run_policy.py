@@ -18,16 +18,22 @@ def main():
 
     # Initialize robot
     print("Initializing robot...")
-    robot = MimicFollower(
+    from lerobot.robots.mimic_follower.config_mimic_follower import MimicFollowerConfig
+    from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
+    from lerobot.cameras.zed_camera import ZedCameraConfig
+
+    config = MimicFollowerConfig(
+        type="mimic_follower",
         left_arm_port="/dev/arm_left_follower",
         right_arm_port="/dev/arm_right_follower",
         base_port="/dev/mecanum_base",
         cameras={
-            "wrist_right": {"type": "opencv", "index_or_path": "/dev/camera_right_wrist", "width": 640, "height": 480, "fps": 30},
-            "wrist_left": {"type": "opencv", "index_or_path": "/dev/camera_left_wrist", "width": 640, "height": 480, "fps": 30},
-            "realsense_top": {"type": "zed_camera", "index_or_path": "23081456", "width": 640, "height": 480, "fps": 30},
+            "wrist_right": OpenCVCameraConfig(type="opencv", index_or_path="/dev/camera_right_wrist", width=640, height=480, fps=30),
+            "wrist_left": OpenCVCameraConfig(type="opencv", index_or_path="/dev/camera_left_wrist", width=640, height=480, fps=30),
+            "realsense_top": ZedCameraConfig(type="zed_camera", index_or_path="23081456", width=640, height=480, fps=30),
         }
     )
+    robot = MimicFollower(config)
     robot.connect()
     print("Robot connected!")
     print("\nRunning policy. Press Ctrl+C to stop.\n")
