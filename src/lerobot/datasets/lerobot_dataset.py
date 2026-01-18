@@ -1679,10 +1679,12 @@ class MultiLeRobotDataset(torch.utils.data.Dataset):
                 self.stats = stats
                 self.camera_keys = camera_keys
         
+        # Use first_meta.features which returns dict format (not HuggingFace format)
+        # This is needed for dataset_to_policy_features() compatibility
         self.meta = MergedMeta(
             info=merged_info,
             episodes=merged_episodes,
-            features=self.features,
+            features=first_meta.features,
             stats=self.stats,
             camera_keys=self.camera_keys,
         )

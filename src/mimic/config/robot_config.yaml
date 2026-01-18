@@ -12,41 +12,34 @@ robot:
   base_port: /dev/mecanum_base
   
   # Camera Configuration
+  # NOTE: Camera names MUST match training data keys:
+  # - wrist_left, wrist_right, realsense_top
   cameras:
-    right_wrist:
+    wrist_right:
       type: opencv
       index_or_path: /dev/camera_right_wrist
       width: 640
       height: 480
       fps: 30
-      fourcc: MJPG  # Use MJPEG compression to reduce USB bandwidth
-      warmup_s: 0  # Reduced warmup for faster startup
-    
-    left_wrist:
+      fourcc: MJPG
+      warmup_s: 0
+
+    wrist_left:
       type: opencv
       index_or_path: /dev/camera_left_wrist
       width: 640
       height: 480
       fps: 30
-      fourcc: MJPG  # Use MJPEG compression to reduce USB bandwidth
-      warmup_s: 0  # Reduced warmup for faster startup
+      fourcc: MJPG
+      warmup_s: 0
 
-    front:  # DISABLED - requires serial_number_or_name, not index_or_path
-      type: opencv
-      index_or_path: /dev/camera_front  # Find with: rs-enumerate-devices
-      width: 640
-      height: 480
-      fps: 30
-      fourcc: MJPG  # Use MJPEG compression to reduce USB bandwidth
-
-
-    top:
+    realsense_top:
       type: zed_camera
       index_or_path: 23081456  # ZED camera serial number
-      width: 1280  # HD720 resolution
+      width: 1280  # HD720 resolution - will be resized to 640x480 for inference
       height: 720
       fps: 30
-      warmup_s: 0  # Reduced warmup for faster startup
+      warmup_s: 0
     
     # front:  # DISABLED - requires serial_number_or_name, not index_or_path
     #   type: intelrealsense
