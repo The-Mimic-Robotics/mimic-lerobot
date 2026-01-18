@@ -156,3 +156,9 @@ We welcome contributions from everyone in the community! To get started, please 
 <div align="center">
 <sub>Built by the <a href="https://huggingface.co/lerobot">LeRobot</a> team at <a href="https://huggingface.co">Hugging Face</a> with ❤️</sub>
 </div>
+
+
+  python -m lerobot.scripts.lerobot_eval \                                      
+    --policy.path=neryotw/act_bimanual_mobile_15d \                             
+    --robot.type=mimic_follower \                                               
+    --robot.config=src/mimic/config/robot_config.yaml       
