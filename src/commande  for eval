@@ -1,6 +1,11 @@
 lerobot-record \
   --policy.path="Mimic-Robotics/xvla-mobile-bimanual-drift" \
-  --robot.type=mimic_follower \
+  --robot.type=mimic_follower \+
+
+
+
+  123
+  liluiiknn
   --robot.left_arm_port=/dev/arm_left_follower \
   --robot.right_arm_port=/dev/arm_right_follower \
   --robot.base_port=/dev/mecanum_base \
