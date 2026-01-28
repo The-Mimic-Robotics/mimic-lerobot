@@ -15,6 +15,14 @@ robot:
   # NOTE: Camera names MUST match training data keys:
   # - wrist_left, wrist_right, realsense_top
   cameras:
+    top:
+      type: zed_camera
+      index_or_path: 23081456  # ZED camera serial number
+      width: 1280
+      height: 720 
+      fps: 30
+      warmup_s: 0
+
     wrist_right:
       type: opencv
       index_or_path: /dev/camera_right_wrist
@@ -33,20 +41,16 @@ robot:
       fourcc: MJPG
       warmup_s: 0
 
-    realsense_top:
-      type: zed_camera
-      index_or_path: 23081456  # ZED camera serial number
-      width: 1280  # HD720 resolution - will be resized to 640x480 for inference
+    front:  #  
+      type: opencv
+      index_or_path: /dev/camera_front  
+      width: 1280
       height: 720
       fps: 30
+      fourcc: MJPG
       warmup_s: 0
+
     
-    # front:  # DISABLED - requires serial_number_or_name, not index_or_path
-    #   type: intelrealsense
-    #   serial_number_or_name: "YOUR_CAMERA_SERIAL"  # Find with: rs-enumerate-devices
-    #   width: 640
-    #   height: 480
-    #   fps: 30
 
 # Teleoperation Configuration
 teleop:
@@ -58,7 +62,7 @@ teleop:
   right_arm_port: /dev/arm_right_leader
   
   # Base Control Mode
-  base_control_mode: joystick  # Options: keyboard, xbox, joystick
+  base_control_mode: keyboard  # Options: keyboard, xbox, joystick
 
 # Dataset Configuration
 dataset:

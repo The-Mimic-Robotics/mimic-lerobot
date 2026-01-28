@@ -1,3 +1,9 @@
+# first test teleop, make sure all camera good 
+```bash
+./src/mimic/scripts/mimic-teleop --cameras
+```
+
+
 # Mimic Recording Script - Quick Reference
 
 ```bash
@@ -19,8 +25,8 @@
 ./src/mimic/scripts/mimic-record --task-name blue_block_handover --version 1 --episodes 10
 
 # Custom timing
-./src/mimic/scripts/mimic-record --task-name blue_block_handover --version 1 \
-  --episodes 5 --episode-time 45 --reset-time 15
+./src/mimic/scripts/mimic-record --task-name displacement_to_grab_blue --version 1 \
+  --episodes 20 --episode-time 60 --reset-time 5
 ```
 
 ## Dataset Naming Convention
