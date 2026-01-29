@@ -2,6 +2,7 @@
 """Run trained ACT policy on Mimic robot."""
 
 import time
+import cv2
 import torch
 from pathlib import Path
 from lerobot.policies.act.modeling_act import ACTPolicy
@@ -85,12 +86,17 @@ def main():
             obs = robot.get_observation()
 
             # Remap camera keys from robot format to policy format
+            # Also resize top/front from 720x1280 to 480x640 to match training data
             obs_remapped = {}
             for k, v in obs.items():
                 if k == "wrist_right":
                     obs_remapped["right_wrist"] = v
                 elif k == "wrist_left":
                     obs_remapped["left_wrist"] = v
+                elif k == "top":
+                    obs_remapped["top"] = cv2.resize(v, (640, 480))
+                elif k == "front":
+                    obs_remapped["front"] = cv2.resize(v, (640, 480))
                 else:
                     obs_remapped[k] = v
 
