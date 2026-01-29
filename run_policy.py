@@ -59,17 +59,12 @@ def main():
     print(f"Policy loaded on {device}")
     print(f"Policy config: chunk_size={policy.config.chunk_size}, n_action_steps={policy.config.n_action_steps}")
 
-    # Enable temporal ensembling for smooth, stable actions
-    # Coefficient 0.01 = more weight on older predictions (smoother, more stable)
-    from lerobot.policies.act.modeling_act import ACTTemporalEnsembler
-    policy.config.temporal_ensemble_coeff = 0.01
-    policy.config.n_action_steps = 1  # Required for temporal ensembling
-    policy.temporal_ensembler = ACTTemporalEnsembler(
-        temporal_ensemble_coeff=0.01,
-        chunk_size=policy.config.chunk_size,
-    )
+    # Disable temporal ensembling - use smaller action steps for responsiveness
+    # This lets the policy re-predict based on current observations more often
+    policy.config.temporal_ensemble_coeff = None
+    policy.config.n_action_steps = 5  # Re-predict every 5 steps (~6 times per second)
     policy._action_queue.clear()
-    print(f"Enabled temporal ensembling (coeff=0.01) for smoother actions")
+    print(f"Using n_action_steps=5 for responsive closed-loop control")
 
     # Load dataset metadata for normalization stats
     print("Loading normalization stats from dataset...")
@@ -161,9 +156,14 @@ def main():
                 for k, v in policy_input.items():
                     print(f"  {k}: shape={v.shape}, min={v.min():.4f}, max={v.max():.4f}")
 
-            # Get action from policy (temporal ensembling predicts every step)
+            # Get action from policy
+            queue_before = len(policy._action_queue)
             with torch.no_grad():
                 action = policy.select_action(policy_input)
+
+            # Show re-prediction
+            if queue_before == 0 and step_count > 1:
+                print(f"Step {step_count}: Re-predicted based on current observation")
 
             if debug_first:
                 print(f"\nRaw policy output: shape={action.shape}, values={action.cpu().numpy().flatten()[:5]}...")
