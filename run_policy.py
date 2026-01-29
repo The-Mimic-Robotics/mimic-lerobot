@@ -3,10 +3,10 @@
 
 import time
 import torch
-import torch.nn.functional as F
 from pathlib import Path
 from lerobot.policies.act.modeling_act import ACTPolicy
 from lerobot.policies.factory import make_pre_post_processors
+from lerobot.policies.utils import build_inference_frame, make_robot_action
 from lerobot.datasets.lerobot_dataset import LeRobotDatasetMetadata
 from lerobot.robots.mimic_follower.mimic_follower import MimicFollower
 
@@ -84,38 +84,25 @@ def main():
             # Get observation
             obs = robot.get_observation()
 
-            # Build state vector (12D arm positions + 3D base = 15D)
-            state = []
-            for key in ["left_shoulder_pan.pos", "left_shoulder_lift.pos", "left_elbow_flex.pos",
-                        "left_wrist_flex.pos", "left_wrist_roll.pos", "left_gripper.pos",
-                        "right_shoulder_pan.pos", "right_shoulder_lift.pos", "right_elbow_flex.pos",
-                        "right_wrist_flex.pos", "right_wrist_roll.pos", "right_gripper.pos"]:
-                state.append(obs.get(key, 0.0))
-            state.extend([obs.get("base_x", 0.0), obs.get("base_y", 0.0), obs.get("base_theta", 0.0)])
+            # Remap camera keys from robot format to policy format
+            obs_remapped = {}
+            for k, v in obs.items():
+                if k == "wrist_right":
+                    obs_remapped["right_wrist"] = v
+                elif k == "wrist_left":
+                    obs_remapped["left_wrist"] = v
+                else:
+                    obs_remapped[k] = v
 
-            # Format for policy - map robot camera names to policy expected names
-            # Policy expects all images at 480x640
-            img_right = torch.tensor(obs["wrist_right"]).permute(2, 0, 1).float() / 255.0
-            img_left = torch.tensor(obs["wrist_left"]).permute(2, 0, 1).float() / 255.0
-            img_top = torch.tensor(obs["top"]).permute(2, 0, 1).float() / 255.0
-            img_front = torch.tensor(obs["front"]).permute(2, 0, 1).float() / 255.0
-
-            # Resize top and front from 720x1280 to 480x640
-            img_top = F.interpolate(img_top.unsqueeze(0), size=(480, 640), mode='bilinear', align_corners=False).squeeze(0)
-            img_front = F.interpolate(img_front.unsqueeze(0), size=(480, 640), mode='bilinear', align_corners=False).squeeze(0)
-
-            # Build observation frame for preprocessor (no batch dim - preprocessor adds it)
-            obs_frame = {
-                "observation.images.right_wrist": img_right,
-                "observation.images.left_wrist": img_left,
-                "observation.images.top": img_top,
-                "observation.images.front": img_front,
-                "observation.state": torch.tensor(state).float(),
-            }
+            # Build inference frame using LeRobot helper
+            obs_frame = build_inference_frame(
+                observation=obs_remapped,
+                ds_features=dataset_metadata.features,
+                device=device
+            )
 
             # Preprocess (normalizes state and images)
             obs_normalized = preprocess(obs_frame)
-            obs_normalized = {k: v.to(device) for k, v in obs_normalized.items()}
 
             # Get action from policy
             with torch.no_grad():
@@ -124,25 +111,8 @@ def main():
             # Postprocess (unnormalizes action back to degrees)
             action = postprocess(action)
 
-            # Convert action tensor to dict for robot
-            action_array = action.cpu().numpy().flatten()
-            action_dict = {
-                "left_shoulder_pan.pos": action_array[0],
-                "left_shoulder_lift.pos": action_array[1],
-                "left_elbow_flex.pos": action_array[2],
-                "left_wrist_flex.pos": action_array[3],
-                "left_wrist_roll.pos": action_array[4],
-                "left_gripper.pos": action_array[5],
-                "right_shoulder_pan.pos": action_array[6],
-                "right_shoulder_lift.pos": action_array[7],
-                "right_elbow_flex.pos": action_array[8],
-                "right_wrist_flex.pos": action_array[9],
-                "right_wrist_roll.pos": action_array[10],
-                "right_gripper.pos": action_array[11],
-                "base_vx": action_array[12],
-                "base_vy": action_array[13],
-                "base_omega": action_array[14],
-            }
+            # Convert action to robot format
+            action_dict = make_robot_action(action, dataset_metadata.features)
             robot.send_action(action_dict)
 
             # 30 FPS timing
