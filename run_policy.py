@@ -3,6 +3,7 @@
 
 import time
 import cv2
+import numpy as np
 import torch
 from pathlib import Path
 from lerobot.policies.act.modeling_act import ACTPolicy
@@ -65,10 +66,21 @@ def main():
 
     # Debug: check state keys from robot
     print("\nState keys from robot:")
-    state_keys = [k for k in test_obs.keys() if not isinstance(test_obs[k], (list, tuple)) or not hasattr(test_obs[k], 'shape')]
     state_keys = [k for k in test_obs.keys() if k not in ["wrist_right", "wrist_left", "top", "front"]]
     for key in sorted(state_keys):
         print(f"  {key}: {test_obs[key]}")
+
+    # Debug: check what state names dataset expects
+    print("\nDataset expected state names:")
+    for key, ft in dataset_metadata.features.items():
+        if key.startswith("observation.state") and ft.get("names"):
+            print(f"  {key}: {ft['names']}")
+
+    # Debug: check action names
+    print("\nDataset expected action names:")
+    for key, ft in dataset_metadata.features.items():
+        if key.startswith("action") and ft.get("names"):
+            print(f"  {key}: {ft['names']}")
 
     # Debug: check what policy expects
     print("\nPolicy config:")
@@ -77,6 +89,9 @@ def main():
             print(f"  {attr}: {getattr(policy.config, attr)}")
 
     print("\nRunning policy at 30 FPS. Press Ctrl+C to stop.\n")
+
+    # Debug first iteration
+    debug_first = True
 
     try:
         while True:
@@ -110,15 +125,43 @@ def main():
             # Preprocess (normalizes state and images)
             obs_normalized = preprocess(obs_frame)
 
+            # Debug first iteration
+            if debug_first:
+                print("\n=== DEBUG: First iteration ===")
+                print("Raw state from robot (sample):")
+                for k in list(obs_remapped.keys())[:5]:
+                    if not isinstance(obs_remapped[k], np.ndarray) or obs_remapped[k].ndim == 0:
+                        print(f"  {k}: {obs_remapped[k]}")
+                print("\nNormalized observation keys:")
+                for k, v in obs_normalized.items():
+                    if isinstance(v, torch.Tensor):
+                        print(f"  {k}: shape={v.shape}, min={v.min():.4f}, max={v.max():.4f}")
+                    else:
+                        print(f"  {k}: {v}")
+
             # Get action from policy
             with torch.no_grad():
                 action = policy.select_action(obs_normalized)
 
+            if debug_first:
+                print(f"\nRaw policy output: shape={action.shape}, values={action.cpu().numpy().flatten()[:5]}...")
+
             # Postprocess (unnormalizes action back to degrees)
             action = postprocess(action)
 
+            if debug_first:
+                print(f"Postprocessed action: shape={action.shape}, values={action.cpu().numpy().flatten()[:5]}...")
+
             # Convert action to robot format
             action_dict = make_robot_action(action, dataset_metadata.features)
+
+            if debug_first:
+                print("\nAction dict sent to robot:")
+                for k, v in action_dict.items():
+                    print(f"  {k}: {v}")
+                debug_first = False
+                print("=== END DEBUG ===\n")
+
             robot.send_action(action_dict)
 
             # 30 FPS timing
