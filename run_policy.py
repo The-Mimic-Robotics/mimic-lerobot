@@ -59,12 +59,16 @@ def main():
     print(f"Policy loaded on {device}")
     print(f"Policy config: chunk_size={policy.config.chunk_size}, n_action_steps={policy.config.n_action_steps}")
 
-    # Disable temporal ensembling - use smaller action steps for responsiveness
-    # This lets the policy re-predict based on current observations more often
-    policy.config.temporal_ensemble_coeff = None
-    policy.config.n_action_steps = 5  # Re-predict every 5 steps (~6 times per second)
+    # Enable temporal ensembling for smooth, stable actions
+    from lerobot.policies.act.modeling_act import ACTTemporalEnsembler
+    policy.config.temporal_ensemble_coeff = 0.01
+    policy.config.n_action_steps = 1
+    policy.temporal_ensembler = ACTTemporalEnsembler(
+        temporal_ensemble_coeff=0.01,
+        chunk_size=policy.config.chunk_size,
+    )
     policy._action_queue.clear()
-    print(f"Using n_action_steps=5 for responsive closed-loop control")
+    print(f"Temporal ensembling enabled (smooth movements)")
 
     # Load dataset metadata for normalization stats
     print("Loading normalization stats from dataset...")
@@ -157,13 +161,8 @@ def main():
                     print(f"  {k}: shape={v.shape}, min={v.min():.4f}, max={v.max():.4f}")
 
             # Get action from policy
-            queue_before = len(policy._action_queue)
             with torch.no_grad():
                 action = policy.select_action(policy_input)
-
-            # Show re-prediction
-            if queue_before == 0 and step_count > 1:
-                print(f"Step {step_count}: Re-predicted based on current observation")
 
             if debug_first:
                 print(f"\nRaw policy output: shape={action.shape}, values={action.cpu().numpy().flatten()[:5]}...")
@@ -174,11 +173,17 @@ def main():
             if debug_first:
                 print(f"Unnormalized action (first 5): {action.cpu().numpy()[:5]}")
 
-            # Build action dict for robot
+            # Build action dict for robot with reach offset
+            # Add small offset to make arms reach further (compensates for calibration/training mismatch)
+            REACH_OFFSET = 5.0  # degrees - increase elbow flex to extend arms further
             action_array = action.cpu().numpy()
             action_dict = {}
             for i, name in enumerate(action_names):
-                action_dict[name] = float(action_array[i])
+                val = float(action_array[i])
+                # Add reach offset to elbow joints to extend arms further
+                if "elbow_flex" in name:
+                    val += REACH_OFFSET
+                action_dict[name] = val
 
             if debug_first:
                 print("\nAction dict sent to robot:")
