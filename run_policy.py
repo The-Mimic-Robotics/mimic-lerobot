@@ -51,6 +51,17 @@ def main():
         else:
             print(f"  {key}: NOT FOUND")
 
+    # Debug: check state keys from robot
+    print("\nState keys from robot:")
+    state_keys = [k for k in test_obs.keys() if not isinstance(test_obs[k], (list, tuple)) or not hasattr(test_obs[k], 'shape')]
+    state_keys = [k for k in test_obs.keys() if k not in ["wrist_right", "wrist_left", "top", "front"]]
+    for key in sorted(state_keys):
+        print(f"  {key}: {test_obs[key]}")
+
+    # Debug: check what policy expects
+    print("\nPolicy state features:")
+    print(f"  {policy.config.state_feature}")
+
     print("\nRunning policy at 30 FPS. Press Ctrl+C to stop.\n")
 
     try:
