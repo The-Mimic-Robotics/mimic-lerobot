@@ -100,7 +100,7 @@ def main():
             "wrist_right": OpenCVCameraConfig(index_or_path="/dev/camera_right_wrist", width=640, height=480, fps=30, fourcc="MJPG"),
             "wrist_left": OpenCVCameraConfig(index_or_path="/dev/camera_left_wrist", width=640, height=480, fps=30, fourcc="MJPG"),
             "top": ZedCameraConfig(index_or_path="/dev/camera_zed", width=1280, height=720, fps=30),
-            # Front camera removed - training data had broken stats (std=0)
+            "front": OpenCVCameraConfig(index_or_path="/dev/camera_front", width=1280, height=720, fps=30, fourcc="MJPG"),
         }
     )
     robot = MimicFollower(config)
@@ -110,7 +110,7 @@ def main():
     # Debug: check camera data
     print("\nChecking cameras...")
     test_obs = robot.get_observation()
-    for key in ["wrist_right", "wrist_left", "top"]:
+    for key in ["wrist_right", "wrist_left", "top", "front"]:
         if key in test_obs:
             img = test_obs[key]
             print(f"  {key}: shape={img.shape}, dtype={img.dtype}, min={img.min()}, max={img.max()}")
@@ -138,10 +138,9 @@ def main():
             # Process images
             img_right = normalize_image(obs["wrist_right"], device)
             img_left = normalize_image(obs["wrist_left"], device)
-            # Resize top camera from 720x1280 to 480x640
+            # Resize top/front cameras from 720x1280 to 480x640
             img_top = normalize_image(cv2.resize(obs["top"], (640, 480)), device)
-            # Create dummy front image (zeros) since training data didn't have valid front camera
-            img_front = torch.zeros(1, 3, 480, 640, device=device)
+            img_front = normalize_image(cv2.resize(obs["front"], (640, 480)), device)
 
             # Build observation dict for policy
             policy_input = {
