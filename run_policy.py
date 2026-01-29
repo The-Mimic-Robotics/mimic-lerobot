@@ -59,8 +59,10 @@ def main():
         print(f"  {key}: {test_obs[key]}")
 
     # Debug: check what policy expects
-    print("\nPolicy state features:")
-    print(f"  {policy.config.state_feature}")
+    print("\nPolicy config:")
+    for attr in ['input_features', 'output_features', 'state_feature', 'action_feature']:
+        if hasattr(policy.config, attr):
+            print(f"  {attr}: {getattr(policy.config, attr)}")
 
     print("\nRunning policy at 30 FPS. Press Ctrl+C to stop.\n")
 
