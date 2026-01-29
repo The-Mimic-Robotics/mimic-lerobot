@@ -57,6 +57,8 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     policy.to(device)
     print(f"Policy loaded on {device}")
+    print(f"Policy config: chunk_size={policy.config.chunk_size}, n_action_steps={policy.config.n_action_steps}")
+    print(f"Temporal ensemble: {policy.config.temporal_ensemble_coeff}")
 
     # Load dataset metadata for normalization stats
     print("Loading normalization stats from dataset...")
@@ -106,9 +108,11 @@ def main():
 
     print("\nRunning policy at 30 FPS. Press Ctrl+C to stop.\n")
     debug_first = True
+    step_count = 0
 
     try:
         while True:
+            step_count += 1
             start = time.time()
 
             # Get observation
@@ -148,8 +152,14 @@ def main():
                     print(f"  {k}: shape={v.shape}, min={v.min():.4f}, max={v.max():.4f}")
 
             # Get action from policy
+            queue_len_before = len(policy._action_queue)
             with torch.no_grad():
                 action = policy.select_action(policy_input)
+            queue_len_after = len(policy._action_queue)
+
+            # Print when policy re-predicts (queue was empty)
+            if queue_len_before == 0:
+                print(f"Step {step_count}: Policy predicted new chunk (queue now has {queue_len_after} actions)")
 
             if debug_first:
                 print(f"\nRaw policy output: shape={action.shape}, values={action.cpu().numpy().flatten()[:5]}...")
