@@ -41,15 +41,14 @@ robot:
       fourcc: MJPG
       warmup_s: 0
 
-    # front camera disabled - USB bandwidth issue
-    # front:
-    #   type: opencv
-    #   index_or_path: /dev/camera_front
-    #   width: 1280
-    #   height: 720
-    #   fps: 30
-    #   fourcc: MJPG
-    #   warmup_s: 0
+    front:
+      type: opencv
+      index_or_path: /dev/camera_front
+      width: 1280
+      height: 720
+      fps: 30
+      fourcc: MJPG
+      warmup_s: 0
 
     
 

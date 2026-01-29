@@ -33,6 +33,7 @@ def main():
             "wrist_right": OpenCVCameraConfig(index_or_path="/dev/camera_right_wrist", width=640, height=480, fps=30, fourcc="MJPG"),
             "wrist_left": OpenCVCameraConfig(index_or_path="/dev/camera_left_wrist", width=640, height=480, fps=30, fourcc="MJPG"),
             "top": ZedCameraConfig(index_or_path="/dev/camera_zed", width=1280, height=720, fps=30),
+            "front": OpenCVCameraConfig(index_or_path="/dev/camera_front", width=1280, height=720, fps=30, fourcc="MJPG"),
         }
     )
     robot = MimicFollower(config)
@@ -61,7 +62,7 @@ def main():
                 "observation.images.right_wrist": torch.tensor(obs["wrist_right"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0,
                 "observation.images.left_wrist": torch.tensor(obs["wrist_left"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0,
                 "observation.images.top": torch.tensor(obs["top"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0,
-                "observation.images.front": torch.zeros(1, 3, 720, 1280).float(),  # Placeholder - front camera disabled
+                "observation.images.front": torch.tensor(obs["front"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0,
                 "observation.state": torch.tensor(state).unsqueeze(0).float(),
             }
             policy_input = {k: v.to(device) for k, v in policy_input.items()}
