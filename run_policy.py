@@ -61,6 +61,7 @@ def main():
                 "observation.images.right_wrist": torch.tensor(obs["wrist_right"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0,
                 "observation.images.left_wrist": torch.tensor(obs["wrist_left"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0,
                 "observation.images.top": torch.tensor(obs["top"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0,
+                "observation.images.front": torch.zeros(1, 3, 720, 1280).float(),  # Placeholder - front camera disabled
                 "observation.state": torch.tensor(state).unsqueeze(0).float(),
             }
             policy_input = {k: v.to(device) for k, v in policy_input.items()}
