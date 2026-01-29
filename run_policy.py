@@ -82,6 +82,20 @@ def main():
         if key.startswith("action") and ft.get("names"):
             print(f"  {key}: {ft['names']}")
 
+    # Debug: check normalization stats
+    print("\nDataset normalization stats:")
+    if dataset_metadata.stats:
+        for key, stats in dataset_metadata.stats.items():
+            if key in ["observation.state", "action", "observation.images.front", "observation.images.top"]:
+                print(f"  {key}:")
+                for stat_name, stat_val in stats.items():
+                    if hasattr(stat_val, 'shape'):
+                        print(f"    {stat_name}: shape={stat_val.shape}, min={stat_val.min():.4f}, max={stat_val.max():.4f}")
+                    else:
+                        print(f"    {stat_name}: {stat_val}")
+    else:
+        print("  NO STATS FOUND!")
+
     # Debug: check what policy expects
     print("\nPolicy config:")
     for attr in ['input_features', 'output_features', 'state_feature', 'action_feature']:
