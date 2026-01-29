@@ -39,6 +39,17 @@ def main():
     robot = MimicFollower(config)
     robot.connect(calibrate=False)
     print("Robot connected!")
+
+    # Debug: check camera data
+    print("\nChecking cameras...")
+    test_obs = robot.get_observation()
+    for key in ["wrist_right", "wrist_left", "top", "front"]:
+        if key in test_obs:
+            img = test_obs[key]
+            print(f"  {key}: shape={img.shape}, dtype={img.dtype}, min={img.min()}, max={img.max()}")
+        else:
+            print(f"  {key}: NOT FOUND")
+
     print("\nRunning policy at 30 FPS. Press Ctrl+C to stop.\n")
 
     try:
