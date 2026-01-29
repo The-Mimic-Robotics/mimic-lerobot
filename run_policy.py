@@ -6,6 +6,8 @@ import torch
 import torch.nn.functional as F
 from pathlib import Path
 from lerobot.policies.act.modeling_act import ACTPolicy
+from lerobot.policies.factory import make_pre_post_processors
+from lerobot.datasets.lerobot_dataset import LeRobotDatasetMetadata
 from lerobot.robots.mimic_follower.mimic_follower import MimicFollower
 
 
@@ -17,6 +19,15 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     policy.to(device)
     print(f"Policy loaded on {device}")
+
+    # Load dataset metadata for normalization stats
+    print("Loading normalization stats from dataset...")
+    dataset_metadata = LeRobotDatasetMetadata("neryotw/bimanual_blue_block_handover_1_drift")
+    preprocess, postprocess = make_pre_post_processors(
+        policy.config,
+        dataset_stats=dataset_metadata.stats
+    )
+    print("Normalization stats loaded.")
 
     # Initialize robot
     print("Initializing robot...")
@@ -84,27 +95,34 @@ def main():
 
             # Format for policy - map robot camera names to policy expected names
             # Policy expects all images at 480x640
-            img_right = torch.tensor(obs["wrist_right"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0
-            img_left = torch.tensor(obs["wrist_left"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0
-            img_top = torch.tensor(obs["top"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0
-            img_front = torch.tensor(obs["front"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+            img_right = torch.tensor(obs["wrist_right"]).permute(2, 0, 1).float() / 255.0
+            img_left = torch.tensor(obs["wrist_left"]).permute(2, 0, 1).float() / 255.0
+            img_top = torch.tensor(obs["top"]).permute(2, 0, 1).float() / 255.0
+            img_front = torch.tensor(obs["front"]).permute(2, 0, 1).float() / 255.0
 
             # Resize top and front from 720x1280 to 480x640
-            img_top = F.interpolate(img_top, size=(480, 640), mode='bilinear', align_corners=False)
-            img_front = F.interpolate(img_front, size=(480, 640), mode='bilinear', align_corners=False)
+            img_top = F.interpolate(img_top.unsqueeze(0), size=(480, 640), mode='bilinear', align_corners=False).squeeze(0)
+            img_front = F.interpolate(img_front.unsqueeze(0), size=(480, 640), mode='bilinear', align_corners=False).squeeze(0)
 
-            policy_input = {
+            # Build observation frame for preprocessor (no batch dim - preprocessor adds it)
+            obs_frame = {
                 "observation.images.right_wrist": img_right,
                 "observation.images.left_wrist": img_left,
                 "observation.images.top": img_top,
                 "observation.images.front": img_front,
-                "observation.state": torch.tensor(state).unsqueeze(0).float(),
+                "observation.state": torch.tensor(state).float(),
             }
-            policy_input = {k: v.to(device) for k, v in policy_input.items()}
+
+            # Preprocess (normalizes state and images)
+            obs_normalized = preprocess(obs_frame)
+            obs_normalized = {k: v.to(device) for k, v in obs_normalized.items()}
 
             # Get action from policy
             with torch.no_grad():
-                action = policy.select_action(policy_input)
+                action = policy.select_action(obs_normalized)
+
+            # Postprocess (unnormalizes action back to degrees)
+            action = postprocess(action)
 
             # Convert action tensor to dict for robot
             action_array = action.cpu().numpy().flatten()
