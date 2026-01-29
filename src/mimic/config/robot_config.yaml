@@ -17,9 +17,9 @@ robot:
   cameras:
     top:
       type: zed_camera
-      index_or_path: 23081456  # ZED camera serial number
+      index_or_path: /dev/camera_zed  # OpenCV fallback uses video device
       width: 1280
-      height: 720 
+      height: 720
       fps: 30
       warmup_s: 0
 

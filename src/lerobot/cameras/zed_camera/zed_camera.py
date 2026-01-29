@@ -12,13 +12,9 @@ from lerobot.cameras.opencv import OpenCVCamera, OpenCVCameraConfig
 
 logger = logging.getLogger(__name__)
 
-# Try to import ZED SDK
-try:
-    import pyzed.sl as sl
-    ZED_SDK_AVAILABLE = True
-except ImportError:
-    ZED_SDK_AVAILABLE = False
-    logger.warning("ZED SDK (pyzed) not available. ZED camera will use OpenCV fallback with manual stereo cropping.")
+# Force OpenCV fallback - ZED SDK causes latency issues
+ZED_SDK_AVAILABLE = False
+logger.info("ZED camera using OpenCV fallback mode (stereo cropping).")
 
 @CameraConfig.register_subclass("zed_camera")
 @dataclass
