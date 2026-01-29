@@ -59,17 +59,11 @@ def main():
     print(f"Policy loaded on {device}")
     print(f"Policy config: chunk_size={policy.config.chunk_size}, n_action_steps={policy.config.n_action_steps}")
 
-    # Enable temporal ensembling for smoother, more responsive actions
-    # This makes the policy respond to current observations rather than playing fixed trajectories
-    policy.config.temporal_ensemble_coeff = 0.01
-    policy.config.n_action_steps = 1  # Required for temporal ensembling
-    # Re-initialize the temporal ensembler
-    from lerobot.policies.act.modeling_act import ACTTemporalEnsembler
-    policy.temporal_ensembler = ACTTemporalEnsembler(
-        temporal_ensemble_coeff=policy.config.temporal_ensemble_coeff,
-        chunk_size=policy.config.chunk_size,
-    )
-    print(f"Enabled temporal ensembling with coeff={policy.config.temporal_ensemble_coeff}")
+    # Use smaller action steps so the policy re-predicts more often based on current observations
+    # This makes the robot more responsive to visual feedback
+    policy.config.n_action_steps = 10  # Re-predict every 10 steps instead of 100
+    policy._action_queue.clear()  # Clear any existing actions
+    print(f"Set n_action_steps={policy.config.n_action_steps} for more frequent re-prediction")
 
     # Load dataset metadata for normalization stats
     print("Loading normalization stats from dataset...")
@@ -162,9 +156,14 @@ def main():
                 for k, v in policy_input.items():
                     print(f"  {k}: shape={v.shape}, min={v.min():.4f}, max={v.max():.4f}")
 
-            # Get action from policy (with temporal ensembling, predicts every step)
+            # Get action from policy
+            queue_len_before = len(policy._action_queue)
             with torch.no_grad():
                 action = policy.select_action(policy_input)
+
+            # Show when policy re-predicts
+            if queue_len_before == 0:
+                print(f"Step {step_count}: Re-predicted. Queue={len(policy._action_queue)}")
 
             if debug_first:
                 print(f"\nRaw policy output: shape={action.shape}, values={action.cpu().numpy().flatten()[:5]}...")
@@ -189,6 +188,10 @@ def main():
                 print("=== END DEBUG ===\n")
 
             robot.send_action(action_dict)
+
+            # Show gripper state periodically
+            if step_count % 30 == 0:  # Every ~1 second
+                print(f"Step {step_count}: L_grip={action_dict['left_gripper.pos']:.1f}, R_grip={action_dict['right_gripper.pos']:.1f}, L_elbow={action_dict['left_elbow_flex.pos']:.1f}, R_elbow={action_dict['right_elbow_flex.pos']:.1f}")
 
             # 30 FPS timing
             elapsed = time.time() - start
