@@ -166,12 +166,14 @@ available_robots = [
     "aloha",
     "so100",
     "so101",
+    "mimic_follower",
 ]
 
 # lists all available cameras from `lerobot/cameras`
 available_cameras = [
     "opencv",
     "intelrealsense",
+    "zed_camera",
 ]
 
 # lists all available motors from `lerobot/motors`
