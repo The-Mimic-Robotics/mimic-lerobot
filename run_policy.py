@@ -58,7 +58,18 @@ def main():
     policy.to(device)
     print(f"Policy loaded on {device}")
     print(f"Policy config: chunk_size={policy.config.chunk_size}, n_action_steps={policy.config.n_action_steps}")
-    print(f"Temporal ensemble: {policy.config.temporal_ensemble_coeff}")
+
+    # Enable temporal ensembling for smoother, more responsive actions
+    # This makes the policy respond to current observations rather than playing fixed trajectories
+    policy.config.temporal_ensemble_coeff = 0.01
+    policy.config.n_action_steps = 1  # Required for temporal ensembling
+    # Re-initialize the temporal ensembler
+    from lerobot.policies.act.modeling_act import ACTTemporalEnsembler
+    policy.temporal_ensembler = ACTTemporalEnsembler(
+        temporal_ensemble_coeff=policy.config.temporal_ensemble_coeff,
+        chunk_size=policy.config.chunk_size,
+    )
+    print(f"Enabled temporal ensembling with coeff={policy.config.temporal_ensemble_coeff}")
 
     # Load dataset metadata for normalization stats
     print("Loading normalization stats from dataset...")
@@ -151,15 +162,9 @@ def main():
                 for k, v in policy_input.items():
                     print(f"  {k}: shape={v.shape}, min={v.min():.4f}, max={v.max():.4f}")
 
-            # Get action from policy
-            queue_len_before = len(policy._action_queue)
+            # Get action from policy (with temporal ensembling, predicts every step)
             with torch.no_grad():
                 action = policy.select_action(policy_input)
-            queue_len_after = len(policy._action_queue)
-
-            # Print when policy re-predicts (queue was empty)
-            if queue_len_before == 0:
-                print(f"Step {step_count}: Policy predicted new chunk (queue now has {queue_len_after} actions)")
 
             if debug_first:
                 print(f"\nRaw policy output: shape={action.shape}, values={action.cpu().numpy().flatten()[:5]}...")
