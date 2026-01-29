@@ -3,6 +3,7 @@
 
 import time
 import torch
+import torch.nn.functional as F
 from pathlib import Path
 from lerobot.policies.act.modeling_act import ACTPolicy
 from lerobot.robots.mimic_follower.mimic_follower import MimicFollower
@@ -69,11 +70,21 @@ def main():
             state.extend([obs.get("base_x", 0.0), obs.get("base_y", 0.0), obs.get("base_theta", 0.0)])
 
             # Format for policy - map robot camera names to policy expected names
+            # Policy expects all images at 480x640
+            img_right = torch.tensor(obs["wrist_right"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+            img_left = torch.tensor(obs["wrist_left"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+            img_top = torch.tensor(obs["top"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+            img_front = torch.tensor(obs["front"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0
+
+            # Resize top and front from 720x1280 to 480x640
+            img_top = F.interpolate(img_top, size=(480, 640), mode='bilinear', align_corners=False)
+            img_front = F.interpolate(img_front, size=(480, 640), mode='bilinear', align_corners=False)
+
             policy_input = {
-                "observation.images.right_wrist": torch.tensor(obs["wrist_right"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0,
-                "observation.images.left_wrist": torch.tensor(obs["wrist_left"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0,
-                "observation.images.top": torch.tensor(obs["top"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0,
-                "observation.images.front": torch.tensor(obs["front"]).permute(2, 0, 1).unsqueeze(0).float() / 255.0,
+                "observation.images.right_wrist": img_right,
+                "observation.images.left_wrist": img_left,
+                "observation.images.top": img_top,
+                "observation.images.front": img_front,
                 "observation.state": torch.tensor(state).unsqueeze(0).float(),
             }
             policy_input = {k: v.to(device) for k, v in policy_input.items()}
