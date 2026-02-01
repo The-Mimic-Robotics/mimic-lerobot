@@ -715,10 +715,10 @@ def dataset_to_policy_features(features: dict[str, dict]) -> dict[str, PolicyFea
     policy_features = {}
     for key, ft in features.items():
         shape = ft["shape"]
-        print(f"DEBUG: Type of ft is {type(ft)}")
-        print(f"DEBUG: Content of ft is {ft}")
+        # print(f"DEBUG: Type of ft is {type(ft)}")
+        # print(f"DEBUG: Content of ft is {ft}")
         if ft["dtype"] in ["image", "video"]:
-            type = FeatureType.VISUAL
+            feature_type = FeatureType.VISUAL
             if len(shape) != 3:
                 raise ValueError(f"Number of dimensions of {key} != 3 (shape={shape})")
 
@@ -727,16 +727,16 @@ def dataset_to_policy_features(features: dict[str, dict]) -> dict[str, PolicyFea
             if names[2] in ["channel", "channels"]:  # (h, w, c) -> (c, h, w)
                 shape = (shape[2], shape[0], shape[1])
         elif key == OBS_ENV_STATE:
-            type = FeatureType.ENV
+            feature_type = FeatureType.ENV
         elif key.startswith(OBS_STR):
-            type = FeatureType.STATE
+            feature_type = FeatureType.STATE
         elif key.startswith(ACTION):
-            type = FeatureType.ACTION
+            feature_type = FeatureType.ACTION
         else:
             continue
 
         policy_features[key] = PolicyFeature(
-            type=type,
+            type=feature_type,
             shape=shape,
         )
 
