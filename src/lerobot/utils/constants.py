@@ -59,8 +59,10 @@ if "LEROBOT_HOME" in os.environ:
 default_cache_path = Path(HF_HOME) / "lerobot"
 HF_LEROBOT_HOME = Path(os.getenv("HF_LEROBOT_HOME", default_cache_path)).expanduser()
 
-# calibration dir
-default_calibration_path = HF_LEROBOT_HOME / "calibration"
+# calibration dir - store in mimic folder instead of .cache
+# Get the path to the mimic module and store calibrations there
+_mimic_calibration_path = Path(__file__).resolve().parent.parent.parent / "mimic" / "calibration"
+default_calibration_path = _mimic_calibration_path
 HF_LEROBOT_CALIBRATION = Path(os.getenv("HF_LEROBOT_CALIBRATION", default_calibration_path)).expanduser()
 
 
