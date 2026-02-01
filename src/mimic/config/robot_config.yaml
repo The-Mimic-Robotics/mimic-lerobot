@@ -15,7 +15,7 @@ robot:
   # NOTE: Camera names MUST match training data keys:
   # - wrist_left, wrist_right, realsense_top
   cameras:
-    top:
+    head:
       type: zed_camera
       index_or_path: 23081456  # ZED camera serial number
       width: 1280
@@ -65,7 +65,7 @@ teleop:
   base_control_mode: keyboard  # Options: keyboard, xbox, joystick
 
 # Dataset Configuration
-dataset:
+dataset: 
   # Organization on HuggingFace Hub
   organization: Mimic-Robotics
   

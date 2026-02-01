@@ -715,6 +715,8 @@ def dataset_to_policy_features(features: dict[str, dict]) -> dict[str, PolicyFea
     policy_features = {}
     for key, ft in features.items():
         shape = ft["shape"]
+        print(f"DEBUG: Type of ft is {type(ft)}")
+        print(f"DEBUG: Content of ft is {ft}")
         if ft["dtype"] in ["image", "video"]:
             type = FeatureType.VISUAL
             if len(shape) != 3:

@@ -187,6 +187,9 @@ class ZedCamera(OpenCVCamera):
             # Only needed for OpenCV fallback
             if not self.is_connected:
                 raise ConnectionError(f"Cannot configure settings for {self} as it is not connected.")
+            
+            if self.videocapture is None:
+                raise RuntimeError(f"{self} videocapture not initialized.")
 
             req_width = self.config.width
             req_height = self.config.height
@@ -196,8 +199,15 @@ class ZedCamera(OpenCVCamera):
             self.videocapture.set(cv2.CAP_PROP_FRAME_HEIGHT, req_height)
             self.videocapture.set(cv2.CAP_PROP_FPS, self.config.fps)
 
-            actual_hw_width = int(self.videocapture.get(cv2.CAP_PROP_FRAME_WIDTH))
-            actual_hw_height = int(self.videocapture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            actual_hw_width = self.videocapture.get(cv2.CAP_PROP_FRAME_WIDTH)
+            actual_hw_height = self.videocapture.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            
+            # Handle potential None values from get()
+            if actual_hw_width is None or actual_hw_height is None:
+                actual_hw_width, actual_hw_height = 0, 0
+            
+            actual_hw_width = int(actual_hw_width)
+            actual_hw_height = int(actual_hw_height)
             
             self.capture_width = actual_hw_width // 2
             self.capture_height = actual_hw_height

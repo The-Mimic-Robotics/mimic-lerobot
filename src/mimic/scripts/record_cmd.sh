@@ -9,13 +9,13 @@ lerobot-record \
   --teleop.type=mimic_leader \
   --teleop.left_arm_port=/dev/arm_left_leader \
   --teleop.right_arm_port=/dev/arm_right_leader \
-  --teleop.base_control_mode=xbox \
+  --teleop.base_control_mode=keyboard \
   --teleop.id=mimic_leader \
-  --dataset.repo_id=Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8 \
+  --dataset.repo_id=Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3 \
   --dataset.single_task="Navigate to the front of the table and perform bimanual blue block handover" \
   --dataset.num_episodes=20 \
-  --dataset.episode_time_s=90 \
-  --dataset.reset_time_s=5 \
+  --dataset.episode_time_s=180 \
+  --dataset.reset_time_s=7 \
   --dataset.video=true \
   --dataset.fps=30 \
   --dataset.push_to_hub=true \

@@ -204,7 +204,10 @@ def convert_dataset(old_repo_id: str, new_repo_id: str, test_only: bool = False)
     
     # Verify stats.json
     new_stats = load_stats(new_cache_dir)
-    print(f"Stats dimensions: mean={new_stats['action']['mean'].shape[0]}, std={new_stats['action']['std'].shape[0]}")
+    if new_stats is not None and "action" in new_stats:
+        print(f"Stats dimensions: mean={new_stats['action']['mean'].shape[0]}, std={new_stats['action']['std'].shape[0]}")
+    else:
+        print("Failed to load new_stats or missing 'action' field.")
     
     # Sample from parquet to verify zero-padding
     parquet_files = sorted(new_cache_dir.glob("data/**/*.parquet"))
