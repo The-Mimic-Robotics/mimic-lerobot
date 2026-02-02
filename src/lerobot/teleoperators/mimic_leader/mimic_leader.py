@@ -6,8 +6,8 @@ import logging
 from functools import cached_property
 
 # Import standard Leader parts
-from lerobot.teleoperators.so100_leader.config_so100_leader import SO100LeaderConfig
-from lerobot.teleoperators.so100_leader.so100_leader import SO100Leader
+from lerobot.teleoperators.so_leader.config_so_leader import SOLeaderTeleopConfig
+from lerobot.teleoperators.so_leader.so_leader import SOLeader
 
 from ..teleoperator import Teleoperator
 from .config_mimic_leader import MimicLeaderConfig
@@ -29,21 +29,21 @@ class MimicLeader(Teleoperator):
         self.config = config
 
         # 1. Setup Left Arm
-        left_arm_config = SO100LeaderConfig(
+        left_arm_config = SOLeaderTeleopConfig(
             id=f"{config.id}_left" if config.id else None,
             calibration_dir=config.calibration_dir,
             port=config.left_arm_port,
         )
 
         # 2. Setup Right Arm
-        right_arm_config = SO100LeaderConfig(
+        right_arm_config = SOLeaderTeleopConfig(
             id=f"{config.id}_right" if config.id else None,
             calibration_dir=config.calibration_dir,
             port=config.right_arm_port,
         )
 
-        self.left_arm = SO100Leader(left_arm_config)
-        self.right_arm = SO100Leader(right_arm_config)
+        self.left_arm = SOLeader(left_arm_config)
+        self.right_arm = SOLeader(right_arm_config)
 
         # 3. Setup Base Controller based on mode
         # For Xbox mode, load config from YAML file

@@ -8,8 +8,8 @@ from functools import cached_property
 from typing import Any
 
 from lerobot.cameras.utils import make_cameras_from_configs
-from lerobot.robots.so100_follower import SO100Follower
-from lerobot.robots.so100_follower.config_so100_follower import SO100FollowerConfig
+from lerobot.robots.so_follower.so_follower import SOFollower
+from lerobot.robots.so_follower.config_so_follower import SOFollowerRobotConfig
 # Import your custom base driver
 from lerobot.motors.mecanum_base import MecanumBase
 
@@ -33,7 +33,7 @@ class MimicFollower(Robot):
         self.config = config
 
         # 1. Configure Left Arm
-        left_arm_config = SO100FollowerConfig(
+        left_arm_config = SOFollowerRobotConfig(
             id=f"{config.id}_left" if config.id else None,
             calibration_dir=config.calibration_dir,
             port=config.left_arm_port,
@@ -44,7 +44,7 @@ class MimicFollower(Robot):
         )
 
         # 2. Configure Right Arm
-        right_arm_config = SO100FollowerConfig(
+        right_arm_config = SOFollowerRobotConfig(
             id=f"{config.id}_right" if config.id else None,
             calibration_dir=config.calibration_dir,
             port=config.right_arm_port,
@@ -55,8 +55,8 @@ class MimicFollower(Robot):
         )
 
         # 3. Instantiate Sub-Robots
-        self.left_arm = SO100Follower(left_arm_config)
-        self.right_arm = SO100Follower(right_arm_config)
+        self.left_arm = SOFollower(left_arm_config)
+        self.right_arm = SOFollower(right_arm_config)
         
         # 4. Instantiate Base
         self.base = MecanumBase(port=config.base_port)

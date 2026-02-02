@@ -101,10 +101,11 @@ class ZedCamera(OpenCVCamera):
             
             cam_info = self.zed.get_camera_information()
             actual_res = cam_info.camera_configuration.resolution
-            logger.info(f"ZED Camera connected: {actual_res.width}x{actual_res.height} @ {self.fps}fps (S/N: {cam_info.serial_number})")
+            logger.info(f"✓ ZED Camera connected with SDK: {actual_res.width}x{actual_res.height} @ {self.fps}fps (S/N: {cam_info.serial_number})")
             
             # Start the read thread for async_read support
             self._start_read_thread()
+            logger.info(f"✓ ZED Camera background thread started (using SDK path)")
             
             if warmup and self.warmup_s > 0:
                 import time
@@ -133,6 +134,22 @@ class ZedCamera(OpenCVCamera):
         return sl.RESOLUTION.HD720
     
     def read(self, color_mode=None) -> NDArray[Any]:
+        if ZED_SDK_AVAILABLE:
+            # Use ZED SDK
+            if not self.is_connected:
+                raise ConnectionError(f"{self} is not connected.")
+            
+            frame = self._read_from_hardware()
+            return self._postprocess_image(frame, color_mode)
+        else:
+            # Use OpenCV fallback with stereo cropping
+            return super().read(color_mode)
+    
+    def _read_from_hardware(self) -> NDArray[Any]:
+        """
+        Override for background thread to read from ZED SDK or OpenCV.
+        Returns raw BGR frame before post-processing.
+        """
         if ZED_SDK_AVAILABLE:
             # Use ZED SDK
             if not self.is_connected:
@@ -167,8 +184,8 @@ class ZedCamera(OpenCVCamera):
             # Crop to Left Eye Only
             height, width, _ = frame.shape
             left_eye_frame = frame[:, :width // 2]
-
-            return self._postprocess_image(left_eye_frame, color_mode)
+            
+            return left_eye_frame
     
     def disconnect(self) -> None:
         if ZED_SDK_AVAILABLE:
