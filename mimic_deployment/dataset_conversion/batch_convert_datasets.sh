@@ -1,5 +1,8 @@
 #!/bin/bash
 # Batch convert all old bimanual handover datasets to mobile bimanual format
+# Uses convert_bimanual_complete.py which properly renames cameras and adds front camera
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # List of all old datasets (from HuggingFace)
 OLD_DATASETS=(
@@ -31,6 +34,7 @@ echo "========================================"
 echo "Batch Dataset Conversion"
 echo "========================================"
 echo "Total datasets to convert: ${#OLD_DATASETS[@]}"
+echo "Using: convert_bimanual_complete.py"
 echo ""
 
 for dataset in "${OLD_DATASETS[@]}"; do
@@ -41,14 +45,14 @@ for dataset in "${OLD_DATASETS[@]}"; do
     INPUT_REPO="${ORG}/${dataset}"
     OUTPUT_REPO="${ORG}/mobile_${dataset}"
     
-    python3 ./mimic_deployment/convert_bimanual_to_mobile.py \
-        --input-repo-id="$INPUT_REPO" \
-        --output-repo-id="$OUTPUT_REPO"
+    python3 "${SCRIPT_DIR}/convert_bimanual_complete.py" \
+        --input-repo="$INPUT_REPO" \
+        --output-repo="$OUTPUT_REPO"
     
     if [ $? -eq 0 ]; then
-        echo "✅ Successfully converted $dataset"
+        echo "Successfully converted $dataset"
     else
-        echo "❌ Failed to convert $dataset"
+        echo "Failed to convert $dataset"
         exit 1
     fi
     
@@ -56,5 +60,5 @@ for dataset in "${OLD_DATASETS[@]}"; do
 done
 
 echo "========================================"
-echo "✅ All datasets converted successfully!"
+echo "All datasets converted successfully!"
 echo "========================================"

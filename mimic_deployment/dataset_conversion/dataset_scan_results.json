@@ -1,0 +1,2384 @@
+{
+  "total_datasets": 48,
+  "successful_scans": 48,
+  "old_format_count": 21,
+  "new_format_count": 27,
+  "other_count": 0,
+  "datasets_with_head_camera": [],
+  "datasets_with_top_camera": [
+    "Mimic-Robotics/mimic_mobile_bimanual_drift_v2",
+    "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v2",
+    "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v7",
+    "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8",
+    "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v6",
+    "Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v2",
+    "Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3"
+  ],
+  "all_results": [
+    {
+      "repo_id": "Mimic-Robotics/jetson_bimanual_recording_test",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 1,
+      "total_frames": 197,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_20",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 14673,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_21",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 18410,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_22",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22842,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_23",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 24336,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_24",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 22486,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_25",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 30254,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_26",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 40,
+      "total_frames": 34654,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_1",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 15177,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_2",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 18613,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_3",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 12391,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_4",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 20106,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_5",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 18858,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_6",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 23,
+      "total_frames": 21797,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_7",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 17633,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_16",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22705,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_18",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22588,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_19",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 19993,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_14",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 19,
+      "total_frames": 22486,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_15",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 7,
+      "total_frames": 8106,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_17",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 8,
+      "total_frames": 9047,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_mobile_bimanual_drift_v2",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 18,
+      "total_frames": 23682,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_1",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 15177,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_2",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 18613,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_3",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 12391,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_4",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 20106,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_5",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 18858,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_6",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 23,
+      "total_frames": 21797,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_7",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 17633,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_14",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 19,
+      "total_frames": 22486,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_15",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 7,
+      "total_frames": 8106,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_16",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22705,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_17",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 8,
+      "total_frames": 9047,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_18",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22588,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_19",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 19993,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_20",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 14673,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_21",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 18410,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_22",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22842,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_23",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 24336,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_24",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 22486,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_25",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 30254,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_26",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 40,
+      "total_frames": 34654,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v2",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 18609,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v7",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 12,
+      "total_frames": 15334,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 20264,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v6",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 15,
+      "total_frames": 16074,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v2",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 20606,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 20427,
+      "status": "success"
+    }
+  ],
+  "old_format": [
+    {
+      "repo_id": "Mimic-Robotics/jetson_bimanual_recording_test",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 1,
+      "total_frames": 197,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_20",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 14673,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_21",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 18410,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_22",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22842,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_23",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 24336,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_24",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 22486,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_25",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 30254,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_26",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 40,
+      "total_frames": 34654,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_1",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 15177,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_2",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 18613,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_3",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 12391,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_4",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 20106,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_5",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 18858,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_6",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 23,
+      "total_frames": 21797,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_7",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 17633,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_16",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22705,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_18",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22588,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_19",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 19993,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_14",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 19,
+      "total_frames": 22486,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_15",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 7,
+      "total_frames": 8106,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/bimanual_blue_block_handover_17",
+      "version": "v2.1",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 12,
+      "obs_state_dim": 12,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 8,
+      "total_frames": 9047,
+      "status": "success"
+    }
+  ],
+  "new_format": [
+    {
+      "repo_id": "Mimic-Robotics/mimic_mobile_bimanual_drift_v2",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 18,
+      "total_frames": 23682,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_1",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 15177,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_2",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 18613,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_3",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 12391,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_4",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 20106,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_5",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 18858,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_6",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 23,
+      "total_frames": 21797,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_7",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 25,
+      "total_frames": 17633,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_14",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 19,
+      "total_frames": 22486,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_15",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 7,
+      "total_frames": 8106,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_16",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22705,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_17",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 8,
+      "total_frames": 9047,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_18",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22588,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_19",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 19993,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_20",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 14673,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_21",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 18410,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_22",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 22842,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_23",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 24336,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_24",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 22486,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_25",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 30,
+      "total_frames": 30254,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mobile_bimanual_blue_block_handover_26",
+      "version": "v3.0",
+      "robot_type": "bi_so101_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "wrist_right",
+          "resolution": "640x480"
+        },
+        {
+          "name": "wrist_left",
+          "resolution": "640x480"
+        },
+        {
+          "name": "realsense_top",
+          "resolution": "640x480"
+        }
+      ],
+      "total_episodes": 40,
+      "total_frames": 34654,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v2",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 18609,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v7",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 12,
+      "total_frames": 15334,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 20264,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_v6",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 15,
+      "total_frames": 16074,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v2",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 20606,
+      "status": "success"
+    },
+    {
+      "repo_id": "Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3",
+      "version": "v3.0",
+      "robot_type": "mimic_follower",
+      "action_dim": 15,
+      "obs_state_dim": 15,
+      "cameras": [
+        {
+          "name": "right_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "left_wrist",
+          "resolution": "640x480"
+        },
+        {
+          "name": "front",
+          "resolution": "640x480"
+        },
+        {
+          "name": "top",
+          "resolution": "1280x720"
+        }
+      ],
+      "total_episodes": 20,
+      "total_frames": 20427,
+      "status": "success"
+    }
+  ],
+  "other": []
+}

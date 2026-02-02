@@ -133,17 +133,17 @@ class ZedCamera(OpenCVCamera):
         logger.warning(f"Resolution {self.width}x{self.height} not standard, using HD720")
         return sl.RESOLUTION.HD720
     
-    def read(self, color_mode=None) -> NDArray[Any]:
+    def read(self) -> NDArray[Any]:
         if ZED_SDK_AVAILABLE:
             # Use ZED SDK
             if not self.is_connected:
                 raise ConnectionError(f"{self} is not connected.")
             
             frame = self._read_from_hardware()
-            return self._postprocess_image(frame, color_mode)
+            return self._postprocess_image(frame)
         else:
             # Use OpenCV fallback with stereo cropping
-            return super().read(color_mode)
+            return super().read()
     
     def _read_from_hardware(self) -> NDArray[Any]:
         """
@@ -164,7 +164,7 @@ class ZedCamera(OpenCVCamera):
             frame = self.image_zed.get_data()
             
             # Convert BGRA to RGB/BGR based on color_mode
-            requested_color_mode = self.color_mode if color_mode is None else color_mode
+            requested_color_mode = self.color_mode
             if frame.shape[2] == 4:  # BGRA
                 if requested_color_mode == self.color_mode.RGB:
                     frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2RGB)

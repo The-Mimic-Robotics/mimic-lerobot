@@ -11,7 +11,7 @@ lerobot-record \
   --teleop.right_arm_port=/dev/arm_right_leader \
   --teleop.base_control_mode=xbox \
   --teleop.id=mimic_leader \
-  --dataset.repo_id=Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8 \
+  --policy.path=outputs/train/act_multi_dataset_new_hands/checkpoints/last/pretrained_model \
   --dataset.single_task="Navigate to the front of the table and perform bimanual blue block handover" \
   --dataset.num_episodes=20 \
   --dataset.episode_time_s=90 \
