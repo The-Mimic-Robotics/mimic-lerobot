@@ -80,8 +80,10 @@ def make_dataset(cfg: TrainPipelineConfig) -> LeRobotDataset | MultiLeRobotDatas
     Returns:
         LeRobotDataset | MultiLeRobotDataset
     """
+    # Create ImageTransforms if enabled OR if resize is specified (resize should always apply)
+    transforms_cfg = cfg.dataset.image_transforms
     image_transforms = (
-        ImageTransforms(cfg.dataset.image_transforms) if cfg.dataset.image_transforms.enable else None
+        ImageTransforms(transforms_cfg) if transforms_cfg.enable or transforms_cfg.resize is not None else None
     )
 
     if isinstance(cfg.dataset.repo_id, str):
