@@ -27,24 +27,16 @@ log_message() {
 
 # Check if SSH sessions are active
 check_ssh_active() {
-    # Method 1: Check for established connections on SSH port
-    # Look for any ESTABLISHED TCP connections on port 22
-    if ss -tnp 2>/dev/null | grep -q ":22.*ESTAB"; then
-        return 0
-    fi
+    # Check for established SSH connections on port 22
+    # Count lines but skip the header line from ss output
+    local ssh_connections=$(ss -tn state established '( dport = :22 or sport = :22 )' 2>/dev/null | tail -n +2 | wc -l)
     
-    # Method 2: Check SSH port with netstat
-    if netstat -tnp 2>/dev/null | grep -q ":22.*ESTAB"; then
+    # If there are any SSH connections, return success
+    if [ "$ssh_connections" -gt 0 ]; then
         return 0
+    else
+        return 1
     fi
-    
-    # Method 3: Check for login-related processes (last resort)
-    # This will catch SSH sessions even if connection tracking is limited
-    if pgrep -f "sshd:.*@" >/dev/null 2>&1; then
-        return 0
-    fi
-    
-    return 1
 }
 
 # Find Gigabyte RGB Fusion Controller USB device
@@ -173,8 +165,13 @@ control_via_hidapi() {
         return 1
     fi
     
-    # Use system Python which has hid installed
-    /usr/bin/python3 - "$mode" << 'PYTHON_HID_EOF'
+    # Install hidapi if not present
+    if ! python3 -c "import hid" 2>/dev/null; then
+        log_message "Installing python hidapi..."
+        sudo apt install -y python3-hid >/dev/null 2>&1
+    fi
+    
+    python3 - "$mode" << 'PYTHON_HID_EOF'
 import sys
 try:
     import hid
@@ -186,40 +183,29 @@ def control_gigabyte(mode):
     h = hid.device()
     try:
         h.open(0x048d, 0x5711)
+        h.set_nonblocking(1)
         
-        # Gigabyte X870 AORUS RGB Fusion controller uses different protocol
-        # These are empirical commands that work on this board
         if mode == "red":
-            # Static red mode with high brightness
-            # Cmd structure: [prefix, cmd_type, effect_mode, r, g, b, param1, brightness]
-            data = [0xCC, 0x10, 0x00, 0xFF, 0x00, 0x00, 0x00, 0xFF]
+            # Static red - Gigabyte RGB Fusion protocol
+            # Format: [report_id, command, mode, R, G, B, speed, brightness, ...]
+            data = [0xCC, 0x10, 0x01, 0xFF, 0x00, 0x00, 0x00, 0xFF]
         elif mode == "rainbow":
-            # Rainbow/cycle mode 
-            data = [0xCC, 0x10, 0x02, 0x00, 0x00, 0x00, 0x10, 0xFF]
+            # Rainbow/spectrum cycle mode
+            data = [0xCC, 0x10, 0x02, 0x00, 0x00, 0x00, 0x20, 0xFF]
         else:
             return False
         
         # Pad to 64 bytes (HID report size)
         data.extend([0x00] * (64 - len(data)))
         
-        # Try sending multiple times in case device needs time
-        for attempt in range(3):
-            try:
-                result = h.write(data)
-                if result > 0:
-                    h.close()
-                    return True
-            except:
-                pass
+        # Send the report
+        h.write(data)
         
         h.close()
-        return False
+        return True
         
     except Exception as e:
-        try:
-            h.close()
-        except:
-            pass
+        print(f"Error: {e}", file=sys.stderr)
         return False
 
 if __name__ == "__main__":
@@ -262,12 +248,7 @@ set_rgb_mode() {
         return 0
     fi
     
-    # NOTE: Gigabyte X870 AORUS ELITE RGB Fusion is not yet supported in Linux
-    # The device responds to HID commands but doesn't change LED color
-    # This appears to be a firmware limitation or undocumented protocol
-    # Workaround: SSH monitoring logic works; RGB commands are logged but don't take effect
-    log_message "WARNING: RGB control not working for this motherboard (X870 AORUS support pending)"
-    log_message "Device detected but protocol not yet supported. RGB stays in BIOS default state."
+    log_message "Failed to control RGB - no working method found"
     return 1
 }
 

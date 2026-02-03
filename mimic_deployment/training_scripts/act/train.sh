@@ -39,7 +39,7 @@ else
     NUM_WORKERS="${NUM_WORKERS:-8}"
 fi
 
-STEPS="${STEPS:-100000}"
+STEPS="${STEPS:-30000}"
 SAVE_FREQ="${SAVE_FREQ:-10000}"
 
 # ============================================================================
@@ -154,12 +154,8 @@ nohup lerobot-train \
   > "$LOG_FILE" 2>&1 &
 
 TRAIN_PID=$!
+echo "$TRAIN_PID" > "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
 
 echo "Training started with PID: $TRAIN_PID"
 echo "Log file: $LOG_FILE"
-echo ""
-echo "To monitor training:"
-echo "  tail -f $LOG_FILE"
-echo ""
-echo "To stop training:"
-echo "  kill $TRAIN_PID"
+echo "PID file: $REPO_ROOT/outputs/logs/${JOB_NAME}.pid"

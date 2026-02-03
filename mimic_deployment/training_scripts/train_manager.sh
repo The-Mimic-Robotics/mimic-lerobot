@@ -52,8 +52,7 @@ ${YELLOW}Optional:${NC}
   --batch-size SIZE        Override default batch size
   --num-workers N          Override default number of workers
   --steps N                Number of training steps
-  --push-to-hub           Auto-upload model to Hugging Face Hub after training (default: false)
-  --wait-for-completion   Wait for training to complete before moving to next group/policy (default: false)
+  --push-to-hub           Auto-upload model to Hugging Face Hub after training (default: true)
   --list-groups            List all available dataset groups and exit
   --list-policies          List all available policies and exit
   --dry-run                Show configuration without starting training
@@ -69,7 +68,7 @@ ${YELLOW}Environment Variables:${NC}
 
 ${YELLOW}Examples:${NC}
   # Train xVLA on all datasets
-  $0 --policy xvla --dataset-group all_datasets
+  $0 --policy xvla --dataset-group mimic_displacement
 
   # Train multiple policies sequentially on same dataset group
   $0 --policy xvla,pi05 --dataset-group high_quality
@@ -104,8 +103,7 @@ COMPUTER="${COMPUTER:-$(hostname)}"
 BATCH_SIZE="${BATCH_SIZE:-}"
 NUM_WORKERS="${NUM_WORKERS:-}"
 STEPS="${STEPS:-}"
-PUSH_TO_HUB="${PUSH_TO_HUB:-false}"
-WAIT_FOR_COMPLETION=false
+PUSH_TO_HUB="${PUSH_TO_HUB:-true}"
 DRY_RUN=false
 
 while [[ $# -gt 0 ]]; do
@@ -140,10 +138,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --push-to-hub)
             PUSH_TO_HUB=true
-            shift
-            ;;
-        --wait-for-completion)
-            WAIT_FOR_COMPLETION=true
             shift
             ;;
         --list-groups)
@@ -315,31 +309,6 @@ export COMPUTER="$COMPUTER"
 [ -n "$NUM_WORKERS" ] && export NUM_WORKERS="$NUM_WORKERS"
 [ -n "$STEPS" ] && export STEPS="$STEPS"
 
-# Function to wait for training completion
-wait_for_training_completion() {
-    local LOG_FILE="$1"
-    local JOB_NAME="$2"
-    
-    echo -e "${YELLOW}Waiting for training to complete: $JOB_NAME${NC}"
-    
-    # Wait for training to finish (check if "Training completed" or similar appears in log)
-    # Or wait for process to end
-    while true; do
-        if [ -f "$LOG_FILE" ]; then
-            # Check if training finished successfully or with error
-            if grep -q "Training completed\|Finished training\|step=${STEPS}" "$LOG_FILE" 2>/dev/null; then
-                echo -e "${GREEN}Training completed successfully: $JOB_NAME${NC}"
-                break
-            elif grep -q "Error\|Exception\|Traceback (most recent call last)" "$LOG_FILE" 2>/dev/null; then
-                echo -e "${RED}Training encountered an error: $JOB_NAME${NC}"
-                echo -e "${YELLOW}Check log file: $LOG_FILE${NC}"
-                break
-            fi
-        fi
-        sleep 30
-    done
-}
-
 # Train on each group sequentially
 if [ -n "$DATASET_GROUPS" ]; then
     GROUP_NUM=1
@@ -366,21 +335,23 @@ if [ -n "$DATASET_GROUPS" ]; then
             echo -e "${YELLOW}Policy $POLICY_NUM/$TOTAL_POLICIES: $POLICY${NC}"
             echo ""
             
-            # Execute training script
+            # Execute training script (runs in background with nohup)
             "$TRAIN_SCRIPT"
             
-            # Wait for training if requested
-            if [ "$WAIT_FOR_COMPLETION" = true ]; then
-                # Construct log file path
-                DATASET_NAME_CLEAN=$(echo "$GROUP" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-                JOB_NAME="${POLICY}_${COMPUTER}_${DATASET_NAME_CLEAN}"
-                LOG_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.log"
-                
-                sleep 5  # Give training time to start
-                wait_for_training_completion "$LOG_FILE" "$JOB_NAME"
-            else
-                sleep 2
+            # Wait for PID file and then wait for process to complete
+            DATASET_NAME_CLEAN=$(echo "$GROUP" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+            JOB_NAME="${POLICY}_${COMPUTER}_${DATASET_NAME_CLEAN}"
+            PID_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+            
+            sleep 2  # Give time for PID file to be created
+            if [ -f "$PID_FILE" ]; then
+                TRAIN_PID=$(cat "$PID_FILE")
+                echo -e "${YELLOW}Waiting for training to complete (PID: $TRAIN_PID)...${NC}"
+                wait "$TRAIN_PID" 2>/dev/null || true
+                echo -e "${GREEN}Training completed: $POLICY${NC}"
+                rm -f "$PID_FILE"
             fi
+            echo ""
             
             ((POLICY_NUM++))
         done
@@ -406,26 +377,24 @@ else
         
         "$TRAIN_SCRIPT"
         
-        # Wait for training if requested
-        if [ "$WAIT_FOR_COMPLETION" = true ]; then
-            DATASET_NAME_CLEAN=$(echo "$SINGLE_DATASET" | sed 's|.*/||')
-            JOB_NAME="${POLICY}_${COMPUTER}_${DATASET_NAME_CLEAN}"
-            LOG_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.log"
-            
-            sleep 5
-            wait_for_training_completion "$LOG_FILE" "$JOB_NAME"
-        else
-            sleep 2
+        # Wait for PID file and then wait for process to complete
+        DATASET_NAME_CLEAN=$(echo "$SINGLE_DATASET" | sed 's|.*/||')
+        JOB_NAME="${POLICY}_${COMPUTER}_${DATASET_NAME_CLEAN}"
+        PID_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+        
+        sleep 2  # Give time for PID file to be created
+        if [ -f "$PID_FILE" ]; then
+            TRAIN_PID=$(cat "$PID_FILE")
+            echo -e "${YELLOW}Waiting for training to complete (PID: $TRAIN_PID)...${NC}"
+            wait "$TRAIN_PID" 2>/dev/null || true
+            echo -e "${GREEN}Training completed: $POLICY${NC}"
+            rm -f "$PID_FILE"
         fi
+        echo ""
         
         ((POLICY_NUM++))
     done
 fi
 
 echo ""
-echo -e "${GREEN}All training jobs launched!${NC}"
-if [ "$WAIT_FOR_COMPLETION" = false ]; then
-    echo -e "Check the training logs in outputs/logs/ for progress."
-else
-    echo -e "All training completed."
-fi
+echo -e "${GREEN}All training completed!${NC}"

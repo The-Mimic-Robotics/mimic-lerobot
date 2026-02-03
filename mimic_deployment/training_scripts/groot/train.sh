@@ -198,12 +198,8 @@ else
 fi
 
 TRAIN_PID=$!
+echo "$TRAIN_PID" > "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
 
 echo "Training started with PID: $TRAIN_PID"
 echo "Log file: $LOG_FILE"
-echo ""
-echo "To monitor training:"
-echo "  tail -f $LOG_FILE"
-echo ""
-echo "To stop training:"
-echo "  kill $TRAIN_PID"
+echo "PID file: $REPO_ROOT/outputs/logs/${JOB_NAME}.pid"

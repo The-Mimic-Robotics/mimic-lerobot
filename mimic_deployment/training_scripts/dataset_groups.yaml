@@ -3,8 +3,14 @@
 # All datasets are in v3.0 format (15D action space, 4 cameras: right_wrist, left_wrist, front, top)
 
 groups:
-  # All Mimic-Robotics datasets (47 total)
-  all_datasets:
+  # All Mimic-Robotics datasets  
+  mimic_displacement:
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v2
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v2
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v6
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v7
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8
 
 
   # Datasets with new hands (improved gripper control)
