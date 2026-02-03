@@ -41,9 +41,12 @@ def resize_video(input_path, output_path, width, height):
         'ffmpeg', '-y', '-i', str(input_path),
         '-vf', f'scale={width}:{height}',
         '-c:v', 'libx264', '-preset', 'fast', '-crf', '18',
+        '-pix_fmt', 'yuv420p',
         str(output_path)
     ]
-    subprocess.run(cmd, check=True, capture_output=True)
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f'    ffmpeg error: {result.stderr[:500]}')
 
 def process_dataset(repo_id):
     """Download, resize videos, and prepare for upload."""
@@ -67,8 +70,13 @@ def process_dataset(repo_id):
             print(f'  Resizing {video_file.name}...')
             temp_file = video_file.with_suffix('.temp.mp4')
             resize_video(video_file, temp_file, TARGET_WIDTH, TARGET_HEIGHT)
-            video_file.unlink()
-            temp_file.rename(video_file)
+            if temp_file.exists() and temp_file.stat().st_size > 0:
+                video_file.unlink()
+                temp_file.rename(video_file)
+            else:
+                print(f'    Warning: Failed to resize {video_file.name}, keeping original')
+                if temp_file.exists():
+                    temp_file.unlink()
 
     # Update info.json with new resolution
     info_path = local_dir / 'meta' / 'info.json'
