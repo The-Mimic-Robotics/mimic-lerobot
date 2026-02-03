@@ -4,7 +4,7 @@
 
 joy_node:
   ros__parameters:
-    device_id: 0           # /dev/input/js0
+    device_id: 1           # /dev/input/js1
     deadzone: 0.05         # Ignore inputs below this threshold
     autorepeat_rate: 20.0  # Hz - rate to republish last command
 
