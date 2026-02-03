@@ -39,8 +39,8 @@ else
     NUM_WORKERS="${NUM_WORKERS:-4}"
 fi
 
-STEPS="${STEPS:-10000}"
-SAVE_FREQ="${SAVE_FREQ:-2000}"
+STEPS="${STEPS:-3000}"
+SAVE_FREQ="${SAVE_FREQ:-1000}"
 
 # ============================================================================
 # RESOLVE DATASET GROUP TO DATASET LIST OR USE SINGLE DATASET
@@ -161,12 +161,11 @@ nohup python src/lerobot/scripts/lerobot_train.py \
   > "$LOG_FILE" 2>&1 &
 
 TRAIN_PID=$!
+echo "$TRAIN_PID" > "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
 
 echo "Training started with PID: $TRAIN_PID"
 echo "Log file: $LOG_FILE"
-echo ""
-echo "To monitor training:"
-echo "  tail -f $LOG_FILE"
+echo "PID file: $REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
 echo ""
 echo "To stop training:"
 echo "  kill $TRAIN_PID"

@@ -26,7 +26,7 @@ SINGLE_DATASET="${SINGLE_DATASET:-}"
 
 # Training parameters with computer-specific defaults
 if [[ "$COMPUTER" == "odin" ]] || [[ "$COMPUTER" == "ODIN-IEEE" ]]; then
-    BATCH_SIZE="${BATCH_SIZE:-8}"
+    BATCH_SIZE="${BATCH_SIZE:-4}"
     NUM_WORKERS="${NUM_WORKERS:-16}"
 elif [[ "$COMPUTER" == "jupiter" ]]; then
     BATCH_SIZE="${BATCH_SIZE:-4}"
@@ -39,8 +39,8 @@ else
     NUM_WORKERS="${NUM_WORKERS:-8}"
 fi
 
-STEPS="${STEPS:-20000}"
-SAVE_FREQ="${SAVE_FREQ:-5000}"
+STEPS="${STEPS:-5000}"
+SAVE_FREQ="${SAVE_FREQ:-1000}"
 
 # ============================================================================
 # RESOLVE DATASET GROUP TO DATASET LIST OR USE SINGLE DATASET
@@ -152,7 +152,7 @@ nohup lerobot-train \
   --policy.action_mode=auto \
   --policy.max_action_dim=20 \
   --policy.device=cuda \
-  --policy.num_image_views=4 \
+  --policy.num_image_views=3 \
   --policy.freeze_vision_encoder=false \
   --policy.freeze_language_encoder=false \
   --policy.train_policy_transformer=true \
@@ -162,16 +162,12 @@ nohup lerobot-train \
   --steps="$STEPS" \
   --save_freq="$SAVE_FREQ" \
   --wandb.enable=true \
-  --rename_map='{"observation.images.top":"observation.images.camera1","observation.images.left_wrist":"observation.images.camera2", "observation.images.right":"observation.images.camera3", "observation.images.front":"observation.images.camera4"}' \
+  --rename_map='{"observation.images.top":"observation.images.image","observation.images.left_wrist":"observation.images.image2","observation.images.right_wrist":"observation.images.empty_camera_0"}' \
   > "$LOG_FILE" 2>&1 &
 
 TRAIN_PID=$!
+echo "$TRAIN_PID" > "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
 
 echo "Training started with PID: $TRAIN_PID"
 echo "Log file: $LOG_FILE"
-echo ""
-echo "To monitor training:"
-echo "  tail -f $LOG_FILE"
-echo ""
-echo "To stop training:"
-echo "  kill $TRAIN_PID"
+echo "PID file: $REPO_ROOT/outputs/logs/${JOB_NAME}.pid"

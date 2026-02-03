@@ -57,9 +57,9 @@ def resolve_groups(group_names: list[str], yaml_path: Path = None) -> list[str]:
 
 
 def format_for_bash(datasets: list[str]) -> str:
-    """Format dataset list for bash script (Python list format within quotes)."""
+    """Format dataset list for bash script (Python list format)."""
     dataset_str = ",".join(datasets)
-    return f"'[{dataset_str}]'"
+    return f"[{dataset_str}]"
 
 
 def format_for_cli(datasets: list[str]) -> str:
