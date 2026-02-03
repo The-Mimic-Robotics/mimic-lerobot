@@ -185,60 +185,19 @@ class XboxBaseController(BaseController):
             return
         
         try:
-            import time
-            
-            # Ensure pygame is fully initialized
-            if pygame.get_init():
-                pygame.quit()
             pygame.init()
-            
-            # Force re-initialization of joystick module for Bluetooth detection
-            pygame.joystick.quit()
-            time.sleep(0.2)  # Allow cleanup
             pygame.joystick.init()
             
-            # Give more time for wireless controllers to be detected (increased for Bluetooth)
-            time.sleep(1.0)
-            
-            # Retry detection a few times for wireless controllers
-            max_retries = 3
-            for attempt in range(max_retries):
-                joystick_count = pygame.joystick.get_count()
-                if joystick_count > 0:
-                    break
-                logger.info(f"Attempt {attempt + 1}/{max_retries}: No gamepad detected, retrying...")
-                time.sleep(0.5)
-            
-            if joystick_count == 0:
-                logger.error("No gamepad found after retries. Check: /proc/bus/input/devices")
+            if pygame.joystick.get_count() == 0:
+                logger.error("No gamepad found")
                 return
             
-            # Find Xbox controller (prefer by name)
-            xbox_index = -1
-            for i in range(joystick_count):
-                try:
-                    test_joy = pygame.joystick.Joystick(i)
-                    name = test_joy.get_name().lower()
-                    if 'xbox' in name or 'microsoft' in name:
-                        xbox_index = i
-                        break
-                except:
-                    continue
-            
-            # Use Xbox controller if found, otherwise use first available
-            device_index = xbox_index if xbox_index >= 0 else 0
-            self.joystick = pygame.joystick.Joystick(device_index)
+            self.joystick = pygame.joystick.Joystick(0)
             self.joystick.init()
-            
-            logger.info(f"Connected: {self.joystick.get_name()} ({self.joystick.get_numaxes()} axes, {self.joystick.get_numbuttons()} buttons)")
-        
-        if pygame.joystick.get_count() == 0:
-            logger.error("No gamepad found")
-            return
-        
-        self.joystick = pygame.joystick.Joystick(0)
-        self.joystick.init()
-        logger.info(f"Connected: {self.joystick.get_name()}")
+            logger.info(f"Connected: {self.joystick.get_name()}")
+        except Exception as e:
+            logger.error(f"Failed to connect gamepad: {e}")
+            self.joystick = None
     
     def disconnect(self) -> None:
         if self.joystick:
@@ -250,9 +209,9 @@ class XboxBaseController(BaseController):
             return 0.0, 0.0, 0.0
         
         try:
-            # Process all pending pygame events (critical for wireless controllers)
+            # Process pygame events
             for event in pygame.event.get():
-                pass  # Just process events to keep connection alive
+                pass
             
             # Check if joystick is still connected
             if not self.joystick.get_init():
@@ -260,78 +219,38 @@ class XboxBaseController(BaseController):
                 self.joystick = None
                 return 0.0, 0.0, 0.0
             
-            # Read buttons: LB=4 (enable normal speed), RB=5 (enable turbo speed)
+            # Read buttons
             enable_normal = self.joystick.get_button(self.enable_button)
             enable_turbo = self.joystick.get_button(self.enable_turbo_button)
             
-            # SAFETY: Must hold at least one enable button (either normal OR turbo)
             if not enable_normal and not enable_turbo:
                 return 0.0, 0.0, 0.0
-            
-            # Determine which speed to use: turbo if RB pressed, normal if only LB pressed
-            use_turbo = enable_turbo
             
             # Read axes
             left_x = self.joystick.get_axis(self.axis_linear_y)
             left_y = self.joystick.get_axis(self.axis_linear_x)
             right_x = self.joystick.get_axis(self.axis_angular_yaw)
             
-            # Apply deadzone - for Bluetooth, also handle -1.0 from unpressed triggers
-            def apply_deadzone(value):
-                # Skip trigger default values (-1.0)
-                if abs(value + 1.0) < 0.05:
-                    return 0.0
-                # Standard deadzone
-                if abs(value) < self.deadzone:
-                    return 0.0
-                return value
+            # Apply deadzone
+            if abs(left_x) < self.deadzone: left_x = 0.0
+            if abs(left_y) < self.deadzone: left_y = 0.0
+            if abs(right_x) < self.deadzone: right_x = 0.0
             
-            left_x = apply_deadzone(left_x)
-            left_y = apply_deadzone(left_y)
-            right_x = apply_deadzone(right_x)
-            
-            # Select speed: turbo if RB pressed, normal otherwise
+            # Select speed
+            use_turbo = enable_turbo
             linear_speed = self.max_linear_speed_turbo if use_turbo else self.max_linear_speed
             angular_speed = self.max_angular_speed_turbo if use_turbo else self.max_angular_speed
             
             # Calculate velocities
-            vx = -left_y * linear_speed  # Forward/back (axis 1)
-            vy = -left_x * linear_speed  # Strafe left/right (axis 0) - NEGATED to fix reversed direction
-            omega = -right_x * angular_speed  # Rotation (axis 3)
+            vx = -left_y * linear_speed
+            vy = -left_x * linear_speed
+            omega = -right_x * angular_speed
             
             return vx, vy, omega
         
-        # Read buttons: LB=4 (enable normal speed), RB=5 (enable turbo speed)
-        enable_normal = self.joystick.get_button(self.enable_button)
-        enable_turbo = self.joystick.get_button(self.enable_turbo_button)
-        
-        # SAFETY: Must hold at least one enable button (either normal OR turbo)
-        if not enable_normal and not enable_turbo:
+        except Exception as e:
+            logger.debug(f"Error reading gamepad: {e}")
             return 0.0, 0.0, 0.0
-        
-        # Determine which speed to use: turbo if RB pressed, normal if only LB pressed
-        use_turbo = enable_turbo
-        
-        # Read axes
-        left_x = self.joystick.get_axis(self.axis_linear_y)
-        left_y = self.joystick.get_axis(self.axis_linear_x)
-        right_x = self.joystick.get_axis(self.axis_angular_yaw)
-        
-        # Apply deadzone
-        if abs(left_x) < self.deadzone: left_x = 0.0
-        if abs(left_y) < self.deadzone: left_y = 0.0
-        if abs(right_x) < self.deadzone: right_x = 0.0
-        
-        # Select speed: turbo if RB pressed, normal otherwise
-        linear_speed = self.max_linear_speed_turbo if use_turbo else self.max_linear_speed
-        angular_speed = self.max_angular_speed_turbo if use_turbo else self.max_angular_speed
-        
-        # Calculate velocities
-        vx = -left_y * linear_speed  # Forward/back (axis 1)
-        vy = -left_x * linear_speed  # Strafe left/right (axis 0) - NEGATED to fix reversed direction
-        omega = -right_x * angular_speed  # Rotation (axis 3)
-        
-        return vx, vy, omega
     
     def is_connected(self) -> bool:
         return self.joystick is not None
