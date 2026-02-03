@@ -185,25 +185,51 @@ class XboxBaseController(BaseController):
             return
         
         try:
-            # Initialize pygame and joystick module
-            if not pygame.get_init():
-                pygame.init()
+            import time
+            
+            # Ensure pygame is fully initialized
+            if pygame.get_init():
+                pygame.quit()
+            pygame.init()
             
             # Force re-initialization of joystick module for Bluetooth detection
             pygame.joystick.quit()
+            time.sleep(0.2)  # Allow cleanup
             pygame.joystick.init()
             
-            # Give system time to detect Bluetooth controllers
-            import time
-            time.sleep(0.5)
+            # Give more time for wireless controllers to be detected (increased for Bluetooth)
+            time.sleep(1.0)
             
-            joystick_count = pygame.joystick.get_count()
+            # Retry detection a few times for wireless controllers
+            max_retries = 3
+            for attempt in range(max_retries):
+                joystick_count = pygame.joystick.get_count()
+                if joystick_count > 0:
+                    break
+                logger.info(f"Attempt {attempt + 1}/{max_retries}: No gamepad detected, retrying...")
+                time.sleep(0.5)
+            
             if joystick_count == 0:
-                logger.error("No gamepad found. Check: /proc/bus/input/devices")
+                logger.error("No gamepad found after retries. Check: /proc/bus/input/devices")
                 return
             
-            self.joystick = pygame.joystick.Joystick(0)
+            # Find Xbox controller (prefer by name)
+            xbox_index = -1
+            for i in range(joystick_count):
+                try:
+                    test_joy = pygame.joystick.Joystick(i)
+                    name = test_joy.get_name().lower()
+                    if 'xbox' in name or 'microsoft' in name:
+                        xbox_index = i
+                        break
+                except:
+                    continue
+            
+            # Use Xbox controller if found, otherwise use first available
+            device_index = xbox_index if xbox_index >= 0 else 0
+            self.joystick = pygame.joystick.Joystick(device_index)
             self.joystick.init()
+            
             logger.info(f"Connected: {self.joystick.get_name()} ({self.joystick.get_numaxes()} axes, {self.joystick.get_numbuttons()} buttons)")
         
         except Exception as e:
@@ -220,7 +246,9 @@ class XboxBaseController(BaseController):
             return 0.0, 0.0, 0.0
         
         try:
-            pygame.event.pump()
+            # Process all pending pygame events (critical for wireless controllers)
+            for event in pygame.event.get():
+                pass  # Just process events to keep connection alive
             
             # Check if joystick is still connected
             if not self.joystick.get_init():
