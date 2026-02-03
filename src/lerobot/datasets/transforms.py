@@ -179,6 +179,9 @@ class ImageTransformsConfig:
     # By default, transforms are applied in Torchvision's suggested order (shown below).
     # Set this to True to apply them in a random order.
     random_order: bool = False
+    # Resize all images to this size (height, width) before other transforms. Set to None to disable.
+    # This is applied ALWAYS (not randomly) to ensure consistent tensor sizes for batching.
+    resize: tuple[int, int] | None = None
     tfs: dict[str, ImageTransformConfig] = field(
         default_factory=lambda: {
             "brightness": ImageTransformConfig(
@@ -235,6 +238,12 @@ class ImageTransforms(Transform):
         super().__init__()
         self._cfg = cfg
 
+        # Mandatory resize transform (always applied first if specified)
+        if cfg.resize is not None:
+            self.resize_tf = v2.Resize(cfg.resize, antialias=True)
+        else:
+            self.resize_tf = None
+
         self.weights = []
         self.transforms = {}
         for tf_name, tf_cfg in cfg.tfs.items():
@@ -256,4 +265,8 @@ class ImageTransforms(Transform):
             )
 
     def forward(self, *inputs: Any) -> Any:
+        # Apply mandatory resize first (if configured)
+        if self.resize_tf is not None:
+            inputs = self.resize_tf(*inputs) if len(inputs) > 1 else (self.resize_tf(inputs[0]),)
+        # Then apply random augmentation transforms
         return self.tf(*inputs)
