@@ -37,7 +37,14 @@ def cfg_to_group(cfg: TrainPipelineConfig, return_list: bool = False) -> list[st
         if isinstance(cfg.dataset.repo_id, list):
             lst.append(f"dataset:multi-dataset-{len(cfg.dataset.repo_id)}")
         else:
-            lst.append(f"dataset:{cfg.dataset.repo_id}")
+            # Shorten single dataset name to avoid W&B tag limit (max 64 chars)
+            # Extract just the dataset name (after the last /)
+            dataset_name = cfg.dataset.repo_id.split('/')[-1]
+            # Account for "dataset:" prefix (9 chars), max total is 64, so dataset_name max is 55
+            max_dataset_name_len = 55
+            if len(dataset_name) > max_dataset_name_len:
+                dataset_name = dataset_name[:max_dataset_name_len-3] + "..."
+            lst.append(f"dataset:{dataset_name}")
     if cfg.env is not None:
         lst.append(f"env:{cfg.env.type}")
     return lst if return_list else "-".join(lst)

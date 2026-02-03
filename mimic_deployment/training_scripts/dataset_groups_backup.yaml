@@ -1,0 +1,154 @@
+# Dataset Grouping Configuration for Mimic Robot Training
+# All datasets are in v3.0 format (15D action space, 4 cameras: right_wrist, left_wrist, front, top)
+
+groups:
+  # All available datasets (27 total)
+  all_datasets:
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v2
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v6
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v7
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v2
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3
+    - neryotw/bimanual_blue_block_handover_1_drift
+    - neryotw/bimanual_blue_block_handover_2_drift
+    - neryotw/bimanual_blue_block_handover_3_drift
+    - neryotw/bimanual_blue_block_handover_4_drift
+    - neryotw/bimanual_blue_block_handover_5_drift
+    - neryotw/bimanual_blue_block_handover_6_drift
+    - neryotw/bimanual_blue_block_handover_7_drift
+    - neryotw/bimanual_blue_block_handover_14_drift
+    - neryotw/bimanual_blue_block_handover_15_drift
+    - neryotw/bimanual_blue_block_handover_16_drift
+    - neryotw/bimanual_blue_block_handover_17_drift
+    - neryotw/bimanual_blue_block_handover_18_drift
+    - neryotw/bimanual_blue_block_handover_19_drift
+    - neryotw/bimanual_blue_block_handover_20_drift
+    - neryotw/bimanual_blue_block_handover_21_drift
+    - neryotw/bimanual_blue_block_handover_22_drift
+    - neryotw/bimanual_blue_block_handover_23_drift
+    - neryotw/bimanual_blue_block_handover_24_drift
+    - neryotw/bimanual_blue_block_handover_25_drift
+    - neryotw/bimanual_blue_block_handover_26_drift
+    - neryotw/mimic_mobile_bimanual_drift_v2_drift
+
+  # Displacement-to-handover tasks with mobile base (6-7 datasets)
+  displacement_only:
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v2
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v6
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v7
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v2
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3
+    # - neryotw/mimic_mobile_bimanual_drift_v2_drift
+
+  # Drift-corrected converted datasets (20 datasets)
+  drift_only:
+    - neryotw/bimanual_blue_block_handover_1_drift
+    - neryotw/bimanual_blue_block_handover_2_drift
+    - neryotw/bimanual_blue_block_handover_3_drift
+    - neryotw/bimanual_blue_block_handover_4_drift
+    - neryotw/bimanual_blue_block_handover_5_drift
+    - neryotw/bimanual_blue_block_handover_6_drift
+    - neryotw/bimanual_blue_block_handover_7_drift
+    - neryotw/bimanual_blue_block_handover_14_drift
+    - neryotw/bimanual_blue_block_handover_15_drift
+    - neryotw/bimanual_blue_block_handover_16_drift
+    - neryotw/bimanual_blue_block_handover_17_drift
+    - neryotw/bimanual_blue_block_handover_18_drift
+    - neryotw/bimanual_blue_block_handover_19_drift
+    - neryotw/bimanual_blue_block_handover_20_drift
+    - neryotw/bimanual_blue_block_handover_21_drift
+    - neryotw/bimanual_blue_block_handover_22_drift
+    - neryotw/bimanual_blue_block_handover_23_drift
+    - neryotw/bimanual_blue_block_handover_24_drift
+    - neryotw/bimanual_blue_block_handover_25_drift
+    - neryotw/bimanual_blue_block_handover_26_drift
+
+  # High quality datasets with new hands and drift correction
+  high_quality:
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v2
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3
+    # - neryotw/mimic_mobile_bimanual_drift_v2_drift
+    - neryotw/bimanual_blue_block_handover_14_drift
+    - neryotw/bimanual_blue_block_handover_15_drift
+    - neryotw/bimanual_blue_block_handover_16_drift
+    - neryotw/bimanual_blue_block_handover_17_drift
+    - neryotw/bimanual_blue_block_handover_18_drift
+    - neryotw/bimanual_blue_block_handover_19_drift
+    - neryotw/bimanual_blue_block_handover_20_drift
+    - neryotw/bimanual_blue_block_handover_21_drift
+    - neryotw/bimanual_blue_block_handover_22_drift
+    - neryotw/bimanual_blue_block_handover_23_drift
+    - neryotw/bimanual_blue_block_handover_24_drift
+    - neryotw/bimanual_blue_block_handover_25_drift
+    - neryotw/bimanual_blue_block_handover_26_drift
+
+  # Stationary bimanual datasets (drift-corrected versions of old stationary recordings)
+  stationary:
+    - neryotw/bimanual_blue_block_handover_1_drift
+    - neryotw/bimanual_blue_block_handover_2_drift
+    - neryotw/bimanual_blue_block_handover_3_drift
+    - neryotw/bimanual_blue_block_handover_4_drift
+    - neryotw/bimanual_blue_block_handover_5_drift
+    - neryotw/bimanual_blue_block_handover_6_drift
+    - neryotw/bimanual_blue_block_handover_7_drift
+    - neryotw/bimanual_blue_block_handover_14_drift
+    - neryotw/bimanual_blue_block_handover_15_drift
+    - neryotw/bimanual_blue_block_handover_16_drift
+    - neryotw/bimanual_blue_block_handover_17_drift
+    - neryotw/bimanual_blue_block_handover_18_drift
+    - neryotw/bimanual_blue_block_handover_19_drift
+    - neryotw/bimanual_blue_block_handover_20_drift
+    - neryotw/bimanual_blue_block_handover_21_drift
+    - neryotw/bimanual_blue_block_handover_22_drift
+    - neryotw/bimanual_blue_block_handover_23_drift
+    - neryotw/bimanual_blue_block_handover_24_drift
+    - neryotw/bimanual_blue_block_handover_25_drift
+    - neryotw/bimanual_blue_block_handover_26_drift
+
+  # Most recent datasets (latest recordings with best quality)
+  most_recent:
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v2
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3
+    - neryotw/bimanual_blue_block_handover_20_drift
+    - neryotw/bimanual_blue_block_handover_21_drift
+    - neryotw/bimanual_blue_block_handover_22_drift
+    - neryotw/bimanual_blue_block_handover_23_drift
+    - neryotw/bimanual_blue_block_handover_24_drift
+    - neryotw/bimanual_blue_block_handover_25_drift
+    - neryotw/bimanual_blue_block_handover_26_drift
+
+  # Datasets recorded with new hands (better gripper control)
+  new_hands:
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v2
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3
+
+  # Datasets recorded with old hands
+  old_hands:
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v2
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v6
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v7
+    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8
+    - neryotw/bimanual_blue_block_handover_1_drift
+    - neryotw/bimanual_blue_block_handover_2_drift
+    - neryotw/bimanual_blue_block_handover_3_drift
+    - neryotw/bimanual_blue_block_handover_4_drift
+    - neryotw/bimanual_blue_block_handover_5_drift
+    - neryotw/bimanual_blue_block_handover_6_drift
+    - neryotw/bimanual_blue_block_handover_7_drift
+    - neryotw/bimanual_blue_block_handover_14_drift
+    - neryotw/bimanual_blue_block_handover_15_drift
+    - neryotw/bimanual_blue_block_handover_16_drift
+    - neryotw/bimanual_blue_block_handover_17_drift
+    - neryotw/bimanual_blue_block_handover_18_drift
+    - neryotw/bimanual_blue_block_handover_19_drift
+    - neryotw/bimanual_blue_block_handover_20_drift
+    - neryotw/bimanual_blue_block_handover_21_drift
+    - neryotw/bimanual_blue_block_handover_22_drift
+    - neryotw/bimanual_blue_block_handover_23_drift
+    - neryotw/bimanual_blue_block_handover_24_drift
+    - neryotw/bimanual_blue_block_handover_25_drift
+    - neryotw/bimanual_blue_block_handover_26_drift
+    - neryotw/mimic_mobile_bimanual_drift_v2_drift

@@ -244,10 +244,19 @@ class XboxBaseController(BaseController):
             left_y = self.joystick.get_axis(self.axis_linear_x)
             right_x = self.joystick.get_axis(self.axis_angular_yaw)
             
-            # Apply deadzone
-            if abs(left_x) < self.deadzone: left_x = 0.0
-            if abs(left_y) < self.deadzone: left_y = 0.0
-            if abs(right_x) < self.deadzone: right_x = 0.0
+            # Apply deadzone - for Bluetooth, also handle -1.0 from unpressed triggers
+            def apply_deadzone(value):
+                # Skip trigger default values (-1.0)
+                if abs(value + 1.0) < 0.05:
+                    return 0.0
+                # Standard deadzone
+                if abs(value) < self.deadzone:
+                    return 0.0
+                return value
+            
+            left_x = apply_deadzone(left_x)
+            left_y = apply_deadzone(left_y)
+            right_x = apply_deadzone(right_x)
             
             # Select speed: turbo if RB pressed, normal otherwise
             linear_speed = self.max_linear_speed_turbo if use_turbo else self.max_linear_speed
