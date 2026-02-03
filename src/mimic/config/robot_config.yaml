@@ -62,7 +62,7 @@ teleop:
   right_arm_port: /dev/arm_right_leader
   
   # Base Control Mode
-  base_control_mode: xbox  # Options: keyboard, xbox, joystick
+  base_control_mode: keyboard  # Options: keyboard, xbox, joystick
 
 # Dataset Configuration
 dataset: 

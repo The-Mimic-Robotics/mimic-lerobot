@@ -88,7 +88,7 @@ rm "$TEMP_CONFIG"
 NUM_EPISODES=10
 TASK="Navigate to table. Pick up blue block with closest arm. Transfer mid-air to opposite arm. Place in target area."
 EVAL_DATASET="Mimic-Robotics/eval_act_multi_dataset_new_hands"
-MODEL_PATH="outputs/train/act_multi_dataset_new_hands/checkpoints/last/pretrained_model"
+MODEL_PATH="outputs/train/act_multi_dataset_new_hands/checkpoints/020000/pretrained_model"
 
 # Clean up existing dataset cache to avoid conflicts
 CACHE_DIR="$HOME/.cache/huggingface/lerobot/$EVAL_DATASET"
