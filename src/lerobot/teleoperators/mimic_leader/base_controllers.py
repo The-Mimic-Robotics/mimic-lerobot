@@ -184,16 +184,20 @@ class XboxBaseController(BaseController):
         if not PYGAME_AVAILABLE:
             return
         
-        pygame.init()
-        pygame.joystick.init()
-        
-        if pygame.joystick.get_count() == 0:
-            logger.error("No gamepad found")
-            return
-        
-        self.joystick = pygame.joystick.Joystick(0)
-        self.joystick.init()
-        logger.info(f"Connected: {self.joystick.get_name()}")
+        try:
+            pygame.init()
+            pygame.joystick.init()
+            
+            if pygame.joystick.get_count() == 0:
+                logger.error("No gamepad found")
+                return
+            
+            self.joystick = pygame.joystick.Joystick(0)
+            self.joystick.init()
+            logger.info(f"Connected: {self.joystick.get_name()}")
+        except Exception as e:
+            logger.error(f"Failed to connect gamepad: {e}")
+            self.joystick = None
     
     def disconnect(self) -> None:
         if self.joystick:
@@ -204,39 +208,49 @@ class XboxBaseController(BaseController):
         if not self.joystick:
             return 0.0, 0.0, 0.0
         
-        pygame.event.pump()
+        try:
+            # Process pygame events
+            for event in pygame.event.get():
+                pass
+            
+            # Check if joystick is still connected
+            if not self.joystick.get_init():
+                logger.warning("Gamepad disconnected")
+                self.joystick = None
+                return 0.0, 0.0, 0.0
+            
+            # Read buttons
+            enable_normal = self.joystick.get_button(self.enable_button)
+            enable_turbo = self.joystick.get_button(self.enable_turbo_button)
+            
+            if not enable_normal and not enable_turbo:
+                return 0.0, 0.0, 0.0
+            
+            # Read axes
+            left_x = self.joystick.get_axis(self.axis_linear_y)
+            left_y = self.joystick.get_axis(self.axis_linear_x)
+            right_x = self.joystick.get_axis(self.axis_angular_yaw)
+            
+            # Apply deadzone
+            if abs(left_x) < self.deadzone: left_x = 0.0
+            if abs(left_y) < self.deadzone: left_y = 0.0
+            if abs(right_x) < self.deadzone: right_x = 0.0
+            
+            # Select speed
+            use_turbo = enable_turbo
+            linear_speed = self.max_linear_speed_turbo if use_turbo else self.max_linear_speed
+            angular_speed = self.max_angular_speed_turbo if use_turbo else self.max_angular_speed
+            
+            # Calculate velocities
+            vx = -left_y * linear_speed
+            vy = -left_x * linear_speed
+            omega = -right_x * angular_speed
+            
+            return vx, vy, omega
         
-        # Read buttons: LB=4 (enable normal speed), RB=5 (enable turbo speed)
-        enable_normal = self.joystick.get_button(self.enable_button)
-        enable_turbo = self.joystick.get_button(self.enable_turbo_button)
-        
-        # SAFETY: Must hold at least one enable button (either normal OR turbo)
-        if not enable_normal and not enable_turbo:
+        except Exception as e:
+            logger.debug(f"Error reading gamepad: {e}")
             return 0.0, 0.0, 0.0
-        
-        # Determine which speed to use: turbo if RB pressed, normal if only LB pressed
-        use_turbo = enable_turbo
-        
-        # Read axes
-        left_x = self.joystick.get_axis(self.axis_linear_y)
-        left_y = self.joystick.get_axis(self.axis_linear_x)
-        right_x = self.joystick.get_axis(self.axis_angular_yaw)
-        
-        # Apply deadzone
-        if abs(left_x) < self.deadzone: left_x = 0.0
-        if abs(left_y) < self.deadzone: left_y = 0.0
-        if abs(right_x) < self.deadzone: right_x = 0.0
-        
-        # Select speed: turbo if RB pressed, normal otherwise
-        linear_speed = self.max_linear_speed_turbo if use_turbo else self.max_linear_speed
-        angular_speed = self.max_angular_speed_turbo if use_turbo else self.max_angular_speed
-        
-        # Calculate velocities
-        vx = -left_y * linear_speed  # Forward/back (axis 1)
-        vy = -left_x * linear_speed  # Strafe left/right (axis 0) - NEGATED to fix reversed direction
-        omega = -right_x * angular_speed  # Rotation (axis 3)
-        
-        return vx, vy, omega
     
     def is_connected(self) -> bool:
         return self.joystick is not None
