@@ -136,6 +136,14 @@ while [[ $# -gt 0 ]]; do
             STEPS="$2"
             shift 2
             ;;
+        --action-steps)
+            ACTION_STEPS="$2"
+            shift 2
+            ;;
+        --chunk-size)
+            CHUNK_SIZE="$2"
+            shift 2
+            ;;
         --push-to-hub)
             PUSH_TO_HUB=true
             shift
@@ -308,6 +316,8 @@ export COMPUTER="$COMPUTER"
 [ -n "$BATCH_SIZE" ] && export BATCH_SIZE="$BATCH_SIZE"
 [ -n "$NUM_WORKERS" ] && export NUM_WORKERS="$NUM_WORKERS"
 [ -n "$STEPS" ] && export STEPS="$STEPS"
+[ -n "$ACTION_STEPS" ] && export ACTION_STEPS="$ACTION_STEPS"
+[ -n "$CHUNK_SIZE" ] && export CHUNK_SIZE="$CHUNK_SIZE"
 
 # Train on each group sequentially
 if [ -n "$DATASET_GROUPS" ]; then

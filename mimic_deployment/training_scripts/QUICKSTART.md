@@ -1,7 +1,7 @@
 # Quick Start Guide - Mimic Robot Training (Multi-Group + Auto-Upload)
 
 ## 🎯 Training in 60 Seconds
-
+hf upload Mimic-Robotics/act_odin_red_x_handover_20k outputs/train/act_odin_red_x_handover_and_place_center/checkpoints/020000
 ### Step 1: Choose Your Setup
 ```bash
 # List available dataset groups
@@ -215,3 +215,52 @@ For comprehensive documentation, see:
 ---
 
 **Ready to train? Pick a command above and get started! 🚀**
+
+
+
+
+#custom ACT
+
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy act,pi05,groot,pi0,wall_oss \
+  --dataset-group red_x_handover_and_place_tictactoe_v8 \
+  --batch-size 10 \
+  --action-steps 30 \
+  --chunk-size 100 
+
+
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy act,pi05,groot,pi0,wall_oss \
+  --dataset-group red_x_handover_and_place_tictactoe_v8 \
+  --batch-size 10 \
+  --action-steps 30 \
+  --chunk-size 100 
+
+
+
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy pi05,groot,pi0,wall_oss \
+  --dataset-group red_x_handover_and_place_tictactoe_v8
+
+
+
+  ./mimic_deployment/training_scripts/train_manager.sh \
+  --policy act,pi05,groot,pi0,wall_oss \
+  --dataset-group red_x_handover_and_place_tictactoe_slower \
+  --batch-size 10 
+
+
+  -> action step should be the number of action which it moves from and the 
+  chunk size is teh number generate to predict future
+
+
+  hf upload Mimic-Robotics/act_odin_red_x_handover_10action_20k outputs/train/act_odin_red_x_handover_and_place_tictactoe_v4/checkpoints/020000/pretrained_model
+
+
+
+hf upload Mimic-Robotics/act_odin_red_x_30a_20k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/020000/pretrained_model
+hf upload Mimic-Robotics/act_odin_red_x_30a_40k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/040000/pretrained_model
+hf upload Mimic-Robotics/act_odin_red_x_30a_60k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/060000/pretrained_model
+hf upload Mimic-Robotics/act_odin_red_x_30a_80k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/080000/pretrained_model
+
+

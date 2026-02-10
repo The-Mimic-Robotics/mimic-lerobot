@@ -31,14 +31,79 @@ groups:
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v4
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v5
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v6
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v7
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v8
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v9
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v10
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v11
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v12
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v13
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v14
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v15
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v16
+
+  red_x_handover_and_place_tictactoe_v8:
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v2
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v3
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v4
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v5
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v6
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v8
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v9
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v11
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v12
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v13
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v14
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v15
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v16
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topleft_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topleft_v2
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v2
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v3
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v4
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomleft_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomleft_v2
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomright_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomright_v2 # - Mimic-Robotics/mimic_tictactoe_red_x_handover_topmiddle_v2
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topmiddle_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v3
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v4
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v2
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v3
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v4
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v2
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v2
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v1
+
+
+
+
+  red_x_handover_and_place_tictactoe_slower:
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v2
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v3
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v4
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v5
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v6
+    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v8
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topmiddle_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v3
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v4
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v2
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v3
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v4
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v2
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v2
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v1
+
+
+    
+    
+
+
+
 

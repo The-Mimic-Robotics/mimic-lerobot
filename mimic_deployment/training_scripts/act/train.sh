@@ -39,8 +39,11 @@ else
     NUM_WORKERS="${NUM_WORKERS:-8}"
 fi
 
-STEPS="${STEPS:-30000}"
+STEPS="${STEPS:-100000}"
 SAVE_FREQ="${SAVE_FREQ:-10000}"
+# Reaction Time (Default 100 = 3.3s blind execution. Set to 10 for 0.3s reaction)
+ACTION_STEPS="${ACTION_STEPS:-100}" 
+CHUNK_SIZE="${CHUNK_SIZE:-100}"
 
 # ============================================================================
 # RESOLVE DATASET GROUP TO DATASET LIST OR USE SINGLE DATASET
@@ -143,6 +146,8 @@ nohup lerobot-train \
   --policy.type="$POLICY_TYPE" \
   --policy.repo_id="$REPO_ID" \
   --policy.device=cuda \
+  --policy.n_action_steps="$ACTION_STEPS" \
+  --policy.chunk_size="$CHUNK_SIZE" \
   --batch_size="$BATCH_SIZE" \
   --num_workers="$NUM_WORKERS" \
   --steps="$STEPS" \
