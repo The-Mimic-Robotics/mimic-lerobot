@@ -10,7 +10,7 @@ set -e
 
 POLICY_TYPE="xvla"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 CONFIG_FILE="$REPO_ROOT/src/mimic/config/robot_config.yaml"
 
 # ============================================================================
@@ -34,6 +34,8 @@ fi
 echo "Parsing robot configuration from $CONFIG_FILE"
 
 # Parse YAML and extract robot configuration
+# Map camera names to match what the model expects:
+# head -> image, wrist_left -> image2, wrist_right -> empty_camera_0
 TEMP_CONFIG=$(mktemp)
 python3 << PYEOF > "$TEMP_CONFIG"
 import yaml
@@ -43,7 +45,20 @@ with open('$CONFIG_FILE', 'r') as f:
     config = yaml.safe_load(f)
 
 robot = config['robot']
-cameras_json = json.dumps(robot['cameras'])
+
+# Rename cameras to match model's expected names
+cameras = {}
+camera_mapping = {
+    'head': 'image',
+    'wrist_left': 'image2',
+    'wrist_right': 'empty_camera_0'
+}
+
+for old_name, cam_config in robot['cameras'].items():
+    new_name = camera_mapping.get(old_name, old_name)
+    cameras[new_name] = cam_config
+
+cameras_json = json.dumps(cameras)
 
 print(f'ROBOT_TYPE="{robot["type"]}"')
 print(f'ROBOT_ID="{robot["id"]}"')
@@ -74,6 +89,11 @@ echo "=========================================="
 echo ""
 
 cd "$REPO_ROOT"
+
+# Camera rename mapping to match model's expected names (combining both remappings from training)
+# Robot cameras: head, wrist_left, wrist_right
+# Model expects: image, image2, empty_camera_0
+# Direct mapping: head->image, wrist_left->image2, wrist_right->empty_camera_0
 
 lerobot-record \
   --robot.type="$ROBOT_TYPE" \

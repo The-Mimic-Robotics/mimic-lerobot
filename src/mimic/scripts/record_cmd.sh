@@ -11,12 +11,12 @@ lerobot-record \
   --teleop.right_arm_port=/dev/arm_right_leader \
   --teleop.base_control_mode=keyboard \
   --teleop.id=mimic_leader \
-  --dataset.repo_id=Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3 \
-  --dataset.single_task="Navigate to the front of the table and perform bimanual blue block handover" \
+  --dataset.repo_id=Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v1 \
+  --dataset.single_task="pick red x handover place center" \
   --dataset.num_episodes=20 \
   --dataset.episode_time_s=180 \
-  --dataset.reset_time_s=7 \
+  --dataset.reset_time_s=10 \
   --dataset.video=true \
   --dataset.fps=30 \
   --dataset.push_to_hub=true \
-  --display_data=true
+  --display_data=false
