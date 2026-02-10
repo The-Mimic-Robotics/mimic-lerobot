@@ -239,15 +239,16 @@ For comprehensive documentation, see:
 
 
 ./mimic_deployment/training_scripts/train_manager.sh \
-  --policy pi05,groot,pi0,wall_oss \
-  --dataset-group red_x_handover_and_place_tictactoe_v8
+  --policy pi0 \
+  --dataset-group red_x_handover_and_place_tictactoe_v1 \
+  --batch-size 8 \
+  --noback
 
 
 
   ./mimic_deployment/training_scripts/train_manager.sh \
   --policy act,pi05,groot,pi0,wall_oss \
-  --dataset-group red_x_handover_and_place_tictactoe_slower \
-  --batch-size 10 
+  --dataset-group red_x_handover_and_place_tictactoe_slower 
 
 
   -> action step should be the number of action which it moves from and the 
