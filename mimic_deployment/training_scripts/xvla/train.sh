@@ -41,6 +41,8 @@ fi
 
 STEPS="${STEPS:-5000}"
 SAVE_FREQ="${SAVE_FREQ:-1000}"
+ACTION_STEPS="${ACTION_STEPS:-32}" 
+CHUNK_SIZE="${CHUNK_SIZE:-32}"
 
 # ============================================================================
 # RESOLVE DATASET GROUP TO DATASET LIST OR USE SINGLE DATASET
@@ -157,6 +159,8 @@ nohup lerobot-train \
   --policy.freeze_language_encoder=false \
   --policy.train_policy_transformer=true \
   --policy.train_soft_prompts=true \
+  --policy.n_action_steps="$ACTION_STEPS" \
+  --policy.chunk_size="$CHUNK_SIZE" \
   --batch_size="$BATCH_SIZE" \
   --num_workers="$NUM_WORKERS" \
   --steps="$STEPS" \

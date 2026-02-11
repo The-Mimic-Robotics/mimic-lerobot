@@ -218,7 +218,6 @@ For comprehensive documentation, see:
 
 
 
-
 #custom ACT
 
 ./mimic_deployment/training_scripts/train_manager.sh \
@@ -229,19 +228,15 @@ For comprehensive documentation, see:
   --chunk-size 100 
 
 
-./mimic_deployment/training_scripts/train_manager.sh \
-  --policy act,pi05,groot,pi0,wall_oss \
-  --dataset-group red_x_handover_and_place_tictactoe_v8 \
-  --batch-size 10 \
-  --action-steps 30 \
-  --chunk-size 100 
 
-
+--------------------------------------------------------pi0
 
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy pi0 \
-  --dataset-group red_x_handover_and_place_tictactoe_v1 \
-  --batch-size 8 \
+  --dataset-group red_x_handover_and_place_tictactoe \
+  --batch-size 24 \
+  --action-steps 50 \
+  --chunk-size 50 \
   --noback
 
 

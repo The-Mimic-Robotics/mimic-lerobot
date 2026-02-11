@@ -43,6 +43,8 @@ fi
 
 STEPS="${STEPS:-3000}"
 SAVE_FREQ="${SAVE_FREQ:-1000}"
+ACTION_STEPS="${ACTION_STEPS:-50}" 
+CHUNK_SIZE="${CHUNK_SIZE:-50}"
 
 # ============================================================================
 # RESOLVE DATASET GROUP TO DATASET LIST OR USE SINGLE DATASET
@@ -192,19 +194,18 @@ cd "$REPO_ROOT"
 CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
   --policy.type=pi0 \
+  --policy.pretrained_path=lerobot/pi0_base \
   --policy.paligemma_variant="gemma_2b" \
   --policy.action_expert_variant="gemma_300m" \
   --policy.repo_id="$REPO_ID" \
   --policy.compile_model=false \
+  --policy.n_action_steps="$ACTION_STEPS" \
+  --policy.chunk_size="$CHUNK_SIZE" \
   --policy.gradient_checkpointing=true \
   --policy.dtype=bfloat16 \
   --policy.freeze_vision_encoder=false \
   --policy.train_expert_only=false \
-  --policy.use_peft=true \
-  --policy.peft_config.r=32 \
-  --policy.peft_config.lora_alpha=64 \
-  --policy.peft_config.lora_dropout=0.1 \
-  --policy.peft_config.target_modules=["q_proj","v_proj","k_proj","o_proj","gate_proj","up_proj","down_proj"] \
+  --peft.r=32 \
   --policy.device=cuda \
   --dataset.image_transforms.enable=false \
   --batch_size="$BATCH_SIZE" \
