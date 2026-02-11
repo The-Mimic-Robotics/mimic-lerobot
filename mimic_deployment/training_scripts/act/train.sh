@@ -40,7 +40,7 @@ else
 fi
 
 STEPS="${STEPS:-100000}"
-SAVE_FREQ="${SAVE_FREQ:-10000}"
+SAVE_FREQ="${SAVE_FREQ:-20000}"
 # Reaction Time (Default 100 = 3.3s blind execution. Set to 10 for 0.3s reaction)
 ACTION_STEPS="${ACTION_STEPS:-100}" 
 CHUNK_SIZE="${CHUNK_SIZE:-100}"
@@ -93,7 +93,11 @@ echo "Datasets: $DATASET_REPO_IDS"
 DATASET_NAME_CLEAN=$(echo "$DATASET_NAME_FOR_JOB" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
 
 # Auto-generate job name and output directory
-JOB_NAME="${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}"
+# Only generate a new name if one wasn't passed from the manager
+if [ -z "$JOB_NAME" ]; then
+    JOB_NAME="${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}"
+fi
+
 OUTPUT_DIR="$REPO_ROOT/outputs/train/${JOB_NAME}"
 LOG_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.log"
 
@@ -141,6 +145,7 @@ echo ""
 
 cd "$REPO_ROOT"
 
+# Note: Filtered out front camera to save VRAM and using gradient accumulation
 nohup lerobot-train \
   --dataset.repo_id="$DATASET_REPO_IDS" \
   --policy.type="$POLICY_TYPE" \
@@ -155,6 +160,8 @@ nohup lerobot-train \
   --output_dir="$OUTPUT_DIR" \
   --job_name="$JOB_NAME" \
   --wandb.enable=true \
+  --optimizer.lr=2e-5 \
+  --policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}}' \
   --dataset.video_backend=pyav \
   --wandb.notes="$WANDB_NOTES" \
   > "$LOG_FILE" 2>&1 &

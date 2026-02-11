@@ -243,10 +243,12 @@ For comprehensive documentation, see:
 
   ./mimic_deployment/training_scripts/train_manager.sh \
   --policy act \
-  --dataset-group red_x_handover_and_place_tictactoe_v6 \
+  --dataset-group red_x_handover_and_place_tictactoe \
   --batch-size 5 \
   --action-steps 50 \
-  --chunk-size 50 
+  --chunk-size 50 \
+  --steps 500000 \
+  --noback
 
 
   -> action step should be the number of action which it moves from and the 
