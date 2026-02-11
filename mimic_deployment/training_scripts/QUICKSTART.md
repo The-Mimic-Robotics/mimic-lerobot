@@ -262,6 +262,15 @@ For comprehensive documentation, see:
 
 
 
+
+
+  ./mimic_deployment/training_scripts/train_manager.sh \
+  --policy smolvla \
+  --dataset-group red_x_handover_and_place_tictactoe \
+  --batch-size 32 \
+  --noback
+
+
   -> action step should be the number of action which it moves from and the 
   chunk size is teh number generate to predict future
 
