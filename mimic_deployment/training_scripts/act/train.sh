@@ -4,8 +4,15 @@
 
 set -e
 
+
+# Add this after the CONFIGURATION section in your script
+export ACCELERATE_MIXED_PRECISION="fp16"
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 # ============================================================================
 # CONFIGURATION
+
+
+# --policy.use_language_conditioning=true (Or --policy.use_text_conditioning=true
 # ============================================================================
 
 POLICY_TYPE="act"
@@ -146,6 +153,7 @@ echo ""
 cd "$REPO_ROOT"
 
 # Note: Filtered out front camera to save VRAM and using gradient accumulation
+#--optimizer.gradient_accumulation_steps=
 nohup lerobot-train \
   --dataset.repo_id="$DATASET_REPO_IDS" \
   --policy.type="$POLICY_TYPE" \

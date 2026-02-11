@@ -244,11 +244,22 @@ For comprehensive documentation, see:
   ./mimic_deployment/training_scripts/train_manager.sh \
   --policy act \
   --dataset-group red_x_handover_and_place_tictactoe \
-  --batch-size 5 \
+  --batch-size 14 \
   --action-steps 50 \
   --chunk-size 50 \
-  --steps 500000 \
-  --noback
+  --steps 500000 
+
+
+
+
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy act \
+  --dataset-group red_x_handover_and_place_tictactoe \
+  --batch-size 20 \
+  --action-steps 50 \
+  --chunk-size 50 \
+  --steps 200000 
+
 
 
   -> action step should be the number of action which it moves from and the 
@@ -265,3 +276,4 @@ hf upload Mimic-Robotics/act_odin_red_x_30a_60k  outputs/train/act_odin_red_x_ha
 hf upload Mimic-Robotics/act_odin_red_x_30a_80k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/080000/pretrained_model
 
 
+hf upload Mimic-Robotics/act_augusto_red_x_50a_14b_100k  outputs/train/act_
