@@ -40,7 +40,7 @@ groups:
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v15
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v16
 
-  red_x_handover_and_place_tictactoe_v6:
+  red_x_handover_and_place_tictactoe:
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v2
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v3
     - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v4

@@ -4,6 +4,8 @@
 
 set -e
 
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
@@ -41,6 +43,8 @@ fi
 
 STEPS="${STEPS:-3000}"
 SAVE_FREQ="${SAVE_FREQ:-1000}"
+ACTION_STEPS="${ACTION_STEPS:-50}" 
+CHUNK_SIZE="${CHUNK_SIZE:-50}"
 
 # ============================================================================
 # RESOLVE DATASET GROUP TO DATASET LIST OR USE SINGLE DATASET
@@ -90,7 +94,10 @@ echo "Datasets: $DATASET_REPO_IDS"
 DATASET_NAME_CLEAN=$(echo "$DATASET_NAME_FOR_JOB" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
 
 # Auto-generate job name and output directory
-JOB_NAME="${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}"
+# Only generate a new name if one wasn't passed from the manager
+if [ -z "$JOB_NAME" ]; then
+    JOB_NAME="${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}"
+fi
 OUTPUT_DIR="$REPO_ROOT/outputs/train/${JOB_NAME}"
 LOG_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.log"
 
@@ -140,32 +147,102 @@ echo ""
 
 cd "$REPO_ROOT"
 
-nohup python src/lerobot/scripts/lerobot_train.py \
+
+#pi0_base -> 2b, --policy.compile_model=true -> default
+
+# nohup python src/lerobot/scripts/lerobot_train.py \
+#   --dataset.repo_id="$DATASET_REPO_IDS" \
+#   --policy.type=pi0 \
+#   --policy.pretrained_path=lerobot/pi0_base \
+#   --policy.paligemma_variant="gemma_2b" \
+#   --policy.action_expert_variant="gemma_300m" \
+#   --policy.repo_id="$REPO_ID" \
+#   --policy.compile_model=true \
+#   --policy.gradient_checkpointing=true \
+#   --policy.dtype=bfloat16 \
+#   --policy.freeze_vision_encoder=false \
+#   --policy.train_expert_only=false \
+#   --policy.device=cuda \
+#   --dataset.image_transforms.enable=false \
+#   --batch_size="$BATCH_SIZE" \
+#   --num_workers="$NUM_WORKERS" \
+#   --steps="$STEPS" \
+#   --save_freq="$SAVE_FREQ" \
+#   --output_dir="$OUTPUT_DIR" \
+#   --job_name="$JOB_NAME" \
+#   --wandb.enable=true \
+#   > "$LOG_FILE" 2>&1 &
+
+# TRAIN_PID=$!
+# echo "$TRAIN_PID" > "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+
+# echo "Training started with PID: $TRAIN_PID"
+# echo "Log file: $LOG_FILE"
+# echo "PID file: $REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+# echo ""
+# echo "To stop training:"
+# echo "  kill $TRAIN_PID"
+
+
+
+# ============================================================================
+# EXECUTION LOGIC (FOREGROUND VS BACKGROUND)
+# ============================================================================
+
+
+# common arguments for both modes
+CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
   --policy.type=pi0 \
   --policy.pretrained_path=lerobot/pi0_base \
+  --policy.paligemma_variant="gemma_2b" \
+  --policy.action_expert_variant="gemma_300m" \
   --policy.repo_id="$REPO_ID" \
-  --policy.compile_model=true \
+  --policy.compile_model=false \
+  --policy.n_action_steps="$ACTION_STEPS" \
+  --policy.chunk_size="$CHUNK_SIZE" \
   --policy.gradient_checkpointing=true \
   --policy.dtype=bfloat16 \
   --policy.freeze_vision_encoder=false \
   --policy.train_expert_only=false \
+  --peft.r=32 \
   --policy.device=cuda \
+  --dataset.image_transforms.enable=false \
   --batch_size="$BATCH_SIZE" \
   --num_workers="$NUM_WORKERS" \
   --steps="$STEPS" \
   --save_freq="$SAVE_FREQ" \
   --output_dir="$OUTPUT_DIR" \
   --job_name="$JOB_NAME" \
-  --wandb.enable=true \
-  > "$LOG_FILE" 2>&1 &
+  --wandb.enable=true)
 
-TRAIN_PID=$!
-echo "$TRAIN_PID" > "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+if [[ "$1" == "--no-daemon" ]]; then
+    # --- FOREGROUND MODE ---
+    echo "Starting training in FOREGROUND..."
+    echo "Output will be shown directly in terminal."
+    echo ""
+    
+    # Run command directly
+    "${CMD[@]}"
 
-echo "Training started with PID: $TRAIN_PID"
-echo "Log file: $LOG_FILE"
-echo "PID file: $REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
-echo ""
-echo "To stop training:"
-echo "  kill $TRAIN_PID"
+else
+    # --- BACKGROUND MODE ---
+    echo "Starting training in BACKGROUND..."
+    echo "Monitor progress: tail -f $LOG_FILE"
+    echo ""
+
+    # Run with nohup
+    nohup "${CMD[@]}" > "$LOG_FILE" 2>&1 &
+
+    TRAIN_PID=$!
+    # Create the log directory if it doesn't exist to ensure PID file can be written
+    mkdir -p "$(dirname "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid")"
+    echo "$TRAIN_PID" > "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+
+    echo "Training started with PID: $TRAIN_PID"
+    echo "Log file: $LOG_FILE"
+    echo "PID file: $REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+    echo ""
+    echo "To stop training:"
+    echo "  kill $TRAIN_PID"
+fi

@@ -105,6 +105,8 @@ NUM_WORKERS="${NUM_WORKERS:-}"
 STEPS="${STEPS:-}"
 PUSH_TO_HUB="${PUSH_TO_HUB:-true}"
 DRY_RUN=false
+RUN_BACKGROUND=true # Default behavio
+TIMESTAMP=$(date +"%Y%m%d_%H%M") # Format: 20260210_1521
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -139,13 +141,17 @@ while [[ $# -gt 0 ]]; do
         --action-steps)
             ACTION_STEPS="$2"
             shift 2
-            ;;
+            ;;       
         --chunk-size)
             CHUNK_SIZE="$2"
             shift 2
             ;;
         --push-to-hub)
             PUSH_TO_HUB=true
+            shift
+            ;;
+        --noback)
+            RUN_BACKGROUND=false
             shift
             ;;
         --list-groups)
@@ -255,7 +261,8 @@ echo -e "${YELLOW}Computer:${NC}           $COMPUTER"
 [ -n "$NUM_WORKERS" ] && echo -e "${YELLOW}Num Workers:${NC}        $NUM_WORKERS (override)"
 [ -n "$STEPS" ] && echo -e "${YELLOW}Steps:${NC}              $STEPS (override)"
 echo -e "${YELLOW}Push to Hub:${NC}        $PUSH_TO_HUB"
-echo -e "${YELLOW}Wait for Completion:${NC} $WAIT_FOR_COMPLETION"
+echo -e "${YELLOW}Run Background:${NC}     $RUN_BACKGROUND"
+echo -e "${YELLOW}Timestamp:${NC}          $TIMESTAMP"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
 echo ""
 
@@ -277,8 +284,6 @@ echo ""
 if [ "$DRY_RUN" = true ]; then
     echo -e "${YELLOW}DRY RUN - Training sequence:${NC}"
     echo ""
-    
-    # Show the nested loop structure
     if [ -n "$DATASET_GROUPS" ]; then
         GROUP_NUM=1
         for GROUP in "${GROUP_ARRAY[@]}"; do
@@ -306,7 +311,7 @@ if [ "$DRY_RUN" = true ]; then
 fi
 
 # ============================================================================
-# TRAINING EXECUTION WITH MULTI-GROUP SUPPORT
+# TRAINING EXECUTION
 # ============================================================================
 
 echo -e "${GREEN}Starting training...${NC}"
@@ -319,92 +324,72 @@ export COMPUTER="$COMPUTER"
 [ -n "$ACTION_STEPS" ] && export ACTION_STEPS="$ACTION_STEPS"
 [ -n "$CHUNK_SIZE" ] && export CHUNK_SIZE="$CHUNK_SIZE"
 
-# Train on each group sequentially
+
+# Determine the dataset loop
 if [ -n "$DATASET_GROUPS" ]; then
-    GROUP_NUM=1
-    TOTAL_GROUPS=${#GROUP_ARRAY[@]}
-    
-    for GROUP in "${GROUP_ARRAY[@]}"; do
-        GROUP=$(echo "$GROUP" | xargs)
-        
-        echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
-        echo -e "${GREEN}Training on Dataset Group $GROUP_NUM/$TOTAL_GROUPS: $GROUP${NC}"
-        echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
-        echo ""
-        
-        export DATASET_GROUP="$GROUP"
-        unset SINGLE_DATASET
-        
-        # Train each policy for this group
-        POLICY_NUM=1
-        TOTAL_POLICIES=${#POLICY_ARRAY[@]}
-        for POLICY in "${POLICY_ARRAY[@]}"; do
-            POLICY=$(echo "$POLICY" | xargs)
-            TRAIN_SCRIPT="$SCRIPT_DIR/$POLICY/train.sh"
-            
-            echo -e "${YELLOW}Policy $POLICY_NUM/$TOTAL_POLICIES: $POLICY${NC}"
-            echo ""
-            
-            # Execute training script (runs in background with nohup)
-            "$TRAIN_SCRIPT"
-            
-            # Wait for PID file and then wait for process to complete
-            DATASET_NAME_CLEAN=$(echo "$GROUP" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-            JOB_NAME="${POLICY}_${COMPUTER}_${DATASET_NAME_CLEAN}"
-            PID_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
-            
-            sleep 2  # Give time for PID file to be created
-            if [ -f "$PID_FILE" ]; then
-                TRAIN_PID=$(cat "$PID_FILE")
-                echo -e "${YELLOW}Waiting for training to complete (PID: $TRAIN_PID)...${NC}"
-                wait "$TRAIN_PID" 2>/dev/null || true
-                echo -e "${GREEN}Training completed: $POLICY${NC}"
-                rm -f "$PID_FILE"
-            fi
-            echo ""
-            
-            ((POLICY_NUM++))
-        done
-        
-        ((GROUP_NUM++))
-        echo ""
-    done
+    OUTER_ARRAY=("${GROUP_ARRAY[@]}")
+    MODE="GROUP"
 else
-    # Single dataset training
-    export SINGLE_DATASET="$SINGLE_DATASET"
-    unset DATASET_GROUP
+    OUTER_ARRAY=("$SINGLE_DATASET")
+    MODE="SINGLE"
+fi
+
+TOTAL_OUTER=${#OUTER_ARRAY[@]}
+OUTER_NUM=1
+
+for ITEM in "${OUTER_ARRAY[@]}"; do
+    ITEM=$(echo "$ITEM" | xargs)
     
+    if [ "$MODE" = "GROUP" ]; then
+        echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
+        echo -e "${GREEN}Training on Dataset Group $OUTER_NUM/$TOTAL_OUTER: $ITEM${NC}"
+        echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
+        export DATASET_GROUP="$ITEM"
+        unset SINGLE_DATASET
+        DATASET_NAME_CLEAN=$(echo "$ITEM" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
+    else
+        export SINGLE_DATASET="$ITEM"
+        unset DATASET_GROUP
+        DATASET_NAME_CLEAN=$(echo "$ITEM" | sed 's|.*/||')
+    fi
+
     POLICY_NUM=1
     TOTAL_POLICIES=${#POLICY_ARRAY[@]}
+    
     for POLICY in "${POLICY_ARRAY[@]}"; do
         POLICY=$(echo "$POLICY" | xargs)
         TRAIN_SCRIPT="$SCRIPT_DIR/$POLICY/train.sh"
         
-        echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
-        echo -e "${GREEN}Training Policy $POLICY_NUM/$TOTAL_POLICIES: $POLICY${NC}"
-        echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
-        echo ""
+        export JOB_NAME="${POLICY}_${COMPUTER}_${DATASET_NAME_CLEAN}_${TIMESTAMP}"
         
-        "$TRAIN_SCRIPT"
-        
-        # Wait for PID file and then wait for process to complete
-        DATASET_NAME_CLEAN=$(echo "$SINGLE_DATASET" | sed 's|.*/||')
-        JOB_NAME="${POLICY}_${COMPUTER}_${DATASET_NAME_CLEAN}"
-        PID_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
-        
-        sleep 2  # Give time for PID file to be created
-        if [ -f "$PID_FILE" ]; then
-            TRAIN_PID=$(cat "$PID_FILE")
-            echo -e "${YELLOW}Waiting for training to complete (PID: $TRAIN_PID)...${NC}"
-            wait "$TRAIN_PID" 2>/dev/null || true
-            echo -e "${GREEN}Training completed: $POLICY${NC}"
-            rm -f "$PID_FILE"
+        echo -e "${YELLOW}Policy $POLICY_NUM/$TOTAL_POLICIES: $POLICY (Job: $JOB_NAME)${NC}"
+
+        if [ "$RUN_BACKGROUND" = true ]; then
+            # Execute training script in background
+            "$TRAIN_SCRIPT"
+            
+            PID_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+            sleep 2
+            if [ -f "$PID_FILE" ]; then
+                TRAIN_PID=$(cat "$PID_FILE")
+                echo -e "${YELLOW}Waiting for background training (PID: $TRAIN_PID)...${NC}"
+                wait "$TRAIN_PID" 2>/dev/null || true
+                rm -f "$PID_FILE"
+            else
+                echo -e "${RED}Warning: PID file not found for $JOB_NAME${NC}"
+            fi
+        else
+            # Execute training script in foreground
+            echo -e "${BLUE}Running in foreground...${NC}"
+            "$TRAIN_SCRIPT" --no-daemon
         fi
-        echo ""
         
+        echo -e "${GREEN}Completed: $POLICY${NC}"
+        echo ""
         ((POLICY_NUM++))
     done
-fi
+    
+    ((OUTER_NUM++))
+done
 
-echo ""
-echo -e "${GREEN}All training completed!${NC}"
+echo -e "${GREEN}All training sessions completed!${NC}"
