@@ -155,6 +155,7 @@ nohup lerobot-train \
   --output_dir="$OUTPUT_DIR" \
   --job_name="$JOB_NAME" \
   --wandb.enable=true \
+  --dataset.video_backend=pyav \
   --wandb.notes="$WANDB_NOTES" \
   > "$LOG_FILE" 2>&1 &
 
