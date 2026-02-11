@@ -5,7 +5,7 @@
 set -e
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-
+export ACCELERATE_MIXED_PRECISION="bf16"
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
@@ -41,7 +41,7 @@ else
     NUM_WORKERS="${NUM_WORKERS:-4}"
 fi
 
-STEPS="${STEPS:-20000}"
+STEPS="${STEPS:-50000}"
 SAVE_FREQ="${SAVE_FREQ:-5000}"
 ACTION_STEPS="${ACTION_STEPS:-50}"
 CHUNK_SIZE="${CHUNK_SIZE:-50}"
@@ -157,9 +157,10 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.repo_id="$REPO_ID" \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
-#   --gradient_checkpointing=true \
+#   --policy.use_gradient_checkpointing=true
 #   --dtype=bfloat16 \
   --policy.freeze_vision_encoder=true \
+  --policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}}' \
   --policy.train_expert_only=true \
   --policy.device=cuda \
   --dataset.image_transforms.enable=false \

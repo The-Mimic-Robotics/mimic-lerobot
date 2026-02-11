@@ -256,9 +256,7 @@ For comprehensive documentation, see:
   ./mimic_deployment/training_scripts/train_manager.sh \
   --policy smolvla \
   --dataset-group red_x_handover_and_place_tictactoe \
-  --batch-size 20 \
-  --action-steps 30 \
-  --chunk-size 100 \
+  --batch-size 32 \
   --noback
 
 
