@@ -147,7 +147,8 @@ cd "$REPO_ROOT"
 # ============================================================================
 # EXECUTION LOGIC (FOREGROUND VS BACKGROUND)
 # ============================================================================
-
+#--policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}}' \
+#--policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}, "observation.instruction": {"type": "TEXT"}}' \
 # common arguments for both modes
 CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
@@ -160,7 +161,8 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
 #   --policy.use_gradient_checkpointing=true
 #   --dtype=bfloat16 \
   --policy.freeze_vision_encoder=true \
-  --policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}}' \
+#   --policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}}' \
+--policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}, "observation.instruction": {"type": "TEXT"}}' \
   --policy.train_expert_only=true \
   --policy.device=cuda \
   --dataset.image_transforms.enable=false \

@@ -266,9 +266,9 @@ For comprehensive documentation, see:
 
   ./mimic_deployment/training_scripts/train_manager.sh \
   --policy smolvla \
-  --dataset-group red_x_handover_and_place_tictactoe \
-  --batch-size 32 \
-  --noback
+  --dataset-group redx_full \
+  --batch-size 64 \
+  --steps 100000
 
 
   -> action step should be the number of action which it moves from and the 
