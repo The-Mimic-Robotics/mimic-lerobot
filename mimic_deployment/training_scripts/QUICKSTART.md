@@ -223,9 +223,9 @@ For comprehensive documentation, see:
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy act,pi05,groot,pi0,wall_oss \
   --dataset-group red_x_handover_and_place_tictactoe_v8 \
-  --batch-size 10 \
+  --batch-size 30 \
   --action-steps 30 \
-  --chunk-size 100 
+  --chunk-size 50 
 
 
 
@@ -234,9 +234,9 @@ For comprehensive documentation, see:
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy pi0 \
   --dataset-group red_x_handover_and_place_tictactoe \
-  --batch-size 24 \
+  --batch-size 30 \
   --action-steps 50 \
-  --chunk-size 50 \
+  --chunk-size 50 
   --noback
 
 

@@ -41,8 +41,8 @@ else
     NUM_WORKERS="${NUM_WORKERS:-4}"
 fi
 
-STEPS="${STEPS:-3000}"
-SAVE_FREQ="${SAVE_FREQ:-1000}"
+STEPS="${STEPS:-150000}"
+SAVE_FREQ="${SAVE_FREQ:-10000}"
 ACTION_STEPS="${ACTION_STEPS:-50}" 
 CHUNK_SIZE="${CHUNK_SIZE:-50}"
 
@@ -189,7 +189,7 @@ cd "$REPO_ROOT"
 # EXECUTION LOGIC (FOREGROUND VS BACKGROUND)
 # ============================================================================
 
-
+#gradient_checkpointing is true, save vram but slowe, true -> batch 30, if false batch 8
 # common arguments for both modes
 CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
@@ -201,7 +201,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.compile_model=false \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
-  --policy.gradient_checkpointing=true \
+  --policy.gradient_checkpointing=True \
   --policy.dtype=bfloat16 \
   --policy.freeze_vision_encoder=false \
   --policy.train_expert_only=false \
