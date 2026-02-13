@@ -14,7 +14,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 DATASET_RESOLVER="$SCRIPT_DIR/dataset_groups.py"
 
 # ============================================================================
-# COLOR OUTPUT
+# COLOR OUTPUT 
 # ============================================================================
 
 RED='\033[0;31m'
@@ -37,7 +37,7 @@ Usage: $0 [OPTIONS]
 
 ${YELLOW}Required Options:${NC}
   --policy POLICY[,POLICY2,...]  Policy type(s) to train (comma-separated for multiple)
-                                  Choices: xvla, pi05, pi0, groot, act, wall_oss
+                                  Choices: xvla, pi05, pi0, groot, act, wall_oss, smolvla
                                   Example: --policy xvla,pi05 (trains both sequentially)
   
   --dataset-group GROUP[,GROUP2,...]  Dataset group(s) to train on (comma-separated for multiple)
@@ -165,6 +165,7 @@ while [[ $# -gt 0 ]]; do
             echo "  pi0        - π₀ (Pi0 - Physical Intelligence base model)"
             echo "  groot      - NVIDIA GR00T N1.5 (humanoid foundation model)"
             echo "  act        - ACT (Action Chunking with Transformers)"
+            echo "  smolvla    - SmolVLA (Efficient Vision-Language-Action model)"
             echo "  wall_oss   - Wall-OSS (Embodied Foundation Model)"
             exit 0
             ;;
@@ -200,7 +201,7 @@ IFS=',' read -ra POLICY_ARRAY <<< "$POLICIES"
 IFS=',' read -ra GROUP_ARRAY <<< "$DATASET_GROUPS"
 
 # Validate each policy
-VALID_POLICIES=("xvla" "pi05" "pi0" "groot" "act" "wall_oss")
+VALID_POLICIES=("xvla" "pi05" "pi0" "groot" "act" "wall_oss" "smolvla")
 for POLICY in "${POLICY_ARRAY[@]}"; do
     # Trim whitespace
     POLICY=$(echo "$POLICY" | xargs)

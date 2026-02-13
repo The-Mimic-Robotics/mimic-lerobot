@@ -5,9 +5,11 @@
 set -e
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+# Add this after the CONFIGURATION section in your script
+# export ACCELERATE_MIXED_PRECISION="fp16"
 
 # ============================================================================
-# CONFIGURATION
+# CONFIGURATION 
 # ============================================================================
 
 POLICY_TYPE="pi0"
