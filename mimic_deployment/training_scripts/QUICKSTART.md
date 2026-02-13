@@ -267,7 +267,7 @@ For comprehensive documentation, see:
   ./mimic_deployment/training_scripts/train_manager.sh \
   --policy smolvla \
   --dataset-group redx_full \
-  --batch-size 64 \
+  --batch-size 48 \
   --steps 100000
 
 
