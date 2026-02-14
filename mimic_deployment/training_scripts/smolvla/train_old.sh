@@ -41,8 +41,8 @@ else
     NUM_WORKERS="${NUM_WORKERS:-4}"
 fi
 
-STEPS="${STEPS:-100000}"
-SAVE_FREQ="${SAVE_FREQ:-10000}"
+STEPS="${STEPS:-50000}"
+SAVE_FREQ="${SAVE_FREQ:-5000}"
 ACTION_STEPS="${ACTION_STEPS:-50}"
 CHUNK_SIZE="${CHUNK_SIZE:-50}"
 
@@ -158,15 +158,11 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.repo_id="$REPO_ID" \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
+#   --policy.use_gradient_checkpointing=true
+#   --dtype=bfloat16 \
   --policy.freeze_vision_encoder=true \
-  --policy.scheduler_decay_steps="$STEPS" \
-  --policy.input_features='{
-    "observation.images.top": {"shape": [3, 720, 1280], "type": "VISUAL"},
-    "observation.images.left_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
-    "observation.images.right_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
-    "observation.state": {"shape": [15], "type": "STATE"},
-    "observation.instruction": {"type": "LANGUAGE", "shape": [1]}
-  }' \
+#   --policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}}' \
+# --policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}, "observation.instruction": {"type": "TEXT"}}' \
   --policy.train_expert_only=true \
   --policy.device=cuda \
   --dataset.image_transforms.enable=false \
