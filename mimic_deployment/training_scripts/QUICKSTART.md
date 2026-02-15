@@ -251,11 +251,11 @@ For comprehensive documentation, see:
 
 
 
-
+# 11Gb vram
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy act \
-  --dataset-group red_x_handover_and_place_tictactoe \
-  --batch-size 20 \
+  --dataset-group redx_full_vlm \
+  --batch-size 8 \
   --action-steps 50 \
   --chunk-size 50 \
   --steps 200000 

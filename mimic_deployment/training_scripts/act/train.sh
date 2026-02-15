@@ -44,8 +44,8 @@ else
     NUM_WORKERS="${NUM_WORKERS:-8}"
 fi
 
-STEPS="${STEPS:-100000}"
-SAVE_FREQ="${SAVE_FREQ:-10000}" # Save more often to catch early convergence
+STEPS="${STEPS:-200000}"
+SAVE_FREQ="${SAVE_FREQ:-20000}" # Save more often to catch early convergence
 ACTION_STEPS="${ACTION_STEPS:-100}" # ACT defaults to 100
 CHUNK_SIZE="${CHUNK_SIZE:-100}"     # ACT defaults to 100
 
@@ -157,13 +157,27 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
   --policy.dim_model=512 \
+  --dataset.image_transforms.enable=true \
   --policy.input_features='{
     "observation.images.top": {"shape": [3, 720, 1280], "type": "VISUAL"},
     "observation.images.left_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
     "observation.images.right_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
-    "observation.state": {"shape": [15], "type": "STATE"}
+    "observation.state": {"shape": [15], "type": "STATE"},
+    "observation.instruction": {"type": "LANGUAGE", "shape": [1]}
   }' \
   --optimizer.lr=2e-5 \
+  # resize to lower resol so easier train, not necearly better
+#   --dataset.image_transforms.enable=false \
+#   # 2. Set the Desired Shape in input_features
+#   # If you want 480p, put 480x640 here. The code will auto-resize your 720p data to fit this.
+#   --policy.input_features='{
+#     "observation.images.top": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.images.left_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.images.right_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.state": {"shape": [15], "type": "STATE"},
+#     "observation.instruction": {"type": "LANGUAGE", "shape": [1]}
+#   }' \
+  #
   --policy.device=cuda \
   --dataset.image_transforms.enable=false \
   --batch_size="$BATCH_SIZE" \
