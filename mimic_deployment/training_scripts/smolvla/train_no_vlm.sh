@@ -167,13 +167,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
     "observation.state": {"shape": [15], "type": "STATE"},
     "observation.instruction": {"type": "LANGUAGE", "shape": [1]}
   }' \
-  --policy.use_peft=false \
-#--policy.use_peft=true \
-#   --peft.type=LORA \
-#   --peft.r=32 \
-#   --peft.alpha=64 \
-#   --peft.dropout=0.05 \
-  --policy.train_expert_only=false \
+  --policy.train_expert_only=true \
   --policy.device=cuda \
   --dataset.image_transforms.enable=false \
   --batch_size="$BATCH_SIZE" \

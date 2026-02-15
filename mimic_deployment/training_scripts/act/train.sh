@@ -4,15 +4,12 @@
 
 set -e
 
-
-# Add this after the CONFIGURATION section in your script
+# ACT typically uses fp16 (unlike SmolVLA which prefers bf16)
 export ACCELERATE_MIXED_PRECISION="fp16"
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
 # ============================================================================
 # CONFIGURATION
-
-
-# --policy.use_language_conditioning=true (Or --policy.use_text_conditioning=true
 # ============================================================================
 
 POLICY_TYPE="act"
@@ -32,6 +29,7 @@ DATASET_GROUP="${DATASET_GROUP:-}"
 SINGLE_DATASET="${SINGLE_DATASET:-}"
 
 # Training parameters with computer-specific defaults
+# ACT is lighter than VLA, so we can usually afford higher batch sizes
 if [[ "$COMPUTER" == "odin" ]] || [[ "$COMPUTER" == "ODIN-IEEE" ]]; then
     BATCH_SIZE="${BATCH_SIZE:-8}"
     NUM_WORKERS="${NUM_WORKERS:-12}"
@@ -46,11 +44,10 @@ else
     NUM_WORKERS="${NUM_WORKERS:-8}"
 fi
 
-STEPS="${STEPS:-100000}"
-SAVE_FREQ="${SAVE_FREQ:-20000}"
-# Reaction Time (Default 100 = 3.3s blind execution. Set to 10 for 0.3s reaction)
-ACTION_STEPS="${ACTION_STEPS:-100}" 
-CHUNK_SIZE="${CHUNK_SIZE:-100}"
+STEPS="${STEPS:-200000}"
+SAVE_FREQ="${SAVE_FREQ:-20000}" # Save more often to catch early convergence
+ACTION_STEPS="${ACTION_STEPS:-100}" # ACT defaults to 100
+CHUNK_SIZE="${CHUNK_SIZE:-100}"     # ACT defaults to 100
 
 # ============================================================================
 # RESOLVE DATASET GROUP TO DATASET LIST OR USE SINGLE DATASET
@@ -100,11 +97,9 @@ echo "Datasets: $DATASET_REPO_IDS"
 DATASET_NAME_CLEAN=$(echo "$DATASET_NAME_FOR_JOB" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
 
 # Auto-generate job name and output directory
-# Only generate a new name if one wasn't passed from the manager
 if [ -z "$JOB_NAME" ]; then
     JOB_NAME="${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}"
 fi
-
 OUTPUT_DIR="$REPO_ROOT/outputs/train/${JOB_NAME}"
 LOG_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.log"
 
@@ -146,37 +141,80 @@ echo "Repo ID:       $REPO_ID"
 echo "Log File:      $LOG_FILE"
 echo "=========================================="
 echo ""
-echo "Starting training in background..."
-echo "Monitor progress: tail -f $LOG_FILE"
-echo ""
 
 cd "$REPO_ROOT"
 
-# Note: Filtered out front camera to save VRAM and using gradient accumulation
-#--optimizer.gradient_accumulation_steps=
-nohup lerobot-train \
+# ============================================================================
+# EXECUTION LOGIC
+# ============================================================================
+
+# Note: We do NOT use 'observation.instruction' for standard ACT
+CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
-  --policy.type="$POLICY_TYPE" \
+  --dataset.video_backend=pyav \
+  --policy.type=act \
   --policy.repo_id="$REPO_ID" \
-  --policy.device=cuda \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
+  --policy.dim_model=512 \
+  --dataset.image_transforms.enable=true \
+  --policy.input_features='{
+    "observation.images.top": {"shape": [3, 720, 1280], "type": "VISUAL"},
+    "observation.images.left_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
+    "observation.images.right_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
+    "observation.state": {"shape": [15], "type": "STATE"},
+    "observation.instruction": {"type": "LANGUAGE", "shape": [1]}
+  }' \
+  --optimizer.lr=2e-5 \
+  # resize to lower resol so easier train, not necearly better
+#   --dataset.image_transforms.enable=false \
+#   # 2. Set the Desired Shape in input_features
+#   # If you want 480p, put 480x640 here. The code will auto-resize your 720p data to fit this.
+#   --policy.input_features='{
+#     "observation.images.top": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.images.left_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.images.right_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.state": {"shape": [15], "type": "STATE"},
+#     "observation.instruction": {"type": "LANGUAGE", "shape": [1]}
+#   }' \
+  #
+  --policy.device=cuda \
+  --dataset.image_transforms.enable=false \
   --batch_size="$BATCH_SIZE" \
   --num_workers="$NUM_WORKERS" \
   --steps="$STEPS" \
   --save_freq="$SAVE_FREQ" \
   --output_dir="$OUTPUT_DIR" \
   --job_name="$JOB_NAME" \
-  --wandb.enable=true \
-  --optimizer.lr=2e-5 \
-  --policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}}' \
-  --dataset.video_backend=pyav \
-  --wandb.notes="$WANDB_NOTES" \
-  > "$LOG_FILE" 2>&1 &
+  --wandb.enable=true)
 
-TRAIN_PID=$!
-echo "$TRAIN_PID" > "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+if [[ "$1" == "--no-daemon" ]]; then
+    # --- FOREGROUND MODE ---
+    echo "Starting training in FOREGROUND..."
+    echo "Output will be shown directly in terminal."
+    echo ""
 
-echo "Training started with PID: $TRAIN_PID"
-echo "Log file: $LOG_FILE"
-echo "PID file: $REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+    # Run command directly
+    "${CMD[@]}"
+
+else
+    # --- BACKGROUND MODE ---
+    echo "Starting training in BACKGROUND..."
+    echo "Monitor progress: tail -f $LOG_FILE"
+    echo ""
+
+    # Run with nohup
+    nohup "${CMD[@]}" > "$LOG_FILE" 2>&1 &
+
+    TRAIN_PID=$!
+    # Create the log directory if it doesn't exist to ensure PID file can be written
+    mkdir -p "$(dirname "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid")"
+    echo "$TRAIN_PID" > "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+
+    echo "Training started with PID: $TRAIN_PID"
+    echo "Log file: $LOG_FILE"
+    echo "PID file: $REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+    echo ""
+    echo "To stop training:"
+    echo "  kill $TRAIN_PID"
+fi
