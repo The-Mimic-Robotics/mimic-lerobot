@@ -266,9 +266,8 @@ For comprehensive documentation, see:
 
   ./mimic_deployment/training_scripts/train_manager.sh \
   --policy smolvla \
-  --dataset-group redx_full \
-  --batch-size 64 \
-  --steps 100000
+  --dataset-group redx_full_vlm \
+  --batch-size 48 
 
 
   -> action step should be the number of action which it moves from and the 

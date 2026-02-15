@@ -169,7 +169,7 @@ nohup lerobot-train \
   --job_name="$JOB_NAME" \
   --wandb.enable=true \
   --optimizer.lr=2e-5 \
-  --policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}}' \
+# --policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}}' \
   --dataset.video_backend=pyav \
   --wandb.notes="$WANDB_NOTES" \
   > "$LOG_FILE" 2>&1 &

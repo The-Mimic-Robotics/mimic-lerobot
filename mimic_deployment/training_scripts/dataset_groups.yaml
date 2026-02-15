@@ -101,7 +101,7 @@ groups:
     - Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v1
 
 
-  redx_full:
+  redx_full_vlm:
     - Mimic-Robotics/mimic_tictactoe_redx_full30hz
 
     
