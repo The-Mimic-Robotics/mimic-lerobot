@@ -2,6 +2,7 @@
 
 ## 🎯 Training in 60 Seconds
 hf upload Mimic-Robotics/act_odin_red_x_handover_20k outputs/train/act_odin_red_x_handover_and_place_center/checkpoints/020000
+hf upload Mimic-Robotics/mimic_tictactoe_red_x_handover_v3 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_red_x_handover_v3 --repo-type dataset
 ### Step 1: Choose Your Setup
 ```bash
 # List available dataset groups
@@ -286,3 +287,30 @@ hf upload Mimic-Robotics/act_odin_red_x_30a_80k  outputs/train/act_odin_red_x_ha
 
 
 hf upload Mimic-Robotics/act_augusto_red_x_50a_14b_100k  outputs/train/act_
+
+
+hf upload Mimic-Robotics/mimic_tictactoe_red_x_handover_v3 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_red_x_handover_v3 --repo-type dataset
+
+
+
+mimic_tictactoe_blue_o_handover_center_slow_v1
+mimic_tictactoe_blue_o_handover_center_slow_v2
+mimic_tictactoe_blue_o_handover_top_left_slow_v1 
+mimic_tictactoe_blue_o_handover_top_right_slow_v1
+mimic_tictactoe_blue_o_handover_top_right_slow_v2 
+mimic_tictactoe_red_x_handover_center_slow_v3 
+
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_center_15Hz_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_center_slow_v1 --repo-type dataset
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_center_15Hz_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_center_slow_v2 --repo-type dataset
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_15Hz_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v1 --repo-type dataset
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_15Hz_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_slow_v1 --repo-type dataset
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_15Hz_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_slow_v2 --repo-type dataset
+
+
+huggingface-cli upload Mimic-Robotics/eval_act_14b_50a_100k_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/eval_act_14b_50a_100k_v2 --repo-type model
+
+
+
+#success
+#--policy.path=outputs/train/act_MISC_red_x_handover_and_place_tictactoe_20260210_2145/checkpoints/100000/pretrained_model \

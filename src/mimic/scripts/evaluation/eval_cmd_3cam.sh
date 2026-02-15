@@ -1,0 +1,23 @@
+#!/bin/bash
+lerobot-record \
+  --robot.type=mimic_follower \
+  --robot.left_arm_port=/dev/arm_left_follower \
+  --robot.right_arm_port=/dev/arm_right_follower \
+  --robot.base_port=/dev/mecanum_base \
+  --robot.id=mimic_follower \
+  --robot.cameras='{"right_wrist": {"type": "opencv", "index_or_path": "/dev/camera_right_wrist", "width": 640, "height": 480, "fps": 30, "fourcc": "MJPG", "warmup_s": 0}, "left_wrist": {"type": "opencv", "index_or_path": "/dev/camera_left_wrist", "width": 640, "height": 480, "fps": 30, "fourcc": "MJPG", "warmup_s": 0}, "top": {"type": "zed_camera", "index_or_path": "23081456", "width": 1280, "height": 720, "fps": 30, "warmup_s": 0}}' \
+  --teleop.type=mimic_leader \
+  --teleop.left_arm_port=/dev/arm_left_leader \
+  --teleop.right_arm_port=/dev/arm_right_leader \
+  --teleop.base_control_mode=keyboard \
+  --teleop.id=mimic_leader \
+  --dataset.repo_id="Mimic-Robotics/eval_act_augusto_red_x_50a_14b_100k_v10" \
+  --policy.path=Mimic-Robotics/act_augusto_red_x_50a_14b_100k \
+  --dataset.single_task="pick red x handover place center" \
+  --dataset.num_episodes=20 \
+  --dataset.episode_time_s=120 \
+  --dataset.reset_time_s=5 \
+  --dataset.video=true \
+  --dataset.fps=30 \
+  --dataset.push_to_hub=false \
+  --display_data=true
