@@ -304,7 +304,12 @@ For comprehensive documentation, see:
 hf upload Mimic-Robotics/act_odin_red_x_30a_20k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/020000/pretrained_model
 hf upload Mimic-Robotics/act_odin_red_x_30a_40k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/040000/pretrained_model
 hf upload Mimic-Robotics/act_odin_red_x_30a_60k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/060000/pretrained_model
-hf upload Mimic-Robotics/act_odin_red_x_30a_80k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/080000/pretrained_model
+
+
+
+
+hf upload Mimic-Robotics/pi0_odin_redx_20k_30b_50a  outputs/train/
+hf upload Mimic-Robotics/smolvla_odin_redx_100k_64b_50a  outputs/train/
 
 
 hf upload Mimic-Robotics/act_augusto_red_x_50a_14b_100k  outputs/train/act_
@@ -335,3 +340,5 @@ huggingface-cli upload Mimic-Robotics/eval_act_14b_50a_100k_v2 ~/.cache/huggingf
 
 #success
 #--policy.path=outputs/train/act_MISC_red_x_handover_and_place_tictactoe_20260210_2145/checkpoints/100000/pretrained_model \
+
+
