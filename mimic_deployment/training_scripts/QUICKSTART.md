@@ -245,7 +245,19 @@ For comprehensive documentation, see:
   ./mimic_deployment/training_scripts/train_manager.sh \
   --policy act \
   --dataset-group red_x_handover_and_place_tictactoe \
-  --batch-size 14 \
+  --batch-size 16 \
+  --action-steps 50 \
+  --chunk-size 50 \
+  --steps 500000 
+
+
+# 24Gb vram
+
+
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy act \
+  --dataset-group red_x_handover_and_place_tictactoe \
+  --batch-size 16 \
   --action-steps 50 \
   --chunk-size 50 \
   --steps 500000 
@@ -267,7 +279,11 @@ For comprehensive documentation, see:
   --dataset-group redx_full_vlm \
   --batch-size 8
 
-
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy pi05 \
+  --dataset-group redx_full_vlm \
+  --batch-size 4 \
+  --steps 100000 
 
 
 
