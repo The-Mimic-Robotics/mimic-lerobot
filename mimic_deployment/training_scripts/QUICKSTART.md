@@ -262,6 +262,12 @@ For comprehensive documentation, see:
   --steps 200000 
 
 
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy xvla \
+  --dataset-group redx_full_vlm \
+  --batch-size 8
+
+
 
 
 

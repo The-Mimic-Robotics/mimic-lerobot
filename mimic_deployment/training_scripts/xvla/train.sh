@@ -1,177 +1,113 @@
 #!/bin/bash
-# xVLA Training Script - Smart Configuration
-# Automatically configures training based on $COMPUTER environment variable and dataset groups
+# X-VLA Training Script - RTX 3090 "Full Power" Edition
+# 24GB VRAM Config: Batch 16 + Full VLM Finetuning
 
 set -e
 
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
+# Optimize memory allocation for 24GB
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export ACCELERATE_MIXED_PRECISION="bf16"
 
 POLICY_TYPE="xvla"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 DATASET_RESOLVER="$REPO_ROOT/mimic_deployment/training_scripts/dataset_groups.py"
-
-# Get computer name from environment or hostname
 COMPUTER="${COMPUTER:-$(hostname)}"
 
-# ============================================================================
-# PARAMETERS (Override via command line arguments)
-# ============================================================================
-
-# Dataset source (either DATASET_GROUP or SINGLE_DATASET)
 DATASET_GROUP="${DATASET_GROUP:-}"
 SINGLE_DATASET="${SINGLE_DATASET:-}"
 
-# Training parameters with computer-specific defaults
-if [[ "$COMPUTER" == "odin" ]] || [[ "$COMPUTER" == "ODIN-IEEE" ]]; then
-    BATCH_SIZE="${BATCH_SIZE:-4}"
-    NUM_WORKERS="${NUM_WORKERS:-16}"
-elif [[ "$COMPUTER" == "jupiter" ]]; then
-    BATCH_SIZE="${BATCH_SIZE:-4}"
-    NUM_WORKERS="${NUM_WORKERS:-8}"
-elif [[ "$COMPUTER" == "mathias" ]]; then
-    BATCH_SIZE="${BATCH_SIZE:-4}"
-    NUM_WORKERS="${NUM_WORKERS:-8}"
-else
-    BATCH_SIZE="${BATCH_SIZE:-4}"
-    NUM_WORKERS="${NUM_WORKERS:-8}"
-fi
+# === POWER SETTINGS (RTX 3090) ===
+BATCH_SIZE="${BATCH_SIZE:-16}"  # 24GB allows nice large batches
+NUM_WORKERS="${NUM_WORKERS:-8}"
+STEPS="${STEPS:-250000}" 
+SAVE_FREQ="${SAVE_FREQ:-50000}" 
+ACTION_STEPS="${ACTION_STEPS:-50}" 
+CHUNK_SIZE="${CHUNK_SIZE:-50}"
 
-STEPS="${STEPS:-5000}"
-SAVE_FREQ="${SAVE_FREQ:-1000}"
-ACTION_STEPS="${ACTION_STEPS:-32}" 
-CHUNK_SIZE="${CHUNK_SIZE:-32}"
-
-# ============================================================================
-# RESOLVE DATASET GROUP TO DATASET LIST OR USE SINGLE DATASET
-# ============================================================================
-
-if [ ! -f "$DATASET_RESOLVER" ]; then
-    echo "Error: Dataset resolver not found at $DATASET_RESOLVER"
-    exit 1
-fi
-
-# Validate: must have either DATASET_GROUP or SINGLE_DATASET
-if [ -z "$DATASET_GROUP" ] && [ -z "$SINGLE_DATASET" ]; then
-    echo "Error: Either DATASET_GROUP or SINGLE_DATASET must be provided"
-    echo "Usage: DATASET_GROUP=<group> $0"
-    echo "   OR: SINGLE_DATASET=<repo_id> $0"
-    exit 1
-fi
-
-if [ -n "$DATASET_GROUP" ] && [ -n "$SINGLE_DATASET" ]; then
-    echo "Error: Cannot specify both DATASET_GROUP and SINGLE_DATASET"
-    exit 1
-fi
-
-# Resolve datasets
+# Resolve Dataset
 if [ -n "$DATASET_GROUP" ]; then
-    echo "Resolving dataset group: $DATASET_GROUP"
     DATASET_REPO_IDS=$(python3 "$DATASET_RESOLVER" "$DATASET_GROUP" --format bash)
-    
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to resolve dataset group '$DATASET_GROUP'"
-        echo "Available groups:"
-        python3 "$DATASET_RESOLVER" --list-groups
-        exit 1
-    fi
-    
     DATASET_NAME_FOR_JOB="$DATASET_GROUP"
 else
-    echo "Using single dataset: $SINGLE_DATASET"
     DATASET_REPO_IDS="$SINGLE_DATASET"
-    # Extract dataset name from repo ID for job name
     DATASET_NAME_FOR_JOB=$(echo "$SINGLE_DATASET" | sed 's|.*/||')
 fi
 
-echo "Datasets: $DATASET_REPO_IDS"
-
-# ============================================================================
-# AUTO-GENERATE TRAINING METADATA
-# ============================================================================
-
-# Sanitize dataset name for use in paths
 DATASET_NAME_CLEAN=$(echo "$DATASET_NAME_FOR_JOB" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-
-# Auto-generate job name and output directory
-JOB_NAME="${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}"
+# Auto-generate job name with TIMESTAMP
+DATE_STR=$(date +"%Y%m%d_%H%M%S")
+if [ -z "$JOB_NAME" ]; then
+    JOB_NAME="${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}_${DATE_STR}"
+fi
 OUTPUT_DIR="$REPO_ROOT/outputs/train/${JOB_NAME}"
 LOG_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.log"
-
-# Auto-generate repo ID for Hugging Face Hub
 REPO_ID="Mimic-Robotics/${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}"
-
-# WandB notes
-if [ -n "$DATASET_GROUP" ]; then
-    WANDB_NOTES="Multi-dataset xVLA training on ${DATASET_GROUP} with Computer ${COMPUTER} and Batch ${BATCH_SIZE}"
-else
-    WANDB_NOTES="xVLA training on ${SINGLE_DATASET} with Computer ${COMPUTER} and Batch ${BATCH_SIZE}"
-fi
-
-# ============================================================================
-# ENSURE LOG DIRECTORY EXISTS
-# ============================================================================
 
 mkdir -p "$REPO_ROOT/outputs/logs"
 
-# ============================================================================
-# TRAINING COMMAND
-# ============================================================================
-
 echo "=========================================="
-echo "xVLA Training Configuration"
+echo "X-VLA Training (RTX 3090 Mode)"
+echo "Batch Size: $BATCH_SIZE"
+echo "Dataset:    $DATASET_NAME_FOR_JOB"
+echo "Log File:   $LOG_FILE"
 echo "=========================================="
-echo "Computer:      $COMPUTER"
-if [ -n "$DATASET_GROUP" ]; then
-    echo "Dataset Group: $DATASET_GROUP"
-else
-    echo "Single Dataset: $SINGLE_DATASET"
-fi
-echo "Batch Size:    $BATCH_SIZE"
-echo "Num Workers:   $NUM_WORKERS"
-echo "Steps:         $STEPS"
-echo "Job Name:      $JOB_NAME"
-echo "Output Dir:    $OUTPUT_DIR"
-echo "Repo ID:       $REPO_ID"
-echo "Log File:      $LOG_FILE"
-echo "=========================================="
-echo ""
-echo "Starting training in background..."
-echo "Monitor progress: tail -f $LOG_FILE"
-echo ""
 
 cd "$REPO_ROOT"
 
-nohup lerobot-train \
+# === THE FIX ===
+# 1. Removed explicit `input_features` (Let it load from pretrained config)
+# 2. Added `rename_map`: Maps YOUR cameras to PRETRAINED slots.
+#    - top        -> image (Primary)
+#    - left_wrist -> image2 (Secondary)
+#    - right_wrist -> empty_camera_0 (Tertiary slot)
+
+CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
-  --output_dir="$OUTPUT_DIR" \
-  --job_name="$JOB_NAME" \
-  --policy.path=lerobot/xvla-base \
+  --dataset.video_backend=pyav \
+  --policy.path="lerobot/xvla-base" \
   --policy.repo_id="$REPO_ID" \
-  --policy.dtype=bfloat16 \
-  --policy.action_mode=auto \
-  --policy.max_action_dim=20 \
-  --policy.device=cuda \
-  --policy.num_image_views=3 \
-  --policy.freeze_vision_encoder=false \
-  --policy.freeze_language_encoder=false \
-  --policy.train_policy_transformer=true \
-  --policy.train_soft_prompts=true \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
+  --policy.action_mode=auto \
+  --policy.num_image_views=3 \
+  --policy.train_soft_prompts=true \
+  --policy.train_policy_transformer=true \
+  --policy.freeze_vision_encoder=false \
+  --policy.freeze_language_encoder=false \
+  --policy.dtype=bfloat16 \
+  --policy.scheduler_decay_steps="$STEPS" \
+  --policy.device=cuda \
+  --dataset.image_transforms.enable=false \
   --batch_size="$BATCH_SIZE" \
   --num_workers="$NUM_WORKERS" \
   --steps="$STEPS" \
   --save_freq="$SAVE_FREQ" \
+  --output_dir="$OUTPUT_DIR" \
+  --job_name="$JOB_NAME" \
   --wandb.enable=true \
-  --rename_map='{"observation.images.top":"observation.images.image","observation.images.left_wrist":"observation.images.image2","observation.images.right_wrist":"observation.images.empty_camera_0"}' \
-  > "$LOG_FILE" 2>&1 &
+  --rename_map='{
+      "observation.images.top": "observation.images.image",
+      "observation.images.left_wrist": "observation.images.image2",
+      "observation.images.right_wrist": "observation.images.empty_camera_0",
+      "observation.images.front": "observation.images.image"
+  }' \
+  --policy.input_features='{
+    "observation.images.image": {"shape": [3, 720, 1280], "type": "VISUAL"},
+    "observation.images.image2": {"shape": [3, 480, 640], "type": "VISUAL"},
+    "observation.images.empty_camera_0": {"shape": [3, 480, 640], "type": "VISUAL"},
+    "observation.state": {"shape": [15], "type": "STATE"},
+    "observation.instruction": {"shape": [1], "type": "LANGUAGE"}
+  }')
+  
+# Note: Added "front" mapping just in case your dataset uses that name instead of top. 
+# It won't hurt if the key doesn't exist.
 
-TRAIN_PID=$!
-echo "$TRAIN_PID" > "$REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
-
-echo "Training started with PID: $TRAIN_PID"
-echo "Log file: $LOG_FILE"
-echo "PID file: $REPO_ROOT/outputs/logs/${JOB_NAME}.pid"
+if [[ "$1" == "--no-daemon" ]]; then
+    echo "Starting in FOREGROUND..."
+    "${CMD[@]}"
+else
+    echo "Starting in BACKGROUND..."
+    nohup "${CMD[@]}" > "$LOG_FILE" 2>&1 &
+    echo "Tail logs with: tail -f $LOG_FILE"
+fi
