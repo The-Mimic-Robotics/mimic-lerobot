@@ -311,6 +311,8 @@ hf upload Mimic-Robotics/act_odin_red_x_30a_60k  outputs/train/act_odin_red_x_ha
 hf upload Mimic-Robotics/pi0_odin_redx_20k_30b_50a  outputs/train/
 hf upload Mimic-Robotics/smolvla_odin_redx_100k_64b_50a  outputs/train/
 
+hf upload Mimic-Robotics/act_math_redxVlm_50a_8b_200k  outputs/train/act_
+
 
 hf upload Mimic-Robotics/act_augusto_red_x_50a_14b_100k  outputs/train/act_
 
