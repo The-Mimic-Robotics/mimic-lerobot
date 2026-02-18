@@ -262,7 +262,10 @@ For comprehensive documentation, see:
   --chunk-size 50 \
   --steps 500000 
 
-
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy pi05fast \
+  --dataset-group redx_full_vlm \
+  --batch-size 2 
 
 # 11Gb vram
 ./mimic_deployment/training_scripts/train_manager.sh \
@@ -312,6 +315,8 @@ hf upload Mimic-Robotics/pi0_odin_redx_20k_30b_50a  outputs/train/
 hf upload Mimic-Robotics/smolvla_odin_redx_100k_64b_50a  outputs/train/
 
 hf upload Mimic-Robotics/act_math_redxVlm_50a_8b_200k  outputs/train/act_
+
+hf upload Mimic-Robotics/act_odin_redxvlm_360k_16b_50a  outputs/train/
 
 
 hf upload Mimic-Robotics/act_augusto_red_x_50a_14b_100k  outputs/train/act_
