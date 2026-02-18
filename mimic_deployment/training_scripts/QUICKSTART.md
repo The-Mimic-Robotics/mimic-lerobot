@@ -304,7 +304,7 @@ For comprehensive documentation, see:
 hf upload Mimic-Robotics/act_odin_red_x_30a_20k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/020000/pretrained_model
 hf upload Mimic-Robotics/act_odin_red_x_30a_40k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/040000/pretrained_model
 hf upload Mimic-Robotics/act_odin_red_x_30a_60k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/060000/pretrained_model
-
+  
 
 
 
@@ -329,11 +329,28 @@ mimic_tictactoe_blue_o_handover_top_right_slow_v2
 mimic_tictactoe_red_x_handover_center_slow_v3 
 
 
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_center_15Hz_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_center_slow_v1 --repo-type dataset
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_center_15Hz_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_center_slow_v2 --repo-type dataset
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_15Hz_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v1 --repo-type dataset
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_15Hz_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_slow_v1 --repo-type dataset
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_15Hz_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_slow_v2 --repo-type dataset
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v1 --repo-type dataset
+
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v2 --repo-type dataset
+
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v1 --repo-type dataset
+
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v2 --repo-type dataset
+
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v2 --repo-type dataset
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 --repo-type dataset
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v4 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v4 --repo-type dataset
+
+                       
+                       
+                       
+                       
 
 
 huggingface-cli upload Mimic-Robotics/eval_act_14b_50a_100k_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/eval_act_14b_50a_100k_v2 --repo-type model

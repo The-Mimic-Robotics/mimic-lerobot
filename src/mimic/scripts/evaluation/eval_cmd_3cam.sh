@@ -11,13 +11,13 @@ lerobot-record \
   --teleop.right_arm_port=/dev/arm_right_leader \
   --teleop.base_control_mode=keyboard \
   --teleop.id=mimic_leader \
-  --dataset.repo_id="Mimic-Robotics/eval_act_augusto_red_x_50a_14b_100k_v10" \
-  --policy.path=Mimic-Robotics/act_augusto_red_x_50a_14b_100k \
-  --dataset.single_task="pick red x handover place center" \
+  --dataset.repo_id="Mimic-Robotics/eval_pi0_augusto_redxVlm_50a_48b_20k_v4" \
+  --policy.path=Mimic-Robotics/pi0_odin_redx_20k_30b_50a \
+  --dataset.single_task="pick red x piece handover place center" \
   --dataset.num_episodes=20 \
   --dataset.episode_time_s=120 \
   --dataset.reset_time_s=5 \
   --dataset.video=true \
   --dataset.fps=30 \
   --dataset.push_to_hub=false \
-  --display_data=true
+  --display_data=false
