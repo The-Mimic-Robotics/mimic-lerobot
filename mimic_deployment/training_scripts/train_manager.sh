@@ -37,7 +37,7 @@ Usage: $0 [OPTIONS]
 
 ${YELLOW}Required Options:${NC}
   --policy POLICY[,POLICY2,...]  Policy type(s) to train (comma-separated for multiple)
-                                  Choices: xvla, pi05, pi0, groot, act, wall_oss, smolvla,pi05fast
+                                  Choices: xvla, pi05, pi0, groot, act, wall_oss, smolvla,pi0fast
                                   Example: --policy xvla,pi05 (trains both sequentially)
   
   --dataset-group GROUP[,GROUP2,...]  Dataset group(s) to train on (comma-separated for multiple)
@@ -162,7 +162,7 @@ while [[ $# -gt 0 ]]; do
             echo -e "${GREEN}Available Policies:${NC}"
             echo "  xvla       - X-VLA (Vision-Language-Action model)"
             echo "  pi05       - π₀.₅ (Pi0.5 - latest Physical Intelligence model)"
-            echo "  pi05fast   - π₀.₅ Fast (Pi0.5 - faster training version)"
+            echo "  pi0fast   - π₀.₅ Fast (Pi0 - faster training version)"
             echo "  pi0        - π₀ (Pi0 - Physical Intelligence base model)"
             echo "  groot      - NVIDIA GR00T N1.5 (humanoid foundation model)"
             echo "  act        - ACT (Action Chunking with Transformers)"
@@ -202,7 +202,7 @@ IFS=',' read -ra POLICY_ARRAY <<< "$POLICIES"
 IFS=',' read -ra GROUP_ARRAY <<< "$DATASET_GROUPS"
 
 # Validate each policy
-VALID_POLICIES=("xvla" "pi05" "pi0" "groot" "act" "wall_oss" "smolvla", "pi05fast")
+VALID_POLICIES=("xvla" "pi05" "pi0" "groot" "act" "wall_oss" "smolvla" "pi0fast")
 for POLICY in "${POLICY_ARRAY[@]}"; do
     # Trim whitespace
     POLICY=$(echo "$POLICY" | xargs)
