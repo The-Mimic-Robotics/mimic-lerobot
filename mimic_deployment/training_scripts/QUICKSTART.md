@@ -263,7 +263,7 @@ For comprehensive documentation, see:
   --steps 500000 
 
 ./mimic_deployment/training_scripts/train_manager.sh \
-  --policy pi05fast \
+  --policy pi0fast \
   --dataset-group redx_full_vlm \
   --batch-size 2 
 
