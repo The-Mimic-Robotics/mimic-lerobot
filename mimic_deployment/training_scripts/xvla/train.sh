@@ -20,7 +20,7 @@ SINGLE_DATASET="${SINGLE_DATASET:-}"
 # === POWER SETTINGS (RTX 3090) ===
 BATCH_SIZE="${BATCH_SIZE:-16}"  # 24GB allows nice large batches
 NUM_WORKERS="${NUM_WORKERS:-8}"
-STEPS="${STEPS:-250000}" 
+STEPS="${STEPS:-300000}" 
 SAVE_FREQ="${SAVE_FREQ:-50000}" 
 ACTION_STEPS="${ACTION_STEPS:-50}" 
 CHUNK_SIZE="${CHUNK_SIZE:-50}"
@@ -70,7 +70,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
   --policy.action_mode=auto \
-  --policy.num_image_views=3 \
+  --policy.num_image_views=2 \
   --policy.train_soft_prompts=true \
   --policy.train_policy_transformer=true \
   --policy.freeze_vision_encoder=false \
@@ -87,18 +87,30 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --job_name="$JOB_NAME" \
   --wandb.enable=true \
   --rename_map='{
-      "observation.images.top": "observation.images.image",
-      "observation.images.left_wrist": "observation.images.image2",
-      "observation.images.right_wrist": "observation.images.empty_camera_0",
-      "observation.images.front": "observation.images.image"
+      "observation.images.left_wrist": "observation.images.image",
+      "observation.images.right_wrist": "observation.images.image2"
   }' \
   --policy.input_features='{
-    "observation.images.image": {"shape": [3, 720, 1280], "type": "VISUAL"},
+    "observation.images.image": {"shape": [3, 480, 640], "type": "VISUAL"},
     "observation.images.image2": {"shape": [3, 480, 640], "type": "VISUAL"},
-    "observation.images.empty_camera_0": {"shape": [3, 480, 640], "type": "VISUAL"},
     "observation.state": {"shape": [15], "type": "STATE"},
     "observation.instruction": {"shape": [1], "type": "LANGUAGE"}
   }')
+#   --rename_map='{
+#       "observation.images.top": "observation.images.image",
+#       "observation.images.left_wrist": "observation.images.image2",
+#       "observation.images.right_wrist": "observation.images.empty_camera_0",
+#       "observation.images.front": "observation.images.image"
+#   }' \
+
+#   --policy.input_features='{
+#     "observation.images.image": {"shape": [3, 720, 1280], "type": "VISUAL"},
+#     "observation.images.image2": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.images.empty_camera_0": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.state": {"shape": [15], "type": "STATE"},
+#     "observation.instruction": {"shape": [1], "type": "LANGUAGE"}
+#   }'
+  
   
 # Note: Added "front" mapping just in case your dataset uses that name instead of top. 
 # It won't hurt if the key doesn't exist.
