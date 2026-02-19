@@ -134,39 +134,6 @@ cd "$REPO_ROOT"
 # If you OOM on 3090Ti, try reducing resolution in input_features or batch_size=1
 # The default policy.max_action_tokens is 256 
 
-CMD=(python src/lerobot/scripts/lerobot_train.py \
-  --dataset.repo_id="$DATASET_REPO_IDS" \
-  --dataset.video_backend=pyav \
-  --policy.type=pi0_fast \
-  --policy.pretrained_path=lerobot/pi0_fast_base \
-  --policy.repo_id="$REPO_ID" \
-  --policy.n_action_steps="$ACTION_STEPS" \
-  --policy.chunk_size="$CHUNK_SIZE" \
-  --policy.max_action_tokens=256 \
-  --policy.scheduler_decay_steps="$STEPS" \
-  --policy.input_features='{
-    "observation.images.top": {"shape": [3, 720, 1280], "type": "VISUAL"},
-    "observation.images.left_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
-    "observation.images.right_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
-    "observation.state": {"shape": [15], "type": "STATE"},
-    "observation.instruction": {"type": "LANGUAGE", "shape": [1]}
-  }' \
-  --policy.dtype=bfloat16 \
-  --policy.use_peft=true \
-#   --peft.type=LORA \
-  --peft.r=32 \
-#   --peft.alpha=64 \
-  --policy.gradient_checkpointing=true \
-  --policy.device=cuda \
-  --dataset.image_transforms.enable=false \
-  --batch_size="$BATCH_SIZE" \
-  --num_workers="$NUM_WORKERS" \
-  --steps="$STEPS" \
-  --save_freq="$SAVE_FREQ" \
-  --output_dir="$OUTPUT_DIR" \
-  --job_name="$JOB_NAME" \
-  --wandb.enable=true)
-
 # CMD=(python src/lerobot/scripts/lerobot_train.py \
 #   --dataset.repo_id="$DATASET_REPO_IDS" \
 #   --dataset.video_backend=pyav \
@@ -178,26 +145,59 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
 #   --policy.max_action_tokens=256 \
 #   --policy.scheduler_decay_steps="$STEPS" \
 #   --policy.input_features='{
-#     "observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"},
-#     "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"},
-#     "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"},
+#     "observation.images.top": {"shape": [3, 720, 1280], "type": "VISUAL"},
+#     "observation.images.left_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.images.right_wrist": {"shape": [3, 480, 640], "type": "VISUAL"},
 #     "observation.state": {"shape": [15], "type": "STATE"},
 #     "observation.instruction": {"type": "LANGUAGE", "shape": [1]}
 #   }' \
-#   --policy.use_peft=true \
-#   --policy.lora_rank=32 \
-#   --policy.lora_alpha=64 \
 #   --policy.dtype=bfloat16 \
+#   --policy.use_peft=true \
+# #   --peft.type=LORA \
+#   --peft.r=32 \
+# #   --peft.alpha=64 \
 #   --policy.gradient_checkpointing=true \
 #   --policy.device=cuda \
 #   --dataset.image_transforms.enable=false \
-#   --batch_size=2 \
+#   --batch_size="$BATCH_SIZE" \
 #   --num_workers="$NUM_WORKERS" \
 #   --steps="$STEPS" \
 #   --save_freq="$SAVE_FREQ" \
 #   --output_dir="$OUTPUT_DIR" \
 #   --job_name="$JOB_NAME" \
 #   --wandb.enable=true)
+
+CMD=(python src/lerobot/scripts/lerobot_train.py \
+  --dataset.repo_id="$DATASET_REPO_IDS" \
+  --dataset.video_backend=pyav \
+  --policy.type=pi0_fast \
+  --policy.pretrained_path=lerobot/pi0_fast_base \
+  --policy.repo_id="$REPO_ID" \
+  --policy.n_action_steps="$ACTION_STEPS" \
+  --policy.chunk_size="$CHUNK_SIZE" \
+  --policy.max_action_tokens=256 \
+  --policy.scheduler_decay_steps="$STEPS" \
+  --policy.input_features='{
+    "observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"},
+    "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"},
+    "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"},
+    "observation.state": {"shape": [15], "type": "STATE"},
+    "observation.instruction": {"type": "LANGUAGE", "shape": [1]}
+  }' \
+#   --policy.use_peft=true \
+#   --policy.lora_rank=32 \
+#   --policy.lora_alpha=64 \
+  --policy.dtype=bfloat16 \
+  --policy.gradient_checkpointing=true \
+  --policy.device=cuda \
+  --dataset.image_transforms.enable=false \
+  --batch_size=2 \
+  --num_workers="$NUM_WORKERS" \
+  --steps="$STEPS" \
+  --save_freq="$SAVE_FREQ" \
+  --output_dir="$OUTPUT_DIR" \
+  --job_name="$JOB_NAME" \
+  --wandb.enable=true)
 
 if [[ "$1" == "--no-daemon" ]]; then
     echo "Starting training in FOREGROUND..."
