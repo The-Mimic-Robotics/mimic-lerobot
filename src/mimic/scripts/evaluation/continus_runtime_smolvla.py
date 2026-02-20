@@ -22,11 +22,16 @@ from lerobot.datasets.utils import combine_feature_dicts
 
 # 1. Map your grid inputs (1-9) to the exact language commands Smol knows
 TIC_TAC_TOE_MOVES = {
-    "1": "pick red x piece handover place top left",
-    "2": "pick red x piece handover place top center",
-    "3": "pick red x piece handover place top right",
-    "4": "pick blue o handover place top middle",
-    # ... fill in 4 through 9
+    "0": "wait",
+    "1": "pick red x piece handover place bottom left",
+    "2": "pick red x piece handover place bottom middle",
+    "3": "pick red x piece handover place bottom right",
+    "4": "pick red x handover place middle left",
+    "5": "pick red x handover place center",
+    "6": "pick red x handover place middle right",
+    "7": "pick red x piece handover place top left",
+    "8": "pick red x piece handover place top middle",
+    "9": "pick red x piece handover place top right",
 }
 
 # Shared state protected by a lock (mutex)
