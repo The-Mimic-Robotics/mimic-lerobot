@@ -15,7 +15,7 @@ robot:
   # NOTE: Camera names MUST match training data keys:
   # - wrist_left, wrist_right, realsense_top
   cameras:
-    head:
+    top:
       type: zed_camera
       index_or_path: 23081456  # ZED camera serial number
       width: 1280
