@@ -32,6 +32,15 @@ TIC_TAC_TOE_MOVES = {
     "7": "pick red x piece handover place top left",
     "8": "pick red x piece handover place top middle",
     "9": "pick red x piece handover place top right",
+    "10": " pick blue o piece handover place bottom left",
+    "11": "pick blue o piece handover place bottom middle",
+    "12": "pick blue o piece handover place bottom right",
+    "13": "pick blue o handover place middle left",
+    "14": "pick blue o handover place center",
+    "15": "pick blue o handover place middle right",
+    "16": "pick blue o piece handover place top left",
+    "17": "pick blue o piece handover place top middle",
+    "18": "pick blue o piece handover place top right"
 }
 
 # Shared state protected by a lock (mutex)
