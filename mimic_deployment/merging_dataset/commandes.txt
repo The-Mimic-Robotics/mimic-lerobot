@@ -73,6 +73,7 @@ lerobot-edit-dataset \
 
 
 
+
   hf upload Mimic-Robotics/act_odin_red_x_handover_10action_20k outputs/train/act_odin_red_x_handover_and_place_tictactoe_v4/checkpoints/020000/pretrained_model
 
 

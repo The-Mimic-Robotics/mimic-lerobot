@@ -163,6 +163,14 @@ class ZedCamera(OpenCVCamera):
             self.zed.retrieve_image(self.image_zed, sl.VIEW.LEFT)
             frame = self.image_zed.get_data()
             
+            #when ready swap to rgb:
+            # # Just convert BGRA to BGR. Let the parent class handle the BGR -> RGB conversion.
+            # if frame.shape[2] == 4:
+            #     frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+                
+            # return frame
+            
+            
             # Convert BGRA to RGB/BGR based on color_mode
             requested_color_mode = self.color_mode
             if frame.shape[2] == 4:  # BGRA

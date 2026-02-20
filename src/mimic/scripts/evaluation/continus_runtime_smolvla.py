@@ -9,7 +9,7 @@ from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
 from lerobot.cameras.zed_camera import ZedCameraConfig
 
 from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
-from lerobot.policies.factory import make_pre_post_processors
+from lerobot.policies.factory import make_pre_post_processor
 from lerobot.processor import make_default_processors
 from lerobot.utils.control_utils import predict_action
 
