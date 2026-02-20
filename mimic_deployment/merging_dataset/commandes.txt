@@ -1,0 +1,146 @@
+lerobot-edit-dataset \
+  --repo_id Mimic-Robotics/mimic_tictactoe_blueO_full30hz \
+  --operation.type merge \
+  --push_to_hub true \
+  --operation.repo_ids "[\
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v1', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v2', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v2', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v3', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v4', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v5', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v6', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v8', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v9', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v11', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v12', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v13', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v14', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v15', \
+'Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v16', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_topleft_v1', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_topleft_v2', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v1', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v2', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v3', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v4', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomleft_v1', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomleft_v2', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomright_v1', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomright_v2', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_topmiddle_v1', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v3', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v4', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v1', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v2', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v3', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v4', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v1', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v2', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v1', \
+'Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v2'\
+]"
+
+
+
+
+lerobot-edit-dataset \
+  --repo_id Mimic-Robotics/mimic_tictactoe_blueO_full30hz \
+  --operation.type merge \
+  --push_to_hub true \
+  --operation.repo_ids "[\
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottomleft_v2', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottomleft_v3', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottommiddle_v1', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottommiddle_v2', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottomright_v1', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottomright_v2', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_center_v1', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_center_v2', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_middleleft_v1', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_middleleft_v2', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_middleright_v5', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_middleright_v6', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_v1', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_v2', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_middle_v1', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_middle_v2', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_v1', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_v2'\
+]"
+
+
+
+
+
+  hf upload Mimic-Robotics/act_odin_red_x_handover_10action_20k outputs/train/act_odin_red_x_handover_and_place_tictactoe_v4/checkpoints/020000/pretrained_model
+
+
+
+hf upload Mimic-Robotics/act_odin_red_x_30a_20k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/020000/pretrained_model
+hf upload Mimic-Robotics/act_odin_red_x_30a_40k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/040000/pretrained_model
+hf upload Mimic-Robotics/act_odin_red_x_30a_60k  outputs/train/act_odin_red_x_handover_and_place_tictactoe_v8/checkpoints/060000/pretrained_model
+  
+
+
+
+hf upload Mimic-Robotics/pi0_odin_redx_20k_30b_50a  outputs/train/
+hf upload Mimic-Robotics/smolvla_odin_redx_100k_64b_50a  outputs/train/
+
+hf upload Mimic-Robotics/act_math_redxVlm_50a_8b_200k  outputs/train/act_
+
+hf upload Mimic-Robotics/act_odin_redxvlm_360k_16b_50a  outputs/train/
+
+
+hf upload Mimic-Robotics/act_augusto_red_x_50a_14b_100k  outputs/train/act_
+
+
+hf upload Mimic-Robotics/mimic_tictactoe_red_x_handover_v3 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_red_x_handover_v3 --repo-type dataset
+
+
+
+mimic_tictactoe_blue_o_handover_center_slow_v1
+mimic_tictactoe_blue_o_handover_center_slow_v2
+mimic_tictactoe_blue_o_handover_top_left_slow_v1 
+mimic_tictactoe_blue_o_handover_top_right_slow_v1
+mimic_tictactoe_blue_o_handover_top_right_slow_v2 
+mimic_tictactoe_red_x_handover_center_slow_v3 
+
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v1 --repo-type dataset
+
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v2 --repo-type dataset
+
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v1 --repo-type dataset
+
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v2 --repo-type dataset
+
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v2 --repo-type dataset
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 --repo-type dataset
+
+huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v4 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v4 --repo-type dataset
+
+                       
+                       
+                       
+                       
+
+
+huggingface-cli upload Mimic-Robotics/eval_act_14b_50a_100k_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/eval_act_14b_50a_100k_v2 --repo-type model
+
+
+
+#success
+#--policy.path=outputs/train/act_MISC_red_x_handover_and_place_tictactoe_20260210_2145/checkpoints/100000/pretrained_model \
+
+
+
+
+
+
+

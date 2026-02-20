@@ -11,11 +11,11 @@ lerobot-record \
   --teleop.right_arm_port=/dev/arm_right_leader \
   --teleop.base_control_mode=keyboard \
   --teleop.id=mimic_leader \
-  --dataset.repo_id=Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottomright_v2 \
-  --dataset.single_task="pick blue o handover place bottom right" \
+  --dataset.repo_id=Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottomleft_v3 \
+  --dataset.single_task="pick blue o handover place bottom left" \
   --dataset.num_episodes=20 \
   --dataset.episode_time_s=180 \
-  --dataset.reset_time_s=10 \
+  --dataset.reset_time_s=5 \
   --dataset.video=true \
   --dataset.fps=30 \
   --dataset.push_to_hub=false \
