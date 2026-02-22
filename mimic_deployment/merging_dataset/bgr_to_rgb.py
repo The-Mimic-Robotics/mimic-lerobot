@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from lerobot.datasets.lerobot_dataset import LeRobotDataset
 
-#nohup python mimic_deployment/merging_dataset/bgr_to_rgb.py > conversion_progress.log 2>&1 &
+#nohup python bgr_to_rgb.py > conversion_progress.log 2>&1 &
 
 def fix_bgr_to_rgb(src_repo_id: str, dst_repo_id: str, target_camera: str):
     print(f"Loading source dataset: {src_repo_id}", flush=True)
@@ -30,7 +30,8 @@ def fix_bgr_to_rgb(src_repo_id: str, dst_repo_id: str, target_camera: str):
         features=features,
         robot_type=robot_type,
         use_videos=True,
-        image_writer_processes=10  
+        image_writer_processes=0,
+        image_writer_threads=16 
     )
 
     print(f"Starting conversion of {total_episodes} episodes...", flush=True)
