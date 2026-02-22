@@ -141,7 +141,17 @@ huggingface-cli upload Mimic-Robotics/eval_act_14b_50a_100k_v2 ~/.cache/huggingf
 
 
 
-hf download --repo-type dataset Mimic-Robotics/test2 --local-dir .cache/huggingface/lerobot/Mimic-Robotics/test2
+hf download --repo-type dataset Mimic-Robotics/mimic_tictactoe_redx_full30hz --local-dir .cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_redx_full30hz
 
 
 
+Mimic-Robotics/mimic_tictactoe_redx_full30hz
+
+lerobot-edit-dataset \
+  --repo_id Mimic-Robotics/mimic_tictactoe_full30hz_rgb \
+  --operation.type merge \
+  --push_to_hub true \
+  --operation.repo_ids "[\
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottomleft_v2', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_v2'\
+]"

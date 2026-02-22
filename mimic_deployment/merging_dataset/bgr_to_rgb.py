@@ -77,8 +77,8 @@ def fix_bgr_to_rgb(src_repo_id: str, dst_repo_id: str, target_camera: str):
     print(f"Done! Fixed dataset sved to {dst_path}")
 
 if __name__ == "__main__":
-    SOURCE_DATASET = "Mimic-Robotics/test2"
-    DESTINATION_DATASET = "Mimic-Robotics/test2_fixed"
+    SOURCE_DATASET = "Mimic-Robotics/mimic_tictactoe_redx_full30hz"
+    DESTINATION_DATASET = "Mimic-Robotics/mimic_tictactoe_redx_full30hz_rgb"
     CAMERA_TO_FIX = "observation.images.top"
     
     fix_bgr_to_rgb(SOURCE_DATASET, DESTINATION_DATASET, CAMERA_TO_FIX)
