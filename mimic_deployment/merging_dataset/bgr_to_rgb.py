@@ -74,7 +74,7 @@ def fix_bgr_to_rgb(src_repo_id: str, dst_repo_id: str, target_camera: str):
 
     print("Finalizing dataset metadata...")
     dst_dataset.finalize()
-    print(f"Done! Fixed dataset saved to {dst_path}")
+    print(f"Done! Fixed dataset sved to {dst_path}")
 
 if __name__ == "__main__":
     SOURCE_DATASET = "Mimic-Robotics/test2"
