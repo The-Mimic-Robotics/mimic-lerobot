@@ -4,14 +4,11 @@ import sys
 from pathlib import Path
 from lerobot.datasets.lerobot_dataset import LeRobotDataset
 
-
 #nohup python mimic_deployment/merging_dataset/bgr_to_rgb.py > conversion_progress.log 2>&1 &
-
 
 def fix_bgr_to_rgb(src_repo_id: str, dst_repo_id: str, target_camera: str):
     print(f"Loading source dataset: {src_repo_id}", flush=True)
     
-    # Use pyav to bypass the local file opener bug
     src_dataset = LeRobotDataset(src_repo_id, video_backend="pyav")
     
     fps = src_dataset.fps
@@ -25,12 +22,15 @@ def fix_bgr_to_rgb(src_repo_id: str, dst_repo_id: str, target_camera: str):
         shutil.rmtree(dst_path)
 
     print(f"Creating destination dataset: {dst_repo_id}", flush=True)
+    
+    # --- THE FIX: Spawn 10 background processes to handle PNG compression ---
     dst_dataset = LeRobotDataset.create(
         repo_id=dst_repo_id,
         fps=fps,
         features=features,
         robot_type=robot_type,
-        use_videos=True
+        use_videos=True,
+        image_writer_processes=10  
     )
 
     print(f"Starting conversion of {total_episodes} episodes...", flush=True)
@@ -42,15 +42,12 @@ def fix_bgr_to_rgb(src_repo_id: str, dst_repo_id: str, target_camera: str):
         from_idx = ep_meta["dataset_from_index"]
         to_idx = ep_meta["dataset_to_index"]
         
-        # Inner loop without tqdm for clean background logging
         for frame_idx in range(from_idx, to_idx):
             item = src_dataset[frame_idx]
             
-            # 1. Flip BGR to RGB on the CHW PyTorch tensor
             if target_camera in item:
                 item[target_camera] = item[target_camera][[2, 1, 0], :, :]
             
-            # 2. Reconstruct the frame safely
             frame = {}
             for key, ft_schema in features.items():
                 if key in ["index", "episode_index", "frame_index", "task_index", "timestamp"]:
@@ -58,7 +55,6 @@ def fix_bgr_to_rgb(src_repo_id: str, dst_repo_id: str, target_camera: str):
                 
                 val = item[key]
                 
-                # 3. Fix the Shape Mismatch 
                 if ft_schema["dtype"] in ["image", "video"]:
                     val = val.permute(1, 2, 0).numpy()
                 else:
@@ -69,15 +65,12 @@ def fix_bgr_to_rgb(src_repo_id: str, dst_repo_id: str, target_camera: str):
             frame["task"] = item["task"]
             dst_dataset.add_frame(frame)
             
-        # Encodes the buffered images into the MP4 chunks
         dst_dataset.save_episode()
         
-        # Explicitly wipe the leftover images folder per episode
         images_dir = dst_path / "images"
         if images_dir.exists():
             shutil.rmtree(images_dir, ignore_errors=True)
 
-        # ETA Calculation
         ep_duration = time.time() - ep_start_time
         eps_remaining = total_episodes - (ep_idx + 1)
         eta_minutes = (eps_remaining * ep_duration) / 60
