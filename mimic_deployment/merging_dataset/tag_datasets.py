@@ -10,9 +10,9 @@ from pathlib import Path
 # Datasets that need tagging
 DATASETS_TO_TAG = [
     "Mimic-Robotics/test2",
-    "Mimic-Robotics/test1",
-    "Mimic-Robotics/mimic_tictactoe_blueO_full30hz",
-    "Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_v2"
+    "Mimic-Robotics/mimic_tictactoe_redx_full30hz_rgb",
+    "Mimic-Robotics/mimic_ttt_blue_full30hz_rgb",
+    "Mimic-Robotics/mimic_ttt_redx_full30hz_rgb"
 ]
 
 def get_dataset_version(repo_id: str) -> str:

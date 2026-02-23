@@ -284,7 +284,7 @@ For comprehensive documentation, see:
 # SmolVla with vision frozen all enabled
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy smolvla \
-  --dataset-group blueO_full_vlm \
+  --dataset-group blueO_full_freeze_vision \
   --batch-size 48
 
 
