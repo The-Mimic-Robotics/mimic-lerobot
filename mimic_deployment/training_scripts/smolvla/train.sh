@@ -41,8 +41,8 @@ else
     NUM_WORKERS="${NUM_WORKERS:-4}"
 fi
 
-STEPS="${STEPS:-100000}"
-SAVE_FREQ="${SAVE_FREQ:-10000}"
+STEPS="${STEPS:-300000}"
+SAVE_FREQ="${SAVE_FREQ:-50000}"
 ACTION_STEPS="${ACTION_STEPS:-50}"
 CHUNK_SIZE="${CHUNK_SIZE:-50}"
 
@@ -158,7 +158,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.repo_id="$REPO_ID" \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
-  --policy.freeze_vision_encoder=true \
+  --policy.freeze_vision_encoder=false \
   --policy.scheduler_decay_steps="$STEPS" \
   --policy.input_features='{
     "observation.images.top": {"shape": [3, 720, 1280], "type": "VISUAL"},
@@ -175,7 +175,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
 #   --peft.dropout=0.05 \
   --policy.train_expert_only=false \
   --policy.device=cuda \
-  --dataset.image_transforms.enable=false \
+#   --dataset.image_transforms.enable=true \
   --batch_size="$BATCH_SIZE" \
   --num_workers="$NUM_WORKERS" \
   --steps="$STEPS" \

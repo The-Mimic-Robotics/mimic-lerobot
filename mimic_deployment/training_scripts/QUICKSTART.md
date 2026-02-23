@@ -273,6 +273,12 @@ For comprehensive documentation, see:
   --dataset-group redx_full_vlm \
   --batch-size 12
 
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy smolvla \
+  --dataset-group redx_full_vlm \
+  --batch-size 48 
+
+
 
 
 
