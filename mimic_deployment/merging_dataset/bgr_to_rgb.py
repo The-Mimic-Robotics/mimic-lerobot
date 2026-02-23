@@ -31,7 +31,7 @@ def fix_bgr_to_rgb(src_repo_id: str, dst_repo_id: str, target_camera: str):
         robot_type=robot_type,
         use_videos=True,
         image_writer_processes=0,
-        image_writer_threads=16 
+        image_writer_threads=6  #16 for the ryzen 9 
     )
 
     print(f"Starting conversion of {total_episodes} episodes...", flush=True)
@@ -85,8 +85,8 @@ def fix_bgr_to_rgb(src_repo_id: str, dst_repo_id: str, target_camera: str):
     print(f"Done! Fixed dataset saved to {dst_path}", flush=True)
 
 if __name__ == "__main__":
-    SOURCE_DATASET = "Mimic-Robotics/mimic_tictactoe_redx_full30hz"
-    DESTINATION_DATASET = "Mimic-Robotics/mimic_tictactoe_redx_full30hz_rgb"
+    SOURCE_DATASET = "Mimic-Robotics/mimic_ttt_blue_full30hz"
+    DESTINATION_DATASET = "Mimic-Robotics/mimic_ttt_blue_full30hz_rgb"
     CAMERA_TO_FIX = "observation.images.top"
     
     fix_bgr_to_rgb(SOURCE_DATASET, DESTINATION_DATASET, CAMERA_TO_FIX)

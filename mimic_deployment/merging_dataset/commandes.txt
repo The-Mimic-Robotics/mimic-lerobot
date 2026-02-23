@@ -129,7 +129,7 @@ hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v4 ~/.cac
 hf upload Mimic-Robotics/test3 ~/.cache/huggingface/lerobot/Mimic-Robotics/test2_ --repo-type dataset
               
                        
-                       
+hf upload Mimic-Robotics/mimic_ttt_blue_full30hz_rgb ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_blue_full30hz_rgb --repo-type dataset                       
 
 
 huggingface-cli upload Mimic-Robotics/eval_act_14b_50a_100k_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/eval_act_14b_50a_100k_v2 --repo-type model
@@ -143,6 +143,7 @@ huggingface-cli upload Mimic-Robotics/eval_act_14b_50a_100k_v2 ~/.cache/huggingf
 
 hf download --repo-type dataset Mimic-Robotics/mimic_tictactoe_redx_full30hz --local-dir .cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_redx_full30hz
 
+hf download --repo-type dataset Mimic-Robotics/mimic_ttt_blue_full30hz_rgb --local-dir .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
 
 
 Mimic-Robotics/mimic_tictactoe_redx_full30hz
@@ -150,8 +151,8 @@ Mimic-Robotics/mimic_tictactoe_redx_full30hz
 lerobot-edit-dataset \
   --repo_id Mimic-Robotics/mimic_tictactoe_full30hz_rgb \
   --operation.type merge \
-  --push_to_hub true \
+  --push_to_hub false \
   --operation.repo_ids "[\
-'Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottomleft_v2', \
+'Mimic-Robotics/mimic_ttt_blue_full30hz_rgb', \
 'Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_v2'\
 ]"
