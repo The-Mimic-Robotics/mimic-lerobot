@@ -273,12 +273,19 @@ For comprehensive documentation, see:
   --dataset-group redx_full_vlm \
   --batch-size 12
 
+
+# SmolVla with VLM all enabled
+
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy smolvla \
-  --dataset-group redx_full_vlm \
-  --batch-size 48 
+  --dataset-group blueO_full_vlm \
+  --batch-size 12
 
-
+# SmolVla with vision frozen all enabled
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy smolvla \
+  --dataset-group blueO_full_vlm \
+  --batch-size 48
 
 
 

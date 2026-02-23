@@ -150,6 +150,9 @@ cd "$REPO_ROOT"
 #--policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}}' \
 #--policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}, "observation.instruction": {"type": "TEXT"}}' \
 # common arguments for both modes
+
+
+# try without and without "--policy.freeze_vision_encoder=false \""
 CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
 --dataset.video_backend=pyav \

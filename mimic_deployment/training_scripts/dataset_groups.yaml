@@ -104,6 +104,9 @@ groups:
   redx_full_vlm:
     - Mimic-Robotics/mimic_tictactoe_redx_full30hz
 
+  blueO_full_vlm:
+    - Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
+
     
     
 
