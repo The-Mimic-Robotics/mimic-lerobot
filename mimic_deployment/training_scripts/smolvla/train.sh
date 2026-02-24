@@ -161,7 +161,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.repo_id="$REPO_ID" \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
-  --policy.freeze_vision_encoder=true \
+  --policy.freeze_vision_encoder=false \
   --policy.scheduler_decay_steps="$STEPS" \
   --policy.input_features='{
     "observation.images.top": {"shape": [3, 720, 1280], "type": "VISUAL"},
