@@ -29,7 +29,8 @@ from lerobot.robots.so_follower.robot_kinematic_processor import (
     ForwardKinematicsJointsToEE,
     InverseKinematicsEEToJoints,
 )
-from lerobot.teleoperators.so_leader import SO100Leader, SO100LeaderConfig
+from lerobot.teleoperators.mimic_leader.mimic_leader import MimicLeader
+from lerobot.teleoperators.mimic_leader.config_mimic_leader import MimicLeaderConfig
 from lerobot.utils.robot_utils import precise_sleep
 from lerobot.utils.visualization_utils import init_rerun, log_rerun_data
 
@@ -39,13 +40,17 @@ FPS = 30
 def main():
     # Initialize the robot and teleoperator config
     follower_config = SO100FollowerConfig(
-        port="/dev/tty.usbmodem5A460814411", id="my_awesome_follower_arm", use_degrees=True
+        port="/dev/ttyACM0", id="so_101_follower_arm", use_degrees=True
     )
-    leader_config = SO100LeaderConfig(port="/dev/tty.usbmodem5A460819811", id="my_awesome_leader_arm")
+    # Configure and initialize follower and mimic leader (bimanual)
+    # NOTE: Provide correct ports for left and right arms here. If you only have one
+    # teleop device, you can set both ports to the same device, otherwise supply
+    # distinct device paths.
+    leader_config = MimicLeaderConfig(left_arm_port="/dev/tty.usbmodem5A460819811", right_arm_port="/dev/tty.usbmodem5A460819812", id="my_awesome_mimic_leader")
 
     # Initialize the robot and teleoperator
     follower = SO100Follower(follower_config)
-    leader = SO100Leader(leader_config)
+    leader = MimicLeader(leader_config)
 
     # NOTE: It is highly recommended to use the urdf in the SO-ARM100 repo: https://github.com/TheRobotStudio/SO-ARM100/blob/main/Simulation/SO101/so101_new_calib.urdf
     follower_kinematics_solver = RobotKinematics(
@@ -54,11 +59,12 @@ def main():
         joint_names=list(follower.bus.motors.keys()),
     )
 
-    # NOTE: It is highly recommended to use the urdf in the SO-ARM100 repo: https://github.com/TheRobotStudio/SO-ARM100/blob/main/Simulation/SO101/so101_new_calib.urdf
+    # For MimicLeader we use the right arm to drive the follower by default.
+    # Use leader.right_arm.bus.motors to build the kinematics joint list.
     leader_kinematics_solver = RobotKinematics(
         urdf_path="./SO101/so101_new_calib.urdf",
         target_frame_name="gripper_frame_link",
-        joint_names=list(leader.bus.motors.keys()),
+        joint_names=list(leader.right_arm.bus.motors.keys()),
     )
 
     # Build pipeline to convert teleop joints to EE action
@@ -103,11 +109,19 @@ def main():
         # Get robot observation
         robot_obs = follower.get_observation()
 
-        # Get teleop observation
+        # Get teleop observation (MimicLeader returns combined left/right/base keys)
         leader_joints_obs = leader.get_action()
 
-        # teleop joints -> teleop EE action
-        leader_ee_act = leader_to_ee(leader_joints_obs)
+        # Extract right-arm joint commands (keys are prefixed with 'right_') and strip prefix
+        if isinstance(leader_joints_obs, dict):
+            right_action = {k.removeprefix("right_"): v for k, v in leader_joints_obs.items() if k.startswith("right_")}
+            # Fallback: if no right_ keys exist, try using full observation as-is
+            leader_input_for_fk = right_action if right_action else leader_joints_obs
+        else:
+            leader_input_for_fk = leader_joints_obs
+
+        # teleop joints -> teleop EE action (use right arm of the mimic leader)
+        leader_ee_act = leader_to_ee(leader_input_for_fk)
 
         # teleop EE -> robot joints
         follower_joints_act = ee_to_follower_joints((leader_ee_act, robot_obs))
