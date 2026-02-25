@@ -153,6 +153,7 @@ cd "$REPO_ROOT"
 
 
 # try without and without "--policy.freeze_vision_encoder=false \""
+# --policy.train_expert_only=true \ this is the VL part
 CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
 --dataset.video_backend=pyav \
@@ -161,7 +162,9 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.repo_id="$REPO_ID" \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
-  --policy.freeze_vision_encoder=false \
+  --policy.train_expert_only=true \
+  --policy.freeze_vision_encoder=True \
+  --policy.freeze_language_encoder=true \
   --policy.scheduler_decay_steps="$STEPS" \
   --policy.input_features='{
     "observation.images.top": {"shape": [3, 720, 1280], "type": "VISUAL"},
@@ -176,7 +179,6 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
 #   --peft.r=32 \
 #   --peft.alpha=64 \
 #   --peft.dropout=0.05 \
-  --policy.train_expert_only=false \
   --policy.device=cuda \
 #   --dataset.image_transforms.enable=true \
   --batch_size="$BATCH_SIZE" \

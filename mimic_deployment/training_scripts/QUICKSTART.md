@@ -275,17 +275,27 @@ For comprehensive documentation, see:
 
 
 # SmolVla with VLM all enabled
-
+# used 21Gb vram
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy smolvla \
   --dataset-group blueO_full_vlm \
   --batch-size 12
 
 # SmolVla with vision frozen all enabled
+# used 19Gb Vram
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy smolvla \
   --dataset-group blueO_full_freeze_vision \
   --batch-size 48
+
+  # SmolVla with vision frozen all enabled
+  # used 16gbs of vram
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy smolvla \
+  --dataset-group blueO_full_VLFReeze \
+  --batch-size 48
+
+# SmolVla with all frozen 
 
 
 
