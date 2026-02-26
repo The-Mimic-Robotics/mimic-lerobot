@@ -102,7 +102,18 @@ groups:
 
 
   redx_full_vlm:
-    - Mimic-Robotics/mimic_tictactoe_redx_full30hz
+    - Mimic-Robotics/mimic_ttt_redx_full30hz_rgb
+
+  blueO_full_VLFReeze:
+    - Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
+
+  full_ttt_odin:
+    - Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
+    - Mimic-Robotics/mimic_tictactoe_redx_full30hz_rgb
+
+  full_ttt_augusto:
+    - Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
+    - Mimic-Robotics/mimic_ttt_redx_full30hz_rgb
 
     
     

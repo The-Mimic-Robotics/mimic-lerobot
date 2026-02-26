@@ -108,28 +108,28 @@ mimic_tictactoe_blue_o_handover_top_right_slow_v2
 mimic_tictactoe_red_x_handover_center_slow_v3 
 
 
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v1 --repo-type dataset
+hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v1 --repo-type dataset
 
 
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v2 --repo-type dataset
+hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v2 --repo-type dataset
 
 
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v1 --repo-type dataset
+hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v1 --repo-type dataset
+
+hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v2 --repo-type dataset
 
 
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_right_slow_v2 --repo-type dataset
+hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v2 --repo-type dataset
 
+hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 --repo-type dataset
 
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v2 --repo-type dataset
-
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 --repo-type dataset
-
-huggingface-cli upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v4 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v4 --repo-type dataset
+hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v4 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v4 --repo-type dataset
 
                        
+hf upload Mimic-Robotics/test3 ~/.cache/huggingface/lerobot/Mimic-Robotics/test2_ --repo-type dataset
+              
                        
-                       
-                       
+hf upload Mimic-Robotics/mimic_ttt_blue_full30hz_rgb ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_blue_full30hz_rgb --repo-type dataset                       
 
 
 huggingface-cli upload Mimic-Robotics/eval_act_14b_50a_100k_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/eval_act_14b_50a_100k_v2 --repo-type model
@@ -141,7 +141,18 @@ huggingface-cli upload Mimic-Robotics/eval_act_14b_50a_100k_v2 ~/.cache/huggingf
 
 
 
+hf download --repo-type dataset Mimic-Robotics/mimic_tictactoe_redx_full30hz --local-dir .cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_redx_full30hz
+
+hf download --repo-type dataset Mimic-Robotics/mimic_ttt_blue_full30hz_rgb --local-dir .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
 
 
+Mimic-Robotics/mimic_tictactoe_redx_full30hz
 
-
+lerobot-edit-dataset \
+  --repo_id Mimic-Robotics/mimic_tictactoe_full30hz_rgb \
+  --operation.type merge \
+  --push_to_hub false \
+  --operation.repo_ids "[\
+'Mimic-Robotics/mimic_ttt_blue_full30hz_rgb', \
+'Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_v2'\
+]"

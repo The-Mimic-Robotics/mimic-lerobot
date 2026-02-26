@@ -9,15 +9,10 @@ from pathlib import Path
 
 # Datasets that need tagging
 DATASETS_TO_TAG = [
-    "Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v1",
-    "Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v2",
-    "Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v3",
-    "Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v4",
-    "Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v1",
-    "Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v2",
-    "Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v1",
-    "Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v2",
-    "Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v1"
+    "Mimic-Robotics/test2",
+    "Mimic-Robotics/mimic_tictactoe_redx_full30hz_rgb",
+    "Mimic-Robotics/mimic_ttt_blue_full30hz_rgb",
+    "Mimic-Robotics/mimic_ttt_redx_full30hz_rgb"
 ]
 
 def get_dataset_version(repo_id: str) -> str:

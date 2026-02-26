@@ -32,7 +32,7 @@ TIC_TAC_TOE_MOVES = {
     "7": "pick red x piece handover place top left",
     "8": "pick red x piece handover place top middle",
     "9": "pick red x piece handover place top right",
-    "10": " pick blue o piece handover place bottom left",
+    "10": "pick blue o piece handover place bottom left",
     "11": "pick blue o piece handover place bottom middle",
     "12": "pick blue o piece handover place bottom right",
     "13": "pick blue o handover place middle left",

@@ -41,8 +41,8 @@ else
     NUM_WORKERS="${NUM_WORKERS:-4}"
 fi
 
-STEPS="${STEPS:-100000}"
-SAVE_FREQ="${SAVE_FREQ:-10000}"
+STEPS="${STEPS:-300000}"
+SAVE_FREQ="${SAVE_FREQ:-50000}"
 ACTION_STEPS="${ACTION_STEPS:-50}"
 CHUNK_SIZE="${CHUNK_SIZE:-50}"
 
@@ -150,6 +150,10 @@ cd "$REPO_ROOT"
 #--policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}}' \
 #--policy.input_features='{"observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"}, "observation.state": {"shape": [15], "type": "STATE"}, "observation.instruction": {"type": "TEXT"}}' \
 # common arguments for both modes
+
+
+# try without and without "--policy.freeze_vision_encoder=false \""
+# --policy.train_expert_only=true \ this is the VL part
 CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
 --dataset.video_backend=pyav \
@@ -158,7 +162,9 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.repo_id="$REPO_ID" \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
-  --policy.freeze_vision_encoder=true \
+  --policy.train_expert_only=true \
+  --policy.freeze_vision_encoder=True \
+  --policy.freeze_language_encoder=true \
   --policy.scheduler_decay_steps="$STEPS" \
   --policy.input_features='{
     "observation.images.top": {"shape": [3, 720, 1280], "type": "VISUAL"},
@@ -173,9 +179,8 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
 #   --peft.r=32 \
 #   --peft.alpha=64 \
 #   --peft.dropout=0.05 \
-  --policy.train_expert_only=false \
   --policy.device=cuda \
-  --dataset.image_transforms.enable=false \
+#   --dataset.image_transforms.enable=true \
   --batch_size="$BATCH_SIZE" \
   --num_workers="$NUM_WORKERS" \
   --steps="$STEPS" \
