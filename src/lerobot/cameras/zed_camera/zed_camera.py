@@ -145,13 +145,63 @@ class ZedCamera(OpenCVCamera):
             # Use OpenCV fallback with stereo cropping
             return super().read()
     
+    # def _read_from_hardware(self) -> NDArray[Any]:
+    #     """
+    #     Override for background thread to read from ZED SDK or OpenCV.
+    #     Returns raw BGR frame before post-processing.
+    #     """
+    #     if ZED_SDK_AVAILABLE:
+    #         # Use ZED SDK
+    #         if not self.is_connected:
+    #             raise ConnectionError(f"{self} is not connected.")
+            
+    #         err = self.zed.grab(self.runtime_params)
+    #         if err != sl.ERROR_CODE.SUCCESS:
+    #             raise RuntimeError(f"ZED grab failed: {err}")
+            
+    #         # Retrieve left eye image
+    #         self.zed.retrieve_image(self.image_zed, sl.VIEW.LEFT)
+    #         frame = self.image_zed.get_data()
+            
+    #         #when ready swap to rgb:
+    #         # # Just convert BGRA to BGR. Let the parent class handle the BGR -> RGB conversion.
+    #         # if frame.shape[2] == 4:
+    #         #     frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+                
+    #         # return frame
+            
+            
+    #         # Convert BGRA to RGB/BGR based on color_mode
+    #         requested_color_mode = self.color_mode
+    #         if frame.shape[2] == 4:  # BGRA
+    #             if requested_color_mode == self.color_mode.RGB:
+    #                 frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2RGB)
+    #             else:
+    #                 frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
+            
+    #         return frame[:, :, :3]  # Remove alpha channel if present
+    #     else:
+    #         # Use OpenCV fallback with stereo cropping
+    #         if not self.is_connected:
+    #             raise ConnectionError(f"{self} is not connected.")
+
+    #         ret, frame = self.videocapture.read()
+    #         if not ret or frame is None:
+    #             raise RuntimeError(f"{self} read failed.")
+
+    #         # Crop to Left Eye Only
+    #         height, width, _ = frame.shape
+    #         left_eye_frame = frame[:, :width // 2]
+            
+    #         return left_eye_frame
+
+
     def _read_from_hardware(self) -> NDArray[Any]:
         """
         Override for background thread to read from ZED SDK or OpenCV.
-        Returns raw BGR frame before post-processing.
+        Returns raw frames (BGRA for ZED, BGR for OpenCV).
         """
         if ZED_SDK_AVAILABLE:
-            # Use ZED SDK
             if not self.is_connected:
                 raise ConnectionError(f"{self} is not connected.")
             
@@ -161,25 +211,8 @@ class ZedCamera(OpenCVCamera):
             
             # Retrieve left eye image
             self.zed.retrieve_image(self.image_zed, sl.VIEW.LEFT)
-            frame = self.image_zed.get_data()
+            return self.image_zed.get_data()  # Returns raw BGRA
             
-            #when ready swap to rgb:
-            # # Just convert BGRA to BGR. Let the parent class handle the BGR -> RGB conversion.
-            # if frame.shape[2] == 4:
-            #     frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
-                
-            # return frame
-            
-            
-            # Convert BGRA to RGB/BGR based on color_mode
-            requested_color_mode = self.color_mode
-            if frame.shape[2] == 4:  # BGRA
-                if requested_color_mode == self.color_mode.RGB:
-                    frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2RGB)
-                else:
-                    frame = cv2.cvtColor(frame, cv2.COLOR_BGRA2BGR)
-            
-            return frame[:, :, :3]  # Remove alpha channel if present
         else:
             # Use OpenCV fallback with stereo cropping
             if not self.is_connected:
@@ -193,7 +226,7 @@ class ZedCamera(OpenCVCamera):
             height, width, _ = frame.shape
             left_eye_frame = frame[:, :width // 2]
             
-            return left_eye_frame
+            return left_eye_frame  # Returns raw BGR
     
     def disconnect(self) -> None:
         if ZED_SDK_AVAILABLE:
@@ -205,6 +238,21 @@ class ZedCamera(OpenCVCamera):
             logger.info(f"{self} disconnected.")
         else:
             super().disconnect()
+
+    def _postprocess_image(self, frame: NDArray[Any]) -> NDArray[Any]:
+        """
+        Intercepts the frame and guarantees RGB output,
+        overriding any parent class assumptions.
+        """
+        # 1. Handle ZED SDK output (BGRA -> RGB)
+        if frame.shape[2] == 4:
+            return cv2.cvtColor(frame, cv2.COLOR_BGRA2RGB)
+            
+        # 2. Handle OpenCV Fallback output (BGR -> RGB)
+        elif len(frame.shape) == 3 and frame.shape[2] == 3:
+            return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            
+        return frame
     
     # Only override these if using OpenCV fallback
     def _configure_capture_settings(self) -> None:
