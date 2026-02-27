@@ -156,3 +156,7 @@ lerobot-edit-dataset \
 'Mimic-Robotics/mimic_ttt_blue_full30hz_rgb', \
 'Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_v2'\
 ]"
+
+
+hf upload Mimic-Robotics/smol_blue_VissionFreeze_50a  outputs/train/smolvla_odin_blueo_full_freeze_vision_20260223_1051/checkpoints/100000/pretrained_model
+  
