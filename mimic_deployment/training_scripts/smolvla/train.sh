@@ -6,6 +6,11 @@ set -e
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 export ACCELERATE_MIXED_PRECISION="bf16"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-1}"
+export OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-1}"
+export MKL_NUM_THREADS="${MKL_NUM_THREADS:-1}"
+export NUMEXPR_NUM_THREADS="${NUMEXPR_NUM_THREADS:-1}"
+export TOKENIZERS_PARALLELISM="${TOKENIZERS_PARALLELISM:-false}"
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
@@ -17,6 +22,9 @@ DATASET_RESOLVER="$REPO_ROOT/mimic_deployment/training_scripts/dataset_groups.py
 
 # Get computer name from environment or hostname
 COMPUTER="${COMPUTER:-$(hostname)}"
+if [[ "$COMPUTER" == speed-* ]] || [[ "$COMPUTER" == speed*.* ]]; then
+    COMPUTER="speed"
+fi
 
 # ============================================================================
 # PARAMETERS (Override via command line arguments)
@@ -36,15 +44,24 @@ elif [[ "$COMPUTER" == "jupiter" ]]; then
 elif [[ "$COMPUTER" == "mathias" ]]; then
     BATCH_SIZE="${BATCH_SIZE:-2}"
     NUM_WORKERS="${NUM_WORKERS:-4}"
+elif [[ "$COMPUTER" == "speed" ]]; then
+    BATCH_SIZE="${BATCH_SIZE:-1}"
+    NUM_WORKERS="${NUM_WORKERS:-0}"
 else
     BATCH_SIZE="${BATCH_SIZE:-1}"
     NUM_WORKERS="${NUM_WORKERS:-4}"
 fi
 
 STEPS="${STEPS:-300000}"
-SAVE_FREQ="${SAVE_FREQ:-50000}"
+SAVE_FREQ="${SAVE_FREQ:-10000}"
 ACTION_STEPS="${ACTION_STEPS:-50}"
 CHUNK_SIZE="${CHUNK_SIZE:-50}"
+
+if [ -n "$WANDB_API_KEY" ]; then
+    WANDB_ENABLE="${WANDB_ENABLE:-true}"
+else
+    WANDB_ENABLE="${WANDB_ENABLE:-false}"
+fi
 
 # ============================================================================
 # RESOLVE DATASET GROUP TO DATASET LIST OR USE SINGLE DATASET
@@ -133,6 +150,7 @@ fi
 echo "Batch Size:    $BATCH_SIZE"
 echo "Num Workers:   $NUM_WORKERS"
 echo "Steps:         $STEPS"
+echo "WandB Enable:  $WANDB_ENABLE"
 echo "Job Name:      $JOB_NAME"
 echo "Output Dir:    $OUTPUT_DIR"
 echo "Repo ID:       $REPO_ID"
@@ -144,6 +162,18 @@ echo ""
 
 cd "$REPO_ROOT"
 
+if [ -n "$PYTHON_BIN" ]; then
+    TRAIN_PYTHON="$PYTHON_BIN"
+elif [ -x "$REPO_ROOT/../conda/lerobot/bin/python" ]; then
+    TRAIN_PYTHON="$REPO_ROOT/../conda/lerobot/bin/python"
+elif command -v python3 >/dev/null 2>&1; then
+    TRAIN_PYTHON="$(command -v python3)"
+else
+    TRAIN_PYTHON="$(command -v python)"
+fi
+
+echo "Python:        $TRAIN_PYTHON"
+
 # ============================================================================
 # EXECUTION LOGIC (FOREGROUND VS BACKGROUND)
 # ============================================================================
@@ -154,7 +184,7 @@ cd "$REPO_ROOT"
 
 # try without and without "--policy.freeze_vision_encoder=false \""
 # --policy.train_expert_only=true \ this is the VL part
-CMD=(python src/lerobot/scripts/lerobot_train.py \
+CMD=("$TRAIN_PYTHON" src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
 --dataset.video_backend=pyav \
   --policy.type=smolvla \
@@ -162,9 +192,8 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.repo_id="$REPO_ID" \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
-  --policy.train_expert_only=true \
-  --policy.freeze_vision_encoder=True \
-  --policy.freeze_language_encoder=true \
+  --policy.train_expert_only=false \
+  --policy.freeze_vision_encoder=false \
   --policy.scheduler_decay_steps="$STEPS" \
   --policy.input_features='{
     "observation.images.top": {"shape": [3, 720, 1280], "type": "VISUAL"},
@@ -187,7 +216,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --save_freq="$SAVE_FREQ" \
   --output_dir="$OUTPUT_DIR" \
   --job_name="$JOB_NAME" \
-  --wandb.enable=true)
+    --wandb.enable="$WANDB_ENABLE")
 
 if [[ "$1" == "--no-daemon" ]]; then
     # --- FOREGROUND MODE ---

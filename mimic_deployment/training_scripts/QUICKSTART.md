@@ -271,7 +271,7 @@ For comprehensive documentation, see:
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy xvla \
   --dataset-group redx_full_vlm \
-  --batch-size 12
+  --batch-size 512
 
 
 # SmolVla with VLM all enabled
@@ -285,7 +285,7 @@ For comprehensive documentation, see:
 # used 19Gb Vram
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy smolvla \
-  --dataset-group blueO_full_freeze_vision \
+  --dataset-group redx_full_vlm \
   --batch-size 48
 
   # SmolVla with vision frozen all enabled
@@ -331,3 +331,51 @@ For comprehensive documentation, see:
   -> action step should be the number of action which it moves from and the 
   chunk size is teh number generate to predict future
 
+## speed bash
+
+```
+#!/bin/bash
+#SBATCH --job-name=mimic-train
+#SBATCH --partition=pg
+#SBATCH --gres=gpu:4
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=128G
+#SBATCH --time=48:00:00
+#SBATCH --output=/nfs/speed-scratch/ac_pate/mimic-lerobot/outputs/logs/slurm-%j.out
+#SBATCH --error=/nfs/speed-scratch/ac_pate/mimic-lerobot/outputs/logs/slurm-%j.err
+
+# Speed HPC: use speed-scratch for I/O performance
+export TMPDIR=/nfs/speed-scratch/ac_pate/tmp
+mkdir -p $TMPDIR
+mkdir -p /nfs/speed-scratch/ac_pate/mimic-lerobot/outputs/logs
+
+# Load modules (adjust to what's available on Speed)
+module load anaconda3/2023.03 cuda/cuda-12.2
+
+# Activate your environment
+source activate base  # or: conda activate your_env
+
+# Multi-GPU optimizations
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+export NCCL_DEBUG=INFO
+export NCCL_SOCKET_IFNAME=eth0
+export TORCH_NCCL_BLOCKING_WAIT=1
+export CUDA_LAUNCH_BLOCKING=0
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+
+# cd to repo
+cd /nfs/speed-scratch/ac_pate/mimic-lerobot
+
+# Run training manager (pass through SLURM env vars)
+# Override COMPUTER to "speed" and forward all args passed via sbatch --export or wrapper
+export COMPUTER=speed
+
+# Execute - replace with your actual training command
+bash mimic_deployment/training_scripts/train_manager.sh \
+    --policy ${POLICY:-pi0fast} \
+    --dataset-group ${DATASET_GROUP:-mimic_displacement} \
+    --batch-size ${BATCH_SIZE:-32} \
+    --num-workers ${NUM_WORKERS:-8} \
+    --noback \
+    ${STEPS:+--steps $STEPS}
+```

@@ -65,6 +65,7 @@ groups:
     - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomright_v1
     - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomright_v2 # - Mimic-Robotics/mimic_tictactoe_red_x_handover_topmiddle_v2
     - Mimic-Robotics/mimic_tictactoe_red_x_handover_topmiddle_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topmiddle_v2
     - Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v3
     - Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v4
     - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v1
@@ -76,6 +77,8 @@ groups:
     - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v1
     - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v2
     - Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v1
+    - Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v2
+    - Mimic-Robotics/mimic_tictactoe_redx_full30hz
 
 
 
