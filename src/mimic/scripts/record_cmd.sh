@@ -11,10 +11,10 @@ lerobot-record \
   --teleop.right_arm_port=/dev/arm_right_leader \
   --teleop.base_control_mode=keyboard \
   --teleop.id=mimic_leader \
-  --dataset.repo_id=Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottomleft_v3 \
-  --dataset.single_task="pick blue o handover place bottom left" \
-  --dataset.num_episodes=20 \
-  --dataset.episode_time_s=180 \
+  --dataset.repo_id=Mimic-Robotics/mimic_small_clothFolding_v5 \
+  --dataset.single_task="pick red cloth move left single fold move right store" \
+  --dataset.num_episodes=10 \
+  --dataset.episode_time_s=200 \
   --dataset.reset_time_s=5 \
   --dataset.video=true \
   --dataset.fps=30 \

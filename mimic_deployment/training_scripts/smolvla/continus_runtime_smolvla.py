@@ -9,7 +9,7 @@ from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
 from lerobot.cameras.zed_camera import ZedCameraConfig
 
 from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
-from lerobot.policies.factory import make_pre_post_processor
+from lerobot.policies.factory import make_pre_post_processors
 from lerobot.processor import make_default_processors
 from lerobot.utils.control_utils import predict_action
 
@@ -19,6 +19,10 @@ from lerobot.utils.constants import OBS_STR
 
 from lerobot.policies.utils import make_robot_action
 from lerobot.datasets.utils import combine_feature_dicts
+
+
+#run offline 
+#HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 python mimic_deployment/training_scripts/smolvla/continus_runtime_smolvla.py
 
 # 1. Map your grid inputs (1-9) to the exact language commands Smol knows
 TIC_TAC_TOE_MOVES = {
@@ -80,7 +84,7 @@ def main():
     
     print("Loading smolVLA weights into the 5070...")
     # model_id = "Mimic-Robotics/smol_augusto_redxVlm_50a_48b_100k"
-    model_id = "Mimic-Robotics/Mimic-Robotics/smol_blue_VissionFreeze_50a"
+    model_id = "Mimic-Robotics/smol_blue_VissionFreeze_50a"
     # Load the policy directly from the pretrained checkpoint
     policy = SmolVLAPolicy.from_pretrained(model_id)
     policy.eval() # Ensure the model is locked into inference mode
@@ -126,7 +130,7 @@ def main():
             active_task = current_task
             
         if active_task == "wait":
-            time.sleep(1/30) # Maintain 30fps idle
+            time.sleep(1/30) # Maintain 30fps 
             continue
             
         # Get live data

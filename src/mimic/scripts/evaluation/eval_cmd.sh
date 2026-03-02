@@ -11,8 +11,8 @@ lerobot-record \
   --teleop.right_arm_port=/dev/arm_right_leader \
   --teleop.base_control_mode=keyboard \
   --teleop.id=mimic_leader \
-  --dataset.repo_id="Mimic-Robotics/eval_xvla_5b_30a_800k_v3" \
-  --policy.path=Mimic-Robotics/xvla_odin_red_x_10a_30k \
+  --dataset.repo_id="Mimic-Robotics/eval_smol_blue_VissionFreeze_50a_v4" \
+  --policy.path=Mimic-Robotics/smol_blue_VissionFreeze_50a_50k \
   --dataset.single_task="pick red x handover place center" \
   --dataset.num_episodes=20 \
   --dataset.episode_time_s=180 \
