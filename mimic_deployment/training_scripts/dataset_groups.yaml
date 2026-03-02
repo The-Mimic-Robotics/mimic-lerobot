@@ -110,7 +110,7 @@ groups:
   blueO_full_VLFReeze:
     - Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
 
-  full_ttt_odin:
+  full_ttt__xvla_VF:
     - Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
     - Mimic-Robotics/mimic_ttt_redx_full30hz_rgb
 
