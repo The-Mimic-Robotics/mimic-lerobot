@@ -9,7 +9,7 @@ from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
 from lerobot.cameras.zed_camera import ZedCameraConfig
 
 from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy
-from lerobot.policies.factory import make_pre_post_processor
+from lerobot.policies.factory import make_pre_post_processors
 from lerobot.processor import make_default_processors
 from lerobot.utils.control_utils import predict_action
 
@@ -21,26 +21,40 @@ from lerobot.policies.utils import make_robot_action
 from lerobot.datasets.utils import combine_feature_dicts
 
 # 1. Map your grid inputs (1-9) to the exact language commands Smol knows
+# TIC_TAC_TOE_MOVES = {
+#     "0": "wait",
+#     "1": "pick red x piece handover place bottom left",
+#     "2": "pick red x piece handover place bottom middle",
+#     "3": "pick red x piece handover place bottom right",
+#     "4": "pick red x handover place middle left",
+#     "5": "pick red x handover place center",
+#     "6": "pick red x handover place middle right",
+#     "7": "pick red x piece handover place top left",
+#     "8": "pick red x piece handover place top middle",
+#     "9": "pick red x piece handover place top right",
+#     "10": "pick blue o piece handover place bottom left",
+#     "11": "pick blue o piece handover place bottom middle",
+#     "12": "pick blue o piece handover place bottom right",
+#     "13": "pick blue o handover place middle left",
+#     "14": "pick blue o handover place center",
+#     "15": "pick blue o handover place middle right",
+#     "16": "pick blue o piece handover place top left",
+#     "17": "pick blue o piece handover place top middle",
+#     "18": "pick blue o piece handover place top right"
+# }
+
 TIC_TAC_TOE_MOVES = {
     "0": "wait",
-    "1": "pick red x piece handover place bottom left",
-    "2": "pick red x piece handover place bottom middle",
-    "3": "pick red x piece handover place bottom right",
-    "4": "pick red x handover place middle left",
-    "5": "pick red x handover place center",
-    "6": "pick red x handover place middle right",
-    "7": "pick red x piece handover place top left",
-    "8": "pick red x piece handover place top middle",
-    "9": "pick red x piece handover place top right",
-    "10": "pick blue o piece handover place bottom left",
-    "11": "pick blue o piece handover place bottom middle",
-    "12": "pick blue o piece handover place bottom right",
-    "13": "pick blue o handover place middle left",
-    "14": "pick blue o handover place center",
-    "15": "pick blue o handover place middle right",
-    "16": "pick blue o piece handover place top left",
-    "17": "pick blue o piece handover place top middle",
-    "18": "pick blue o piece handover place top right"
+    "1": "pick rex x piece handover place bottom left",
+    "2": "pick blue o piece handover place bottom middle",
+    "3": "pick blue o piece handover place bottom right",
+    "4": "pick blue o handover place middle left",
+    "5": "pick blue o handover place center",
+    "6": "pick blue o handover place middle right",
+    "7": "pick blue o piece handover place top left",
+    "8": "pick blue o piece handover place top middle",
+    "9": "pick blue o piece handover place top right",
+    "10": "home"
 }
 
 # Shared state protected by a lock (mutex)
@@ -79,8 +93,9 @@ def main():
     robot = make_robot_from_config(robot_cfg)
     
     print("Loading smolVLA weights into the 5070...")
-    model_id = "Mimic-Robotics/smol_augusto_redxVlm_50a_48b_100k"
+    model_id = "Mimic-Robotics/smolvla_speed_redx_full_vlm"
     
+ 
     # Load the policy directly from the pretrained checkpoint
     policy = SmolVLAPolicy.from_pretrained(model_id)
     policy.eval() # Ensure the model is locked into inference mode
