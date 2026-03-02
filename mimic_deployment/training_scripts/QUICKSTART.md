@@ -278,7 +278,7 @@ For comprehensive documentation, see:
 # used 21Gb vram
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy smolvla \
-  --dataset-group blueO_full_vlm \
+  --dataset-group full_ttt_odin \
   --batch-size 12
 
 # SmolVla with vision frozen all enabled

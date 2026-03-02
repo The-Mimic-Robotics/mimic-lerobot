@@ -149,14 +149,17 @@ hf download --repo-type dataset Mimic-Robotics/mimic_ttt_blue_full30hz_rgb --loc
 Mimic-Robotics/mimic_tictactoe_redx_full30hz
 
 lerobot-edit-dataset \
-  --repo_id Mimic-Robotics/mimic_tictactoe_full30hz_rgb \
+  --repo_id Mimic-Robotics/mimic_ttt_full30hz_rgb \
   --operation.type merge \
   --push_to_hub false \
   --operation.repo_ids "[\
 'Mimic-Robotics/mimic_ttt_blue_full30hz_rgb', \
-'Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_right_v2'\
+'Mimic-Robotics/mimic_ttt_redx_full30hz_rgb'\
 ]"
 
 
 hf upload Mimic-Robotics/smol_blue_VissionFreeze_50a  outputs/train/smolvla_odin_blueo_full_freeze_vision_20260223_1051/checkpoints/100000/pretrained_model
   
+
+hf upload Mimic-Robotics/smol_blue_aug_allUnFrozeb_100k  outputs/train/smolvla_augusto-linux_blueo_full_unfreeze_all_20260223_2329/checkpoints/100000/pretrained_model
+hf upload Mimic-Robotics/smol_blue_aug_allUnFrozeb_150k  outputs/train/smolvla_augusto-linux_blueo_full_unfreeze_all_20260223_2329/checkpoints/150000/pretrained_model
