@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=requirements-ubuntu.txt requirements.in
 #
--e .[all]
+-e .
     # via -[all]
 absl-py==2.3.1
     # via
@@ -120,8 +120,6 @@ debugpy==1.8.17
     # via lerobot
 decorator==5.2.1
     # via ipython
-decord==0.6.0
-    # via lerobot
 deepdiff==8.6.1
     # via lerobot
 diffusers==0.35.2
@@ -149,10 +147,6 @@ dynamixel-sdk==3.8.4
     # via lerobot
 easydict==1.13
     # via libero
-egl-probe @ git+https://github.com/huggingface/egl_probe.git
-    # via
-    #   libero
-    #   robomimic
 eigenpy==3.10.3
     # via coal-library
 einops==0.8.1
@@ -317,8 +311,6 @@ labmaze==1.0.6
     # via dm-control
 lazy-loader==0.4
     # via scikit-image
-libero @ git+https://github.com/huggingface/lerobot-libero.git@main
-    # via lerobot
 llvmlite==0.45.1
     # via numba
 lxml==6.0.2
@@ -540,7 +532,7 @@ propcache==0.4.1
     # via
     #   aiohttp
     #   yarl
-protobuf==6.31.0
+protobuf==6.31.1
     # via
     #   dm-control
     #   grpcio-tools
@@ -832,7 +824,7 @@ uvloop==0.22.1
     # via uvicorn
 virtualenv==20.35.3
     # via pre-commit
-wandb==0.21.4
+wandb==0.24.0
     # via
     #   lerobot
     #   libero

@@ -100,6 +100,9 @@ POLICIES=""
 DATASET_GROUPS="${DATASET_GROUP:-}"
 SINGLE_DATASET="${SINGLE_DATASET:-}"
 COMPUTER="${COMPUTER:-$(hostname)}"
+if [[ "$COMPUTER" == speed-* ]] || [[ "$COMPUTER" == speed*.* ]]; then
+    COMPUTER="speed"
+fi
 BATCH_SIZE="${BATCH_SIZE:-}"
 NUM_WORKERS="${NUM_WORKERS:-}"
 STEPS="${STEPS:-}"
@@ -107,6 +110,13 @@ PUSH_TO_HUB="${PUSH_TO_HUB:-true}"
 DRY_RUN=false
 RUN_BACKGROUND=true # Default behavio
 TIMESTAMP=$(date +"%Y%m%d_%H%M") # Format: 20260210_1521
+
+# SLURM defaults for Speed cluster
+SLURM_PARTITION="${SLURM_PARTITION:-pg}"
+SLURM_GPUS="${SLURM_GPUS:-4}"
+SLURM_CPUS="${SLURM_CPUS:-32}"
+SLURM_MEM="${SLURM_MEM:-128G}"
+SLURM_TIME="${SLURM_TIME:-48:00:00}"
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -124,6 +134,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         --computer)
             COMPUTER="$2"
+            if [[ "$COMPUTER" == speed-* ]] || [[ "$COMPUTER" == speed*.* ]]; then
+                COMPUTER="speed"
+            fi
             shift 2
             ;;
         --batch-size)
@@ -144,6 +157,22 @@ while [[ $# -gt 0 ]]; do
             ;;       
         --chunk-size)
             CHUNK_SIZE="$2"
+            shift 2
+            ;;
+        --partition)
+            SLURM_PARTITION="$2"
+            shift 2
+            ;;
+        --gpus)
+            SLURM_GPUS="$2"
+            shift 2
+            ;;
+        --time-limit)
+            SLURM_TIME="$2"
+            shift 2
+            ;;
+        --slurm-mem)
+            SLURM_MEM="$2"
             shift 2
             ;;
         --push-to-hub)
@@ -265,6 +294,13 @@ echo -e "${YELLOW}Computer:${NC}           $COMPUTER"
 echo -e "${YELLOW}Push to Hub:${NC}        $PUSH_TO_HUB"
 echo -e "${YELLOW}Run Background:${NC}     $RUN_BACKGROUND"
 echo -e "${YELLOW}Timestamp:${NC}          $TIMESTAMP"
+if [ "$COMPUTER" = "speed" ]; then
+    echo -e "${YELLOW}SLURM Partition:${NC}    $SLURM_PARTITION"
+    echo -e "${YELLOW}SLURM GPUs:${NC}         $SLURM_GPUS"
+    echo -e "${YELLOW}SLURM CPUs:${NC}         $SLURM_CPUS"
+    echo -e "${YELLOW}SLURM Memory:${NC}       $SLURM_MEM"
+    echo -e "${YELLOW}SLURM Time:${NC}         $SLURM_TIME"
+fi
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
 echo ""
 
@@ -319,6 +355,7 @@ fi
 echo -e "${GREEN}Starting training...${NC}"
 echo ""
 
+PREV_SLURM_JOB_ID=""
 export COMPUTER="$COMPUTER"
 [ -n "$BATCH_SIZE" ] && export BATCH_SIZE="$BATCH_SIZE"
 [ -n "$NUM_WORKERS" ] && export NUM_WORKERS="$NUM_WORKERS"
@@ -366,7 +403,48 @@ for ITEM in "${OUTER_ARRAY[@]}"; do
         
         echo -e "${YELLOW}Policy $POLICY_NUM/$TOTAL_POLICIES: $POLICY (Job: $JOB_NAME)${NC}"
 
-        if [ "$RUN_BACKGROUND" = true ]; then
+        if [ "$COMPUTER" = "speed" ]; then
+            # === SLURM SBATCH SUBMISSION ===
+            SBATCH_SCRIPT="$REPO_ROOT/outputs/logs/${JOB_NAME}.sbatch"
+            cat > "$SBATCH_SCRIPT" << SBATCH_EOF
+#!/encs/bin/bash
+#SBATCH --job-name=${JOB_NAME}
+#SBATCH --partition=${SLURM_PARTITION}
+#SBATCH --gpus=${SLURM_GPUS}
+#SBATCH --cpus-per-task=${SLURM_CPUS}
+#SBATCH --mem=${SLURM_MEM}
+#SBATCH --time=${SLURM_TIME}
+#SBATCH --output=${REPO_ROOT}/outputs/logs/${JOB_NAME}_%j.out
+#SBATCH --error=${REPO_ROOT}/outputs/logs/${JOB_NAME}_%j.err
+#SBATCH --mail-type=ALL
+
+mkdir -p /speed-scratch/\$USER/tmp
+export TMPDIR=/speed-scratch/\$USER/tmp
+export TMP=\$TMPDIR
+
+export COMPUTER="${COMPUTER}"
+export JOB_NAME="${JOB_NAME}"
+export BATCH_SIZE="${BATCH_SIZE}"
+export NUM_WORKERS="${NUM_WORKERS}"
+export STEPS="${STEPS}"
+export ACTION_STEPS="${ACTION_STEPS:-}"
+export CHUNK_SIZE="${CHUNK_SIZE:-}"
+export PUSH_TO_HUB="${PUSH_TO_HUB}"
+export DATASET_GROUP="${DATASET_GROUP:-}"
+export SINGLE_DATASET="${SINGLE_DATASET:-}"
+
+${TRAIN_SCRIPT} --no-daemon
+SBATCH_EOF
+            chmod +x "$SBATCH_SCRIPT"
+
+            SBATCH_ARGS=""
+            [ -n "${PREV_SLURM_JOB_ID:-}" ] && SBATCH_ARGS="--depend=afterany:$PREV_SLURM_JOB_ID"
+            SLURM_OUTPUT=$(sbatch $SBATCH_ARGS "$SBATCH_SCRIPT")
+            PREV_SLURM_JOB_ID=$(echo "$SLURM_OUTPUT" | grep -oP '\d+$')
+            echo -e "${GREEN}Submitted SLURM job: $SLURM_OUTPUT${NC}"
+            echo -e "${GREEN}Script: $SBATCH_SCRIPT${NC}"
+
+        elif [ "$RUN_BACKGROUND" = true ]; then
             # Execute training script in background
             "$TRAIN_SCRIPT"
             
@@ -395,3 +473,6 @@ for ITEM in "${OUTER_ARRAY[@]}"; do
 done
 
 echo -e "${GREEN}All training sessions completed!${NC}"
+if [ "$COMPUTER" = "speed" ] && [ -n "$PREV_SLURM_JOB_ID" ]; then
+    echo -e "${YELLOW}Monitor jobs: squeue -u \$USER${NC}"
+fi
