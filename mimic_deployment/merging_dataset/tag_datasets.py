@@ -8,9 +8,16 @@ import os
 from pathlib import Path
 
 # Datasets that need tagging
+# DATASETS_TO_TAG = [
+#     "Mimic-Robotics/test2",
+#     "Mimic-Robotics/mimic_tictactoe_redx_full30hz_rgb",
+#     "Mimic-Robotics/mimic_ttt_blue_full30hz_rgb",
+#     "Mimic-Robotics/mimic_ttt_redx_full30hz_rgb"
+# ]
+
 DATASETS_TO_TAG = [
     "Mimic-Robotics/test2",
-    "Mimic-Robotics/mimic_tictactoe_redx_full30hz_rgb",
+    "Mimic-Robotics/mimic_ttt_full30hz_rgb",
     "Mimic-Robotics/mimic_ttt_blue_full30hz_rgb",
     "Mimic-Robotics/mimic_ttt_redx_full30hz_rgb"
 ]
