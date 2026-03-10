@@ -21,7 +21,7 @@ SINGLE_DATASET="${SINGLE_DATASET:-}"
 BATCH_SIZE="${BATCH_SIZE:-16}"  # 24GB allows nice large batches
 NUM_WORKERS="${NUM_WORKERS:-8}"
 STEPS="${STEPS:-300000}" 
-SAVE_FREQ="${SAVE_FREQ:-50000}" 
+SAVE_FREQ="${SAVE_FREQ:-25000}" 
 ACTION_STEPS="${ACTION_STEPS:-50}" 
 CHUNK_SIZE="${CHUNK_SIZE:-50}"
 
@@ -73,7 +73,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.num_image_views=2 \
   --policy.train_soft_prompts=true \
   --policy.train_policy_transformer=true \
-  --policy.freeze_vision_encoder=True \
+  --policy.freeze_vision_encoder=false \
   --policy.freeze_language_encoder=false \
   --policy.dtype=bfloat16 \
   --policy.scheduler_decay_steps="$STEPS" \
