@@ -172,3 +172,5 @@ hf upload Mimic-Robotics/smol_blue_aug_allUnFrozeb_150k  outputs/train/smolvla_a
 
 
 hf download Mimic-Robotics/mimic_ttt_blue_full30hz_rgb --local-dir .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
+hf upload Mimic-Robotics/xvla_full_ttt_18e_300k  outputs/train/xvla_odin_full_ttt__xvla_vf_20260302_1548/checkpoints/300000/pretrained_model
+ 

@@ -288,6 +288,19 @@ For comprehensive documentation, see:
   --dataset-group redx_full_vlm \
   --batch-size 48
 
+# xvla vf -- 21GB
+  ./mimic_deployment/training_scripts/train_manager.sh \
+  --policy xvla \
+  --dataset-group full_ttt__xvla_VF \
+  --batch-size 44
+
+
+# xvla vf -- 22.2GB
+  ./mimic_deployment/training_scripts/train_manager.sh \
+  --policy xvla \
+  --dataset-group full_ttt__xvla_NoFr_2cam_50a \
+  --batch-size 12
+
   # SmolVla with vision frozen all enabled
   # used 16gbs of vram
 ./mimic_deployment/training_scripts/train_manager.sh \
