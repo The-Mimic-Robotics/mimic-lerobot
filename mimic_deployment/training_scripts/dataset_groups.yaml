@@ -110,7 +110,7 @@ groups:
   blueO_full_VLFReeze:
     - Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
 
-  full_ttt__xvla_NoFr_2cam_50a:
+  full_ttt__xvla_NoFr_2cam_32a:
     - Mimic-Robotics/mimic_ttt_full30hz_rgb
 
   full_ttt_augusto:
