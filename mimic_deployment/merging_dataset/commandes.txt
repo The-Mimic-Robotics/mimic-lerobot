@@ -166,3 +166,5 @@ hf upload Mimic-Robotics/smol_blue_VissionFreeze_50a  outputs/train/smolvla_odin
 
 hf upload Mimic-Robotics/smol_blue_aug_allUnFrozeb_100k  outputs/train/smolvla_augusto-linux_blueo_full_unfreeze_all_20260223_2329/checkpoints/100000/pretrained_model
 hf upload Mimic-Robotics/smol_blue_aug_allUnFrozeb_150k  outputs/train/smolvla_augusto-linux_blueo_full_unfreeze_all_20260223_2329/checkpoints/150000/pretrained_model
+
+hf upload Mimic-Robotics/smol_full_ttt_70k  outputs/train/smolvla_augusto-linux_full_ttt_augusto_20260302_1444/checkpoints/070000/pretrained_model
