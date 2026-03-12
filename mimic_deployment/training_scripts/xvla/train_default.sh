@@ -1,10 +1,6 @@
 #!/bin/bash
 # X-VLA Training Script - RTX 3090 "Full Power" Edition
-# 24GB VRAM Config: PEFT/LoRA Finetuning
-
-
-#lora 
-
+# 24GB VRAM Config: Batch 16 + Full VLM Finetuning
 
 set -e
 
@@ -22,7 +18,7 @@ DATASET_GROUP="${DATASET_GROUP:-}"
 SINGLE_DATASET="${SINGLE_DATASET:-}"
 
 # === POWER SETTINGS (RTX 3090) ===
-BATCH_SIZE="${BATCH_SIZE:-12}"  # You can likely crank this much higher with LoRA!
+BATCH_SIZE="${BATCH_SIZE:-12}"  # 24GB allows nice large batches
 NUM_WORKERS="${NUM_WORKERS:-8}"
 STEPS="${STEPS:-300000}" 
 SAVE_FREQ="${SAVE_FREQ:-50000}" 
@@ -51,13 +47,20 @@ REPO_ID="Mimic-Robotics/${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}"
 mkdir -p "$REPO_ROOT/outputs/logs"
 
 echo "=========================================="
-echo "X-VLA Training (LoRA Mode)"
+echo "X-VLA Training (RTX 3090 Mode)"
 echo "Batch Size: $BATCH_SIZE"
 echo "Dataset:    $DATASET_NAME_FOR_JOB"
 echo "Log File:   $LOG_FILE"
 echo "=========================================="
 
 cd "$REPO_ROOT"
+
+# === THE FIX ===
+# 1. Removed explicit `input_features` (Let it load from pretrained config)
+# 2. Added `rename_map`: Maps YOUR cameras to PRETRAINED slots.
+#    - top        -> image (Primary)
+#    - left_wrist -> image2 (Secondary)
+#    - right_wrist -> empty_camera_0 (Tertiary slot)
 
 CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
@@ -71,10 +74,8 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.num_image_views=2 \
   --policy.train_soft_prompts=true \
   --policy.train_policy_transformer=true \
-  --peft.method_type=LORA \
-  --peft.r=64 \
-  --policy.optimizer_lr=1e-3 \
-  --policy.scheduler_decay_lr=1e-4 \
+  --policy.freeze_vision_encoder=false \
+  --policy.freeze_language_encoder=false \
   --policy.dtype=bfloat16 \
   --policy.scheduler_decay_steps="$STEPS" \
   --policy.device=cuda \
@@ -96,6 +97,24 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
     "observation.state": {"shape": [15], "type": "STATE"},
     "observation.instruction": {"shape": [1], "type": "LANGUAGE"}
   }')
+#   --rename_map='{
+#       "observation.images.top": "observation.images.image",
+#       "observation.images.left_wrist": "observation.images.image2",
+#       "observation.images.right_wrist": "observation.images.empty_camera_0",
+#       "observation.images.front": "observation.images.image"
+#   }' \
+
+#   --policy.input_features='{
+#     "observation.images.image": {"shape": [3, 720, 1280], "type": "VISUAL"},
+#     "observation.images.image2": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.images.empty_camera_0": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.state": {"shape": [15], "type": "STATE"},
+#     "observation.instruction": {"shape": [1], "type": "LANGUAGE"}
+#   }'
+  
+  
+# Note: Added "front" mapping just in case your dataset uses that name instead of top. 
+# It won't hurt if the key doesn't exist.
 
 if [[ "$1" == "--no-daemon" ]]; then
     echo "Starting in FOREGROUND..."
