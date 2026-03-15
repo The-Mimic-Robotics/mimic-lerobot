@@ -152,12 +152,12 @@ hf download Mimic-Robotics/mimic_ttt_blue_full30hz_rgb --local-dir .cache/huggin
 Mimic-Robotics/mimic_tictactoe_redx_full30hz
 
 lerobot-edit-dataset \
-  --repo_id Mimic-Robotics/mimic_ttt_full30hz_rgb \
+  --repo_id Mimic-Robotics/mimic_ttt_15hz \
   --operation.type merge \
   --push_to_hub false \
   --operation.repo_ids "[\
-'Mimic-Robotics/mimic_ttt_blue_full30hz_rgb', \
-'Mimic-Robotics/mimic_ttt_redx_full30hz_rgb'\
+'Mimic-Robotics/mimic_ttt_blue_15hz', \
+'Mimic-Robotics/mimic_ttt_redx_15hz' \
 ]"
 
 
@@ -174,4 +174,6 @@ hf upload Mimic-Robotics/smol_full_ttt_70k  outputs/train/smolvla_augusto-linux_
 
 hf download Mimic-Robotics/mimic_ttt_blue_full30hz_rgb --local-dir .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
 hf upload Mimic-Robotics/xvla_full_ttt_18e_300k  outputs/train/xvla_odin_full_ttt__xvla_vf_20260302_1548/checkpoints/300000/pretrained_model
+ 
+hf upload Mimic-Robotics/xvla_ttt_lora_30hz_15e  outputs/train/xvla_augusto-linux_ttt_lora_2cam_20260311_2308/checkpoints/180000/pretrained_model
  

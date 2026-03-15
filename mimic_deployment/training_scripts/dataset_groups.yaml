@@ -116,8 +116,8 @@ groups:
   full_ttt_augusto:
     - Mimic-Robotics/mimic_ttt_full30hz_rgb
 
-  ttt_lora_2cam:
-    - Mimic-Robotics/mimic_ttt_full30hz_rgb
+  ttt_2cam_15hz_10a_24c:
+    - Mimic-Robotics/mimic_ttt_15hz
     
     
 

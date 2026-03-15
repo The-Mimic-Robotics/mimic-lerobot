@@ -313,6 +313,15 @@ For comprehensive documentation, see:
   --policy xvla \
   --dataset-group ttt_lora_2cam 
 
+# xvla no freeze 
+
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy xvla \
+  --dataset-group ttt_2cam_15hz_10a_24c \
+  --batch-size 14 
+
+
+
 # SmolVla with all frozen 
 
 
