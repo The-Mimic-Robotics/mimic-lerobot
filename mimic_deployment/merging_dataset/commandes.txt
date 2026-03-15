@@ -45,7 +45,7 @@ lerobot-edit-dataset \
 
 
 lerobot-edit-dataset \
-  --repo_id Mimic-Robotics/mimic_tictactoe_blueO_full30hz \
+  --repo_id Mimic-Robotics/mimic_simpleClothFolding_v1 \
   --operation.type merge \
   --push_to_hub true \
   --operation.repo_ids "[\

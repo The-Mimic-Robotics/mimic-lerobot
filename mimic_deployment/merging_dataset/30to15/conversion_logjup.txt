@@ -1,7 +1,7 @@
 nohup: ignoring input
 Deleting local cache: /home/jupiter/.cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_red_15hz
 Traceback (most recent call last):
-  File "/home/jupiter/mimic-lerobot/mimic_deployment/merging_dataset/30to15/30to15.py", line 71, in <module>
+  File "/home/jupiter/mimic-lerobot/mimic_deployment/merging_dataset/30to15/30to15_jupiter.py", line 136, in <module>
     frame_data = orig_dataset[i]
   File "/home/jupiter/mimic-lerobot/src/lerobot/datasets/lerobot_dataset.py", line 1070, in __getitem__
     video_frames = self._query_videos(query_timestamps, ep_idx)
