@@ -11,8 +11,8 @@ lerobot-record \
   --teleop.right_arm_port=/dev/arm_right_leader \
   --teleop.base_control_mode=keyboard \
   --teleop.id=mimic_leader \
-  --dataset.repo_id="Mimic-Robotics/eval_xvla_ttt_nofr_15hz_50k_v2" \
-  --policy.path=Mimic-Robotics/xvla_ttt_15hz_10a_24c_2e_50k \
+  --dataset.repo_id="Mimic-Robotics/eval_xvla_ttt_nofr_15hz_50k_v7" \
+  --policy.path=Mimic-Robotics/xvla_ttt_nofr_15hz_25ac_100k \
   --dataset.single_task="pick red x piece handover place bottom right" \
   --dataset.num_episodes=20 \
   --dataset.episode_time_s=120 \
