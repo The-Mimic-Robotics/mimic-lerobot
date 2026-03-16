@@ -79,7 +79,9 @@ def main():
     
     print("Loading XVLA weights into the GPU...")
     # Updated to your specific XVLA model checkpoint
-    model_id = "Mimic-Robotics/xvla_full_ttt_18e_300k"
+    # model_id = "Mimic-Robotics/xvla_full_ttt_18e_300k"
+    model_id = "Mimic-Robotics/xvla_odin_ttt__xvla_nofr_2cam_30hz_300k"
+    # Mimic-Robotics/xvla_odin_ttt__xvla_nofr_2cam_30hz_300k
     
     # Load the policy directly from the pretrained checkpoint
     policy = XVLAPolicy.from_pretrained(model_id)
