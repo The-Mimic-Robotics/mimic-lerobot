@@ -6,7 +6,7 @@ import numpy as np
 from lerobot.robots import make_robot_from_config
 from lerobot.robots.mimic_follower import MimicFollowerConfig
 from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
-from lerobot.cameras.zed_camera import ZedCameraConfig  # <-- Added ZED Camera support
+from lerobot.cameras.zed_camera import ZedCameraConfig  # <-- Added ZED Camera
 
 # Updated import for XVLA (assuming standard LeRobot fork structure)
 from lerobot.policies.xvla.modeling_xvla import XVLAPolicy
@@ -49,7 +49,7 @@ current_task = "wait"
 task_lock = threading.Lock()
 
 # Target FPS for the policy execution
-CONTROL_HZ = 15 
+CONTROL_HZ = 15  # <-- Updated to 15Hz
 
 def brain_thread():
     """This thread handles the LLM, solver, and updating the task."""
@@ -60,7 +60,7 @@ def brain_thread():
         if move in TIC_TAC_TOE_MOVES:
             with task_lock:
                 current_task = TIC_TAC_TOE_MOVES[move]
-            print(f"> Instructing Policy: {current_task}")
+            print(f"> Instructing XVLA: {current_task}")
         elif move == "wait":
             with task_lock:
                 current_task = "wait"
@@ -69,24 +69,24 @@ def brain_thread():
 def main():
     print("Initializing robot configuration...")
     
-    # Updated to use 3 cameras, mapped directly to the slots the policy expects.
-    # Cameras run at 30fps to ensure fresh frames, but we sample them at 15Hz below.
+    # Updated to use the 3 cameras mapped directly to the slots the policy expects.
+    # The cameras stream at 30fps to keep frames fresh, but inference happens at 15Hz.
     robot_cfg = MimicFollowerConfig(
         id="mimic_follower", 
         left_arm_port="/dev/arm_left_follower",
         right_arm_port="/dev/arm_right_follower",
         base_port="/dev/mecanum_base",
         cameras={
-            "image": ZedCameraConfig(index_or_path="23081456", width=1280, height=720, fps=30, warmup_s=0, use_depth=False), # Top Camera
-            "image2": OpenCVCameraConfig(index_or_path="/dev/camera_left_wrist", width=640, height=480, fps=30, fourcc="MJPG", warmup_s=0), # Left Wrist
-            "image3": OpenCVCameraConfig(index_or_path="/dev/camera_right_wrist", width=640, height=480, fps=30, fourcc="MJPG", warmup_s=0) # Right Wrist
+            "image": ZedCameraConfig(index_or_path="23081456", width=1280, height=720, fps=30, warmup_s=0, use_depth=False),
+            "image2": OpenCVCameraConfig(index_or_path="/dev/camera_left_wrist", width=640, height=480, fps=30, fourcc="MJPG", warmup_s=0),
+            "image3": OpenCVCameraConfig(index_or_path="/dev/camera_right_wrist", width=640, height=480, fps=30, fourcc="MJPG", warmup_s=0)
         }
     )
     robot = make_robot_from_config(robot_cfg)
     
-    print("Loading Policy weights into the GPU...")
-    # Updated to your new 15Hz 3-cam policy
-    model_id = "Mimic-Robotics/smol_blue_odin_VF_LF_150k"
+    print("Loading XVLA weights into the GPU...")
+    # Updated to your specific 15Hz 3-cam XVLA model checkpoint
+    model_id = "Mimic-Robotics/xvla_ttt_nofr_15hz_25ac_3cam_100k"
     
     # Load the policy directly from the pretrained checkpoint
     policy = XVLAPolicy.from_pretrained(model_id)
@@ -132,7 +132,7 @@ def main():
             active_task = current_task
             
         if active_task == "wait":
-            time.sleep(1 / CONTROL_HZ) # Maintain idle at target FPS
+            time.sleep(1 / CONTROL_HZ) # Maintain 15fps idle
             continue
             
         # Get live data
@@ -161,7 +161,7 @@ def main():
         robot_action_to_send = robot_action_processor((act_processed_policy, obs))
         robot.send_action(robot_action_to_send)
         
-        # Keep the loop steady at the target Hz
+        # Keep the loop steady at ~15Hz
         time.sleep(max((1 / CONTROL_HZ) - (time.perf_counter() - start_t), 0))
 
 if __name__ == "__main__":
