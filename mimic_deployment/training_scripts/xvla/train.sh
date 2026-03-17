@@ -22,8 +22,13 @@ BATCH_SIZE="${BATCH_SIZE:-14}"  # 24GB allows nice large batches
 NUM_WORKERS="${NUM_WORKERS:-8}"
 STEPS="${STEPS:-300000}" 
 SAVE_FREQ="${SAVE_FREQ:-50000}" 
+<<<<<<< Updated upstream
 ACTION_STEPS="${ACTION_STEPS:-10}" 
 CHUNK_SIZE="${CHUNK_SIZE:-24}"
+=======
+ACTION_STEPS="${ACTION_STEPS:-32}" 
+CHUNK_SIZE="${CHUNK_SIZE:-32}"
+>>>>>>> Stashed changes
 
 # Resolve Dataset
 if [ -n "$DATASET_GROUP" ]; then
@@ -71,7 +76,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.chunk_size="$CHUNK_SIZE" \
   --policy.action_mode=auto \
   --policy.max_action_dim=20 \
-  --policy.num_image_views=2 \
+  --policy.num_image_views=3 \
   --policy.train_soft_prompts=true \
   --policy.train_policy_transformer=true \
   --policy.freeze_vision_encoder=false \
@@ -88,15 +93,25 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --job_name="$JOB_NAME" \
   --wandb.enable=true \
   --rename_map='{
-      "observation.images.left_wrist": "observation.images.image",
-      "observation.images.right_wrist": "observation.images.image2"
+    "observation.images.top": "observation.images.image",
+      "observation.images.left_wrist": "observation.images.image2",
+      "observation.images.right_wrist": "observation.images.image3"
   }' \
-  --policy.input_features='{
-    "observation.images.image": {"shape": [3, 480, 640], "type": "VISUAL"},
-    "observation.images.image2": {"shape": [3, 480, 640], "type": "VISUAL"},
-    "observation.state": {"shape": [15], "type": "STATE"},
-    "observation.instruction": {"shape": [1], "type": "LANGUAGE"}
-  }')
+--policy.input_features='{
+  "observation.images.image": {"shape": [3, 480, 640], "type": "VISUAL"},
+  "observation.images.image2": {"shape": [3, 480, 640], "type": "VISUAL"},
+  "observation.images.image3": {"shape": [3, 480, 640], "type": "VISUAL"},
+  "observation.state": {"shape": [15], "type": "STATE"},
+  "observation.instruction": {"shape": [1], "type": "LANGUAGE"}
+}')
+
+
+#   --policy.input_features='{
+#     "observation.images.image": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.images.image2": {"shape": [3, 480, 640], "type": "VISUAL"},
+#     "observation.state": {"shape": [15], "type": "STATE"},
+#     "observation.instruction": {"shape": [1], "type": "LANGUAGE"}
+#   }')
 #   --rename_map='{
 #       "observation.images.top": "observation.images.image",
 #       "observation.images.left_wrist": "observation.images.image2",

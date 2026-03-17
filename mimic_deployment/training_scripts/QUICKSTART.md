@@ -291,14 +291,14 @@ For comprehensive documentation, see:
 # xvla vf -- 21GB
   ./mimic_deployment/training_scripts/train_manager.sh \
   --policy xvla \
-  --dataset-group full_ttt__xvla_VF \
-  --batch-size 44
+  --dataset-group ttt_3cam_15hz_25a \
+  --batch-size 9
 
 
 # xvla vf -- 22.2GB
   ./mimic_deployment/training_scripts/train_manager.sh \
   --policy xvla \
-  --dataset-group full_ttt__xvla_NoFr_2cam_32a \
+  --dataset-group ttt_lora_2cam_15hz \
   --batch-size 12
 
   # SmolVla with vision frozen all enabled
