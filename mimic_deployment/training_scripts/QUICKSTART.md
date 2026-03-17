@@ -317,8 +317,8 @@ For comprehensive documentation, see:
 
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy xvla \
-  --dataset-group ttt_2cam_15hz_10a_24c \
-  --batch-size 14 
+  --dataset-group ttt_3cam_15hz_25a_full \
+  --batch-size 9 
 
 
 
