@@ -118,7 +118,7 @@ def main():
     teleop = make_teleoperator_from_config(teleop_cfg)
 
     print("Loading XVLA weights into the GPU...")
-    model_id = "Mimic-Robotics/xvla_ttt_nofr_15hz_25ac_3cam_100k"
+    model_id = "Mimic-Robotics/xvla_ttt_nofr_15hz_25ac_3cam_150k"
     
     policy = XVLAPolicy.from_pretrained(model_id)
     policy.to("cuda")
