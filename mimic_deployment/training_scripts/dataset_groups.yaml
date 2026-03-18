@@ -123,7 +123,7 @@ groups:
   ttt_lora_2cam:
     - Mimic-Robotics/mimic_ttt_full30hz_rgb
 
-  ttt_3cam_15hz_25a:
+  ttt_3cam_15hz_32ac:
     - Mimic-Robotics/mimic_ttt_redx_15hz
     - Mimic-Robotics/mimic_ttt_blue_15hz
 >>>>>>> Stashed changes
