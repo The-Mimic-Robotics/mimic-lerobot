@@ -18,17 +18,12 @@ DATASET_GROUP="${DATASET_GROUP:-}"
 SINGLE_DATASET="${SINGLE_DATASET:-}"
 
 # === POWER SETTINGS (RTX 3090) ===
-BATCH_SIZE="${BATCH_SIZE:-14}"  # 24GB allows nice large batches
+BATCH_SIZE="${BATCH_SIZE:-9}"  # 24GB allows batch 9
 NUM_WORKERS="${NUM_WORKERS:-8}"
 STEPS="${STEPS:-300000}" 
 SAVE_FREQ="${SAVE_FREQ:-50000}" 
-<<<<<<< Updated upstream
-ACTION_STEPS="${ACTION_STEPS:-10}" 
-CHUNK_SIZE="${CHUNK_SIZE:-24}"
-=======
 ACTION_STEPS="${ACTION_STEPS:-32}" 
 CHUNK_SIZE="${CHUNK_SIZE:-32}"
->>>>>>> Stashed changes
 
 # Resolve Dataset
 if [ -n "$DATASET_GROUP" ]; then
