@@ -185,3 +185,7 @@ hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 .cache/huggingface/lerobot
 hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v1 --repo-type dataset && \
 hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2 --repo-type dataset && \
 hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_v1 --repo-type dataset 
+hf upload Mimic-Robotics/xvla_ttt_nofr_15hz_25ac_3cam_150k outputs/train/xvla_odin_ttt_3cam_15hz_25a_20260315_1800/checkpoints/150000/pretrained_model
+
+
+
