@@ -62,7 +62,7 @@ def brain_thread():
         print(" [1-18] Tic-Tac-Toe grid position")
         print(" [20]   Custom prompt")
         print(" [-1]   Teleoperation (Human Control)")
-        print(" [wait] Pause robot")
+        print(" [0] Pause robot")
         move = input("Enter command: ").strip()
         
         if move == "-1":
@@ -118,8 +118,9 @@ def main():
     teleop = make_teleoperator_from_config(teleop_cfg)
 
     print("Loading XVLA weights into the GPU...")
-    model_id = "Mimic-Robotics/xvla_ttt_nofr_15hz_25ac_3cam_150k"
-    
+    model_id = "Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_300k"
+    # model_id = "Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_100k_auguv2"
+    # Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_100k_auguv2
     policy = XVLAPolicy.from_pretrained(model_id)
     policy.to("cuda")
     policy.eval()

@@ -123,7 +123,7 @@ hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v2 ~/.cac
 
 hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 --repo-type dataset
 
-hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v4 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v4 --repo-type dataset
+hf upload Mimic-Robotics/mimic_tttt_redx_x2_BL_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 --repo-type dataset
 
                        
 hf upload Mimic-Robotics/test3 ~/.cache/huggingface/lerobot/Mimic-Robotics/test2_ --repo-type dataset
@@ -177,3 +177,11 @@ hf upload Mimic-Robotics/xvla_full_ttt_18e_300k  outputs/train/xvla_odin_full_tt
  
 hf upload Mimic-Robotics/xvla_ttt_lora_30hz_15e  outputs/train/xvla_augusto-linux_ttt_lora_2cam_20260311_2308/checkpoints/180000/pretrained_model
  
+
+
+
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v3 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v1 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_v1 --repo-type dataset 
