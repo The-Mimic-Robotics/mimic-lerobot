@@ -1,0 +1,8 @@
+lerobot-edit-dataset \
+  --repo_id Mimic-Robotics/mimic_ttt_redx \
+  --operation.type merge \
+  --push_to_hub true \
+  --operation.repo_ids "[\
+'Mimic-Robotics/mimic_ttt_blue_15hz', \
+'Mimic-Robotics/mimic_ttt_redx_15hz' \
+]"
