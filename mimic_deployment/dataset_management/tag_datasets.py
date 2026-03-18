@@ -16,7 +16,7 @@ from pathlib import Path
 # ]
 
 DATASETS_TO_TAG = [
-    "Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v1",
+    "Mimic-Robotics/mimic_ttt_redBalanced_30hz",
     "Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2",
     "Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v1",
     "Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2",
