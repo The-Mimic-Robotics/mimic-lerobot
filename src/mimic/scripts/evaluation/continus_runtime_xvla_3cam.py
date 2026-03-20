@@ -118,7 +118,10 @@ def main():
     teleop = make_teleoperator_from_config(teleop_cfg)
 
     print("Loading XVLA weights into the GPU...")
-    model_id = "Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_300k"
+    # model_id = "Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_300k"
+    
+    # model_id = "Mimic-Robotics/xvla_ttt_red_30hz_32ac_100k"
+    model_id = "Mimic-Robotics/xvla_ttt_15hz_32ac_LF_100k"
     # model_id = "Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_100k_auguv2"
     # Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_100k_auguv2
     policy = XVLAPolicy.from_pretrained(model_id)
