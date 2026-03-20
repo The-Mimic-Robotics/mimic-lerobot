@@ -44,7 +44,7 @@ Override example:
 ```bash
 ./mimic_deployment/training_scripts/train_manager_speed.sh \
    --policy xvla --dataset-group ttt_3cam_15hz_32ac \
-   --steps 500000 --checkpoint-freq 50000
+   --steps 500000 --checkpoint-freq 50000 --batch-size 40 --no-follow
 ```
 
 ## Queue monitoring (recommended):
@@ -85,9 +85,16 @@ SLURM_GRES='gpu:nvidia_a100_7g.80gb:1' ./mimic_deployment/training_scripts/train
 SLURM_GRES='' SLURM_CONSTRAINT='gpu20' ./mimic_deployment/training_scripts/train_manager_speed.sh --policy xvla --dataset-group ttt_3cam_15hz_32ac --steps 1000 --checkpoint-freq 1000 --batch-size 4 --gpus 1 --slurm-mem 64G
 ```
 
+## Validated XVLA batch sizes (ttt_3cam_15hz_32ac)
+
+- Best known stable on `20GB` slice: `batch-size 8`
+- Best known stable on `80GB` slice: `batch-size 40`
+
+Use these as defaults for long training runs unless model/dataset settings change significantly.
+
 ## Observed SPEED limits (current account/cluster behavior)
 
-- Max wall time: `7-00:00:00` (partition limit used by manager)
+- Max wall time used by manager: `3-00:00:00`
 - Account cap observed: total `gpu=4`, `cpu=32` across running jobs
 - Common stable memory requests used: `128G` / `256G`
 - Batch size is model+dataset dependent (no global max)
@@ -124,6 +131,32 @@ Pending/log note:
 - If a job is `PENDING`, the stdout log file may not exist yet; `tail -f` will fail until the job starts.
 - Check first with `squeue -j <jobid> -o "%.9i %.9P %.24j %.8T %.10M %.20R"`.
 
+
+## Conda env routing (automatic by policy)
+
+`train_manager_speed.sh` now auto-selects conda env per policy:
+
+- `xvla` -> `/speed-scratch/$USER/conda/lerobot-xvla`
+- `pi05` -> `/speed-scratch/$USER/conda/lerobot-pi`
+- others -> `CONDA_ENV_NAME` (default fallback)
+
+Important:
+- `lerobot-xvla` is an alias path for the xvla env and is intentionally used by the manager.
+- Env package snapshots are stored in:
+   - `conda-envs/lerobot-xvla-requirements.txt`
+   - `conda-envs/lerobot-pi-requirements.txt`
+
+## W&B / disk quota notes
+
+- If checkpoint logging fails with `OSError: [Errno 122] Disk quota exceeded`, it is usually home quota pressure.
+- Manager now exports scratch paths for W&B/temp/cache (`/speed-scratch/$USER/...`) to reduce home usage.
+- If needed, clean old local W&B data under `~/.local/share/wandb`.
+
+## Multi-GPU note
+
+- You can request multiple GPUs with `--gpus N`, but with the current manager launch mode (single python process), this does **not** automatically run distributed training.
+- In current form, extra GPUs may be reserved without speeding training.
+- For true multi-GPU speedup, launch must use distributed workers (e.g., `accelerate launch` / multi-process `srun`).
 
 ## Flow (Mermaid)
 

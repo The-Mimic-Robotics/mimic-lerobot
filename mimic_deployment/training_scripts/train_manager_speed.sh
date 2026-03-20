@@ -71,16 +71,18 @@ PUSH_TO_HUB="${PUSH_TO_HUB:-true}"
 FOLLOW_LOGS=true
 DRY_RUN=false
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-lerobot}"
+XVLA_CONDA_ENV_NAME="${XVLA_CONDA_ENV_NAME:-/speed-scratch/$USER/conda/lerobot-xvla}"
+PI05_CONDA_ENV_NAME="${PI05_CONDA_ENV_NAME:-/speed-scratch/$USER/conda/lerobot-pi}"
 POLICY_MODE="${POLICY_MODE:-default}"
 
 # SPEED defaults (kept simple; edit here if cluster policy changes)
 SLURM_PARTITION="pt"
 SLURM_CONSTRAINT="${SLURM_CONSTRAINT:-}"
 SLURM_GPUS="${SLURM_GPUS:-1}"
-SLURM_GRES="${SLURM_GRES:-gpu:nvidia_a100_7g.80gb:1}"
+SLURM_GRES="${SLURM_GRES-gpu:nvidia_a100_7g.80gb:1}"
 SLURM_CPUS="${SLURM_CPUS:-8}"
 SLURM_MEM="${SLURM_MEM:-256G}"
-SLURM_TIME="${SLURM_TIME:-7-00:00:00}"
+SLURM_TIME="${SLURM_TIME:-3-00:00:00}"
 HF_PUSH_CHECKPOINTS="${HF_PUSH_CHECKPOINTS:-true}"
 HF_CHECKPOINT_SYNC_INTERVAL="${HF_CHECKPOINT_SYNC_INTERVAL:-180}"
 
@@ -284,6 +286,9 @@ echo -e "${YELLOW}Constraint:${NC}     ${SLURM_CONSTRAINT:-<none>}"
 echo -e "${YELLOW}GRES Override:${NC}  ${SLURM_GRES:-<none>}"
 echo -e "${YELLOW}Output Base:${NC}    $OUTPUT_BASE"
 echo -e "${YELLOW}SLURM Mem:${NC}      $SLURM_MEM"
+echo -e "${YELLOW}Conda (default):${NC} $CONDA_ENV_NAME"
+echo -e "${YELLOW}Conda (xvla):${NC}   $XVLA_CONDA_ENV_NAME"
+echo -e "${YELLOW}Conda (pi05):${NC}   $PI05_CONDA_ENV_NAME"
 echo -e "${YELLOW}Push to Hub:${NC}    $PUSH_TO_HUB"
 echo -e "${YELLOW}Push Checkpoints:${NC} $HF_PUSH_CHECKPOINTS (every ${HF_CHECKPOINT_SYNC_INTERVAL}s)"
 echo -e "${YELLOW}Follow Logs:${NC}    $FOLLOW_LOGS"
@@ -304,6 +309,9 @@ touch "$SUMMARY_LOG"
   echo "GresOverride=${SLURM_GRES:-<none>}"
   echo "OutputBase=$OUTPUT_BASE"
   echo "SlurmMem=$SLURM_MEM"
+  echo "CondaDefault=$CONDA_ENV_NAME"
+  echo "CondaXvla=$XVLA_CONDA_ENV_NAME"
+  echo "CondaPi05=$PI05_CONDA_ENV_NAME"
   echo "PushToHub=$PUSH_TO_HUB"
   echo "PushCheckpoints=$HF_PUSH_CHECKPOINTS"
   echo "CheckpointSyncInterval=$HF_CHECKPOINT_SYNC_INTERVAL"
@@ -393,6 +401,14 @@ for GROUP in "${GROUP_ARRAY[@]}"; do
   POLICY_NUM=1
   for POLICY in "${POLICY_ARRAY[@]}"; do
     POLICY="$(echo "$POLICY" | xargs)"
+    POLICY_CONDA_ENV_NAME="$CONDA_ENV_NAME"
+    if [ "$POLICY" = "xvla" ]; then
+      POLICY_CONDA_ENV_NAME="$XVLA_CONDA_ENV_NAME"
+    fi
+    if [ "$POLICY" = "pi05" ]; then
+      POLICY_CONDA_ENV_NAME="$PI05_CONDA_ENV_NAME"
+    fi
+
     EFFECTIVE_BATCH_SIZE="$BATCH_SIZE"
     if [ -z "$EFFECTIVE_BATCH_SIZE" ] && [ "$POLICY" = "xvla" ]; then
       EFFECTIVE_BATCH_SIZE="4"
@@ -422,7 +438,7 @@ ${SBATCH_GPU_LINE}
 
 set -euo pipefail
 
-if [ "\${CONDA_DEFAULT_ENV:-}" != "${CONDA_ENV_NAME}" ] && [[ "\${CONDA_PREFIX:-}" != */"${CONDA_ENV_NAME}" ]]; then
+if [ "\${CONDA_DEFAULT_ENV:-}" != "${POLICY_CONDA_ENV_NAME}" ] && [[ "\${CONDA_PREFIX:-}" != */"${POLICY_CONDA_ENV_NAME}" ]]; then
   if command -v conda >/dev/null 2>&1; then
     eval "\$(conda shell.bash hook 2>/dev/null)" || true
   fi
@@ -431,11 +447,11 @@ if [ "\${CONDA_DEFAULT_ENV:-}" != "${CONDA_ENV_NAME}" ] && [[ "\${CONDA_PREFIX:-
     [ -f "/speed-scratch/\$USER/conda/etc/profile.d/conda.sh" ] && source "/speed-scratch/\$USER/conda/etc/profile.d/conda.sh"
     [ -f "\$HOME/anaconda3/etc/profile.d/conda.sh" ] && source "\$HOME/anaconda3/etc/profile.d/conda.sh"
   fi
-  if ! conda activate "${CONDA_ENV_NAME}" >/dev/null 2>&1; then
-    echo "[warn] failed to activate conda env '${CONDA_ENV_NAME}'"
-    if [ -x "${CONDA_ENV_NAME}/bin/python" ]; then
-      export PATH="${CONDA_ENV_NAME}/bin:\$PATH"
-      echo "[info] using python from ${CONDA_ENV_NAME}/bin"
+  if ! conda activate "${POLICY_CONDA_ENV_NAME}" >/dev/null 2>&1; then
+    echo "[warn] failed to activate conda env '${POLICY_CONDA_ENV_NAME}'"
+    if [ -x "${POLICY_CONDA_ENV_NAME}/bin/python" ]; then
+      export PATH="${POLICY_CONDA_ENV_NAME}/bin:\$PATH"
+      echo "[info] using python from ${POLICY_CONDA_ENV_NAME}/bin"
     fi
   fi
 fi
@@ -450,10 +466,16 @@ export TMPDIR=/speed-scratch/\$USER/tmp
 export TMP=\$TMPDIR
 mkdir -p /speed-scratch/\$USER/hf_home
 mkdir -p /speed-scratch/\$USER/hf_cache
+mkdir -p /speed-scratch/\$USER/wandb
+mkdir -p /speed-scratch/\$USER/wandb_cache
+mkdir -p /speed-scratch/\$USER/wandb_artifacts
 export HF_HOME="\${HF_HOME:-/speed-scratch/\$USER/hf_home}"
 export HUGGINGFACE_HUB_CACHE="\${HUGGINGFACE_HUB_CACHE:-/speed-scratch/\$USER/hf_cache}"
 export WANDB__SERVICE_WAIT="\${WANDB__SERVICE_WAIT:-300}"
 export WANDB_START_METHOD="\${WANDB_START_METHOD:-thread}"
+export WANDB_DIR="\${WANDB_DIR:-/speed-scratch/\$USER/wandb}"
+export WANDB_CACHE_DIR="\${WANDB_CACHE_DIR:-/speed-scratch/\$USER/wandb_cache}"
+export WANDB_ARTIFACT_DIR="\${WANDB_ARTIFACT_DIR:-/speed-scratch/\$USER/wandb_artifacts}"
 export TOKENIZERS_PARALLELISM="\${TOKENIZERS_PARALLELISM:-false}"
 
 export COMPUTER="speed"
@@ -466,6 +488,9 @@ export POLICY_MODE="${POLICY_MODE}"
 
 if [ "${POLICY}" = "xvla" ]; then
   export XVLA_SPEED_MODE="${POLICY_MODE}"
+fi
+if [ "${POLICY}" = "pi05" ]; then
+  export PI05_SPEED_MODE="${POLICY_MODE}"
 fi
 
 if [ -n "${EFFECTIVE_BATCH_SIZE}" ]; then export BATCH_SIZE="${EFFECTIVE_BATCH_SIZE}"; fi
@@ -482,13 +507,14 @@ if [ -n "${CHECKPOINT_FREQ}" ]; then export SAVE_FREQ="${CHECKPOINT_FREQ}"; fi
 
 echo "[info] Job started: \$(date '+%F %T')"
 echo "[info] Policy: ${POLICY}"
+echo "[info] Policy conda env: ${POLICY_CONDA_ENV_NAME}"
 echo "[info] Dataset group: ${GROUP}"
 echo "[info] Log file: ${JOB_LOG}"
 echo "[info] Conda env: \${CONDA_DEFAULT_ENV:-<none>}"
 echo "[info] Python: \$(command -v python || command -v python3 || echo 'missing')"
 if ! (python -c "import torch" >/dev/null 2>&1); then
   echo "[error] torch is unavailable in current python environment."
-  echo "[error] Set CONDA_ENV_NAME correctly (example: /speed-scratch/\$USER/conda/lerobot)."
+  echo "[error] Set policy conda env correctly (example: /speed-scratch/\$USER/conda/lerobot or /speed-scratch/\$USER/conda/lerobot-pi)."
   exit 2
 fi
 if command -v nvidia-smi >/dev/null 2>&1; then
@@ -514,8 +540,8 @@ SBATCH_EOF
     echo -e "${GREEN}Submitted job:${NC} $JOB_ID"
     echo -e "${GREEN}Policy:${NC}        $POLICY"
     echo -e "${GREEN}Dataset group:${NC} $GROUP"
-    echo -e "${GREEN}Log file:${NC}      $JOB_LOG"
-    echo -e "${GREEN}SLURM script:${NC}  $SLURM_SCRIPT"
+    echo -e "${GREEN}Log file:${NC}      tail -f $JOB_LOG"
+    echo -e "${GREEN}SLURM script:${NC}  tail -f $SLURM_SCRIPT"
 
     {
       echo "[$(date '+%F %T')] submitted job_id=$JOB_ID policy=$POLICY group=$GROUP"
@@ -535,6 +561,6 @@ done
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
 echo -e "${GREEN}All jobs submitted in sequence.${NC}"
-echo -e "${YELLOW}Summary log:${NC} $SUMMARY_LOG"
+echo -e "${YELLOW}Summary log:${NC} tail -f $SUMMARY_LOG"
 echo -e "${YELLOW}Queue:${NC}       squeue -u \$USER"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
