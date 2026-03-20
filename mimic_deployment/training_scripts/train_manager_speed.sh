@@ -7,8 +7,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 DATASET_RESOLVER="$SCRIPT_DIR/dataset_groups.py"
-LOG_DIR="$REPO_ROOT/outputs/logs"
-TIMESTAMP="$(date +"%d_%b_%H%M" | tr '[:upper:]' '[:lower:]')"
+OUTPUT_BASE="${OUTPUT_BASE:-/speed-scratch/$USER/mimic-lerobot-outputs}"
+LOG_DIR="$OUTPUT_BASE/logs"
+TRAIN_DIR="$OUTPUT_BASE/train"
+TIMESTAMP="$(date +"%d_%b_%H%M%S" | tr '[:upper:]' '[:lower:]')"
 SUMMARY_LOG="$LOG_DIR/train_manager_speed_${TIMESTAMP}.log"
 
 RED='\033[0;31m'
@@ -30,8 +32,10 @@ ${YELLOW}Required:${NC}
   --dataset-group GROUP[,GROUP2,...]     Dataset group(s) from dataset_groups.py
 
 ${YELLOW}Core options:${NC}
-  --steps N               Override training steps (default: policy script default)
+  --steps N               Training steps (default: 300000)
+  --checkpoint-freq N     Checkpoint frequency in steps (default: 50000)
   --batch-size N          Override batch size
+  --policy-mode MODE      Policy mode (default|smoke1k|maxbatch), default: default
   --gpus N                Number of GPUs for SBATCH (default: 1)
   --slurm-mem SIZE        SLURM memory request (default: 256G)
 
@@ -61,21 +65,33 @@ EOF
 POLICIES=""
 DATASET_GROUPS="${DATASET_GROUP:-}"
 STEPS="${STEPS:-}"
+CHECKPOINT_FREQ="${CHECKPOINT_FREQ:-${SAVE_FREQ:-}}"
 BATCH_SIZE="${BATCH_SIZE:-}"
 PUSH_TO_HUB="${PUSH_TO_HUB:-true}"
 FOLLOW_LOGS=true
 DRY_RUN=false
 CONDA_ENV_NAME="${CONDA_ENV_NAME:-lerobot}"
+POLICY_MODE="${POLICY_MODE:-default}"
 
 # SPEED defaults (kept simple; edit here if cluster policy changes)
 SLURM_PARTITION="pt"
-SLURM_CONSTRAINT="gpu20"
+SLURM_CONSTRAINT="${SLURM_CONSTRAINT:-}"
 SLURM_GPUS="${SLURM_GPUS:-1}"
+SLURM_GRES="${SLURM_GRES:-gpu:nvidia_a100_7g.80gb:1}"
 SLURM_CPUS="${SLURM_CPUS:-8}"
 SLURM_MEM="${SLURM_MEM:-256G}"
 SLURM_TIME="${SLURM_TIME:-7-00:00:00}"
+HF_PUSH_CHECKPOINTS="${HF_PUSH_CHECKPOINTS:-true}"
+HF_CHECKPOINT_SYNC_INTERVAL="${HF_CHECKPOINT_SYNC_INTERVAL:-180}"
+
+STEPS="${STEPS:-300000}"
+CHECKPOINT_FREQ="${CHECKPOINT_FREQ:-50000}"
 
 ensure_conda_active() {
+  if [ "${SKIP_LOCAL_CONDA_CHECK:-false}" = "true" ]; then
+    return 0
+  fi
+
   if [ "${CONDA_DEFAULT_ENV:-}" = "$CONDA_ENV_NAME" ] || [[ "${CONDA_PREFIX:-}" == */"$CONDA_ENV_NAME" ]]; then
     return 0
   fi
@@ -129,8 +145,21 @@ while [[ $# -gt 0 ]]; do
       STEPS="$2"
       shift 2
       ;;
+    --checkpoint-freq)
+      CHECKPOINT_FREQ="$2"
+      shift 2
+      ;;
+    --save-freq)
+      CHECKPOINT_FREQ="$2"
+      echo -e "${YELLOW}Warning:${NC} --save-freq is deprecated; use --checkpoint-freq."
+      shift 2
+      ;;
     --batch-size)
       BATCH_SIZE="$2"
+      shift 2
+      ;;
+    --policy-mode)
+      POLICY_MODE="$2"
       shift 2
       ;;
     --gpus)
@@ -185,9 +214,19 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [ "$PUSH_TO_HUB" != "true" ]; then
+  echo -e "${YELLOW}Note:${NC} SPEED manager enforces push_to_hub=true; overriding requested value."
+  PUSH_TO_HUB=true
+fi
+
 if [ -z "$POLICIES" ]; then
   echo -e "${RED}Error: --policy is required${NC}"
   usage
+  exit 1
+fi
+
+if [[ "$POLICY_MODE" != "default" && "$POLICY_MODE" != "smoke1k" && "$POLICY_MODE" != "maxbatch" ]]; then
+  echo -e "${RED}Error: --policy-mode must be one of: default, smoke1k, maxbatch${NC}"
   exit 1
 fi
 
@@ -229,18 +268,24 @@ for GROUP in "${GROUP_ARRAY[@]}"; do
   fi
 done
 
-mkdir -p "$LOG_DIR"
+mkdir -p "$LOG_DIR" "$TRAIN_DIR"
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
 echo -e "${GREEN}SPEED SBATCH Configuration${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
 echo -e "${YELLOW}Policies:${NC}       $POLICIES (${#POLICY_ARRAY[@]} model(s))"
 echo -e "${YELLOW}Dataset Groups:${NC} $DATASET_GROUPS (${#GROUP_ARRAY[@]} group(s))"
-echo -e "${YELLOW}Steps:${NC}          ${STEPS:-<policy default>}"
+echo -e "${YELLOW}Steps:${NC}          $STEPS"
+echo -e "${YELLOW}Checkpoint Freq:${NC} $CHECKPOINT_FREQ"
 echo -e "${YELLOW}Batch Size:${NC}     ${BATCH_SIZE:-<policy default>}"
+echo -e "${YELLOW}Policy Mode:${NC}    $POLICY_MODE"
 echo -e "${YELLOW}GPUs:${NC}           $SLURM_GPUS"
+echo -e "${YELLOW}Constraint:${NC}     ${SLURM_CONSTRAINT:-<none>}"
+echo -e "${YELLOW}GRES Override:${NC}  ${SLURM_GRES:-<none>}"
+echo -e "${YELLOW}Output Base:${NC}    $OUTPUT_BASE"
 echo -e "${YELLOW}SLURM Mem:${NC}      $SLURM_MEM"
 echo -e "${YELLOW}Push to Hub:${NC}    $PUSH_TO_HUB"
+echo -e "${YELLOW}Push Checkpoints:${NC} $HF_PUSH_CHECKPOINTS (every ${HF_CHECKPOINT_SYNC_INTERVAL}s)"
 echo -e "${YELLOW}Follow Logs:${NC}    $FOLLOW_LOGS"
 echo -e "${YELLOW}Summary Log:${NC}    $SUMMARY_LOG"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
@@ -250,11 +295,18 @@ touch "$SUMMARY_LOG"
   echo "[$(date '+%F %T')] SPEED training manager started"
   echo "Policies=$POLICIES"
   echo "DatasetGroups=$DATASET_GROUPS"
-  echo "Steps=${STEPS:-<policy default>}"
+  echo "Steps=$STEPS"
+  echo "CheckpointFreq=$CHECKPOINT_FREQ"
   echo "BatchSize=${BATCH_SIZE:-<policy default>}"
+  echo "PolicyMode=$POLICY_MODE"
   echo "GPUs=$SLURM_GPUS"
+  echo "Constraint=${SLURM_CONSTRAINT:-<none>}"
+  echo "GresOverride=${SLURM_GRES:-<none>}"
+  echo "OutputBase=$OUTPUT_BASE"
   echo "SlurmMem=$SLURM_MEM"
   echo "PushToHub=$PUSH_TO_HUB"
+  echo "PushCheckpoints=$HF_PUSH_CHECKPOINTS"
+  echo "CheckpointSyncInterval=$HF_CHECKPOINT_SYNC_INTERVAL"
 } >> "$SUMMARY_LOG"
 
 if [ "$DRY_RUN" = true ]; then
@@ -317,6 +369,16 @@ follow_job_log() {
 PREV_JOB_ID=""
 GROUP_NUM=1
 
+SBATCH_GPU_LINE="#SBATCH --gpus=${SLURM_GPUS}"
+if [ -n "$SLURM_GRES" ]; then
+  SBATCH_GPU_LINE="#SBATCH --gres=${SLURM_GRES}"
+fi
+
+SBATCH_CONSTRAINT_LINE=""
+if [ -n "$SLURM_CONSTRAINT" ]; then
+  SBATCH_CONSTRAINT_LINE="#SBATCH --constraint=${SLURM_CONSTRAINT}"
+fi
+
 for GROUP in "${GROUP_ARRAY[@]}"; do
   GROUP="$(echo "$GROUP" | xargs)"
   DATASET_NAME_CLEAN="$(echo "$GROUP" | tr '[:upper:]' '[:lower:]' | tr ' ' '_' | tr ',' '_')"
@@ -338,7 +400,8 @@ for GROUP in "${GROUP_ARRAY[@]}"; do
     fi
 
     TRAIN_SCRIPT="$SCRIPT_DIR/$POLICY/train.sh"
-    JOB_NAME="${POLICY}_speed_${DATASET_NAME_CLEAN}_${TIMESTAMP}"
+    BATCH_TAG="${EFFECTIVE_BATCH_SIZE:-auto}"
+    JOB_NAME="${POLICY}_speed_${DATASET_NAME_CLEAN}_b${BATCH_TAG}_${TIMESTAMP}"
     SLURM_SCRIPT="$LOG_DIR/${JOB_NAME}.slurm.sh"
     JOB_LOG="$LOG_DIR/${JOB_NAME}.log"
 
@@ -348,8 +411,8 @@ for GROUP in "${GROUP_ARRAY[@]}"; do
 #!/encs/bin/bash
 #SBATCH --job-name=${JOB_NAME}
 #SBATCH --partition=${SLURM_PARTITION}
-#SBATCH --constraint=${SLURM_CONSTRAINT}
-#SBATCH --gpus=${SLURM_GPUS}
+${SBATCH_CONSTRAINT_LINE}
+${SBATCH_GPU_LINE}
 #SBATCH --cpus-per-task=${SLURM_CPUS}
 #SBATCH --mem=${SLURM_MEM}
 #SBATCH --time=${SLURM_TIME}
@@ -368,10 +431,19 @@ if [ "\${CONDA_DEFAULT_ENV:-}" != "${CONDA_ENV_NAME}" ] && [[ "\${CONDA_PREFIX:-
     [ -f "/speed-scratch/\$USER/conda/etc/profile.d/conda.sh" ] && source "/speed-scratch/\$USER/conda/etc/profile.d/conda.sh"
     [ -f "\$HOME/anaconda3/etc/profile.d/conda.sh" ] && source "\$HOME/anaconda3/etc/profile.d/conda.sh"
   fi
-  conda activate "${CONDA_ENV_NAME}" >/dev/null 2>&1 || echo "[warn] failed to activate conda env '${CONDA_ENV_NAME}'"
+  if ! conda activate "${CONDA_ENV_NAME}" >/dev/null 2>&1; then
+    echo "[warn] failed to activate conda env '${CONDA_ENV_NAME}'"
+    if [ -x "${CONDA_ENV_NAME}/bin/python" ]; then
+      export PATH="${CONDA_ENV_NAME}/bin:\$PATH"
+      echo "[info] using python from ${CONDA_ENV_NAME}/bin"
+    fi
+  fi
 fi
 
 cd "${REPO_ROOT}"
+
+mkdir -p "${OUTPUT_BASE}/train" "${OUTPUT_BASE}/logs"
+export OUTPUT_BASE="${OUTPUT_BASE}"
 
 mkdir -p /speed-scratch/\$USER/tmp
 export TMPDIR=/speed-scratch/\$USER/tmp
@@ -388,9 +460,17 @@ export COMPUTER="speed"
 export JOB_NAME="${JOB_NAME}"
 export DATASET_GROUP="${GROUP}"
 export PUSH_TO_HUB="${PUSH_TO_HUB}"
+export HF_PUSH_CHECKPOINTS="${HF_PUSH_CHECKPOINTS}"
+export HF_CHECKPOINT_SYNC_INTERVAL="${HF_CHECKPOINT_SYNC_INTERVAL}"
+export POLICY_MODE="${POLICY_MODE}"
+
+if [ "${POLICY}" = "xvla" ]; then
+  export XVLA_SPEED_MODE="${POLICY_MODE}"
+fi
 
 if [ -n "${EFFECTIVE_BATCH_SIZE}" ]; then export BATCH_SIZE="${EFFECTIVE_BATCH_SIZE}"; fi
 if [ -n "${STEPS}" ]; then export STEPS="${STEPS}"; fi
+if [ -n "${CHECKPOINT_FREQ}" ]; then export SAVE_FREQ="${CHECKPOINT_FREQ}"; fi
 
 # pass-through auth/env vars if already present
 [ -n "\${WANDB_API_KEY:-}" ] && export WANDB_API_KEY
@@ -406,6 +486,11 @@ echo "[info] Dataset group: ${GROUP}"
 echo "[info] Log file: ${JOB_LOG}"
 echo "[info] Conda env: \${CONDA_DEFAULT_ENV:-<none>}"
 echo "[info] Python: \$(command -v python || command -v python3 || echo 'missing')"
+if ! (python -c "import torch" >/dev/null 2>&1); then
+  echo "[error] torch is unavailable in current python environment."
+  echo "[error] Set CONDA_ENV_NAME correctly (example: /speed-scratch/\$USER/conda/lerobot)."
+  exit 2
+fi
 if command -v nvidia-smi >/dev/null 2>&1; then
   echo "[info] GPU memory visible to this job:"
   nvidia-smi --query-gpu=index,name,memory.total,mig.mode.current --format=csv,noheader || true
