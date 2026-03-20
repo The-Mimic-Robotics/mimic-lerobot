@@ -19,12 +19,18 @@ DATASET_RESOLVER="$REPO_ROOT/mimic_deployment/training_scripts/dataset_groups.py
 # Get computer name from environment or hostname
 COMPUTER="${COMPUTER:-$(hostname)}"
 
+PI05_SPEED_MODE="${PI05_SPEED_MODE:-default}"
+if [[ "$PI05_SPEED_MODE" == "maxbatch" ]]; then
+    exec "$SCRIPT_DIR/train_speed_max_batch_probe.sh" "$@"
+fi
+
 # ============================================================================
 # PARAMETERS (Override via command line arguments)
 # ============================================================================
 
 DATASET_GROUP="${DATASET_GROUP:-}"
 SINGLE_DATASET="${SINGLE_DATASET:-}"
+PUSH_TO_HUB="${PUSH_TO_HUB:-true}"
 
 # Training parameters with computer-specific defaults
 if [[ "$COMPUTER" == "odin" ]] || [[ "$COMPUTER" == "ODIN-IEEE" ]]; then
@@ -42,6 +48,8 @@ STEPS="${STEPS:-150000}"
 SAVE_FREQ="${SAVE_FREQ:-10000}"
 ACTION_STEPS="${ACTION_STEPS:-50}" 
 CHUNK_SIZE="${CHUNK_SIZE:-50}"
+PI05_COMPILE_MODEL="${PI05_COMPILE_MODEL:-false}"
+PI05_COMPILE_MODE="${PI05_COMPILE_MODE:-max-autotune}"
 
 # ============================================================================
 # RESOLVE DATASET
@@ -76,9 +84,12 @@ if [ -z "$JOB_NAME" ]; then
     JOB_NAME="${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}_${TIMESTAMP}"
 fi
 
-OUTPUT_DIR="$REPO_ROOT/outputs/train/${JOB_NAME}"
-LOG_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.log"
+OUTPUT_BASE="${OUTPUT_BASE:-$REPO_ROOT/outputs}"
+OUTPUT_DIR="$OUTPUT_BASE/train/${JOB_NAME}"
+LOG_FILE="$OUTPUT_BASE/logs/${JOB_NAME}.log"
 REPO_ID="Mimic-Robotics/${JOB_NAME}"
+
+mkdir -p "$OUTPUT_BASE/logs" "$OUTPUT_BASE/train"
 
 # ============================================================================
 # TRAINING COMMAND
@@ -91,6 +102,7 @@ echo "Job Name:      $JOB_NAME"
 echo "Computer:      $COMPUTER"
 echo "Batch Size:    $BATCH_SIZE"
 echo "Steps:         $STEPS"
+echo "Compile Model: $PI05_COMPILE_MODEL ($PI05_COMPILE_MODE)"
 echo "Log File:      $LOG_FILE"
 echo "=========================================="
 
@@ -98,31 +110,26 @@ cd "$REPO_ROOT"
 CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
   --dataset.video_backend=pyav \
-  --policy.type=pi0_fast \
-  --policy.pretrained_path=lerobot/pi0_fast_base \
+    --policy.type=pi05 \
+    --policy.pretrained_path=lerobot/pi05_base \
   --policy.repo_id="$REPO_ID" \
+    --policy.push_to_hub="$PUSH_TO_HUB" \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
-  --policy.max_action_tokens=256 \
-  --policy.scheduler_decay_steps="$STEPS" \
-  --policy.input_features='{
-    "observation.images.top": {"shape": [3, 224, 224], "type": "VISUAL"},
-    "observation.images.left_wrist": {"shape": [3, 224, 224], "type": "VISUAL"},
-    "observation.images.right_wrist": {"shape": [3, 224, 224], "type": "VISUAL"},
-    "observation.state": {"shape": [15], "type": "STATE"},
-    "observation.instruction": {"type": "LANGUAGE", "shape": [1]}
-  }' \
-  --policy.use_peft=true \
+    --policy.scheduler_decay_steps="$STEPS" \
+  --policy.use_peft=false \
 #   --peft.type=LORA \
 #   --peft.r=32 \
 #   --peft.alpha=64 \
   --policy.train_expert_only=true \
-  --policy.freeze_vision_encoder=true \
+    --policy.freeze_vision_encoder=false \
+    --policy.gradient_checkpointing=true \
+    --policy.compile_model="$PI05_COMPILE_MODEL" \
+    --policy.compile_mode="$PI05_COMPILE_MODE" \
   --policy.dtype=bfloat16 \
-  --policy.gradient_checkpointing=true \
   --policy.device=cuda \
   --dataset.image_transforms.enable=false \
-  --batch_size=1 \
+    --batch_size="$BATCH_SIZE" \
   --num_workers="$NUM_WORKERS" \
   --steps="$STEPS" \
   --save_freq="$SAVE_FREQ" \
@@ -130,7 +137,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --job_name="$JOB_NAME" \
   --wandb.enable=true)
 
-if [[ "$1" == "--no-daemon" ]]; then
+if [[ "${1:-}" == "--no-daemon" ]]; then
     echo "Starting training in FOREGROUND..."
     "${CMD[@]}"
 else
