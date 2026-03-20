@@ -14,21 +14,27 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 DATASET_RESOLVER="$REPO_ROOT/mimic_deployment/training_scripts/dataset_groups.py"
 COMPUTER="${COMPUTER:-$(hostname)}"
 
+XVLA_SPEED_MODE="${XVLA_SPEED_MODE:-default}"
+if [[ "$XVLA_SPEED_MODE" == "smoke1k" ]]; then
+  exec "$SCRIPT_DIR/train_speed_smoke_1k.sh" "$@"
+fi
+if [[ "$XVLA_SPEED_MODE" == "maxbatch" ]]; then
+  exec "$SCRIPT_DIR/train_speed_max_batch_probe.sh" "$@"
+fi
+
 DATASET_GROUP="${DATASET_GROUP:-}"
 SINGLE_DATASET="${SINGLE_DATASET:-}"
+PUSH_TO_HUB="${PUSH_TO_HUB:-true}"
+HF_PUSH_CHECKPOINTS="${HF_PUSH_CHECKPOINTS:-true}"
+HF_CHECKPOINT_SYNC_INTERVAL="${HF_CHECKPOINT_SYNC_INTERVAL:-180}"
 
 # === POWER SETTINGS (RTX 3090) ===
-BATCH_SIZE="${BATCH_SIZE:-14}"  # 24GB allows nice large batches
+BATCH_SIZE="${BATCH_SIZE:-9}"  # 24GB allows batch 9
 NUM_WORKERS="${NUM_WORKERS:-8}"
 STEPS="${STEPS:-300000}" 
 SAVE_FREQ="${SAVE_FREQ:-50000}" 
-<<<<<<< Updated upstream
-ACTION_STEPS="${ACTION_STEPS:-10}" 
-CHUNK_SIZE="${CHUNK_SIZE:-24}"
-=======
 ACTION_STEPS="${ACTION_STEPS:-32}" 
 CHUNK_SIZE="${CHUNK_SIZE:-32}"
->>>>>>> Stashed changes
 
 # Resolve Dataset
 if [ -n "$DATASET_GROUP" ]; then
@@ -40,21 +46,30 @@ else
 fi
 
 DATASET_NAME_CLEAN=$(echo "$DATASET_NAME_FOR_JOB" | tr '[:upper:]' '[:lower:]' | tr ' ' '_')
-# Auto-generate job name with TIMESTAMP
-DATE_STR=$(date +"%Y%m%d_%H%M%S")
-if [ -z "$JOB_NAME" ]; then
-    JOB_NAME="${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}_${DATE_STR}"
+DATE_TAG=$(date +"%d_%b" | tr '[:upper:]' '[:lower:]')
+TIME_TAG=$(date +"%H%M%S")
+CKPT_TAG="lastckpt"
+if [[ "$HF_PUSH_CHECKPOINTS" == "true" ]]; then
+  CKPT_TAG="allckpt"
 fi
-OUTPUT_DIR="$REPO_ROOT/outputs/train/${JOB_NAME}"
-LOG_FILE="$REPO_ROOT/outputs/logs/${JOB_NAME}.log"
-REPO_ID="Mimic-Robotics/${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}"
+BATCH_TAG="b${BATCH_SIZE}"
+MODEL_BASENAME="${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}_${BATCH_TAG}_${DATE_TAG}_${CKPT_TAG}"
+if [ -z "$JOB_NAME" ]; then
+    JOB_NAME="${POLICY_TYPE}_${COMPUTER}_${DATASET_NAME_CLEAN}_${BATCH_TAG}_${DATE_TAG}_${TIME_TAG}"
+fi
+OUTPUT_BASE="${OUTPUT_BASE:-$REPO_ROOT/outputs}"
+OUTPUT_DIR="$OUTPUT_BASE/train/${JOB_NAME}"
+LOG_FILE="$OUTPUT_BASE/logs/${JOB_NAME}.log"
+REPO_ID="Mimic-Robotics/${MODEL_BASENAME}"
 
-mkdir -p "$REPO_ROOT/outputs/logs"
+mkdir -p "$OUTPUT_BASE/logs" "$OUTPUT_BASE/train"
 
 echo "=========================================="
 echo "X-VLA Training (RTX 3090 Mode)"
 echo "Batch Size: $BATCH_SIZE"
 echo "Dataset:    $DATASET_NAME_FOR_JOB"
+echo "Repo ID:    $REPO_ID"
+echo "CKPT Sync:  $HF_PUSH_CHECKPOINTS (interval=${HF_CHECKPOINT_SYNC_INTERVAL}s)"
 echo "Log File:   $LOG_FILE"
 echo "=========================================="
 
@@ -72,6 +87,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.video_backend=pyav \
   --policy.path="lerobot/xvla-base" \
   --policy.repo_id="$REPO_ID" \
+  --policy.push_to_hub="$PUSH_TO_HUB" \
   --policy.n_action_steps="$ACTION_STEPS" \
   --policy.chunk_size="$CHUNK_SIZE" \
   --policy.action_mode=auto \
@@ -131,9 +147,71 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
 # Note: Added "front" mapping just in case your dataset uses that name instead of top. 
 # It won't hurt if the key doesn't exist.
 
-if [[ "$1" == "--no-daemon" ]]; then
-    echo "Starting in FOREGROUND..."
-    "${CMD[@]}"
+sync_checkpoints_to_hf() {
+  local sync_db="$OUTPUT_DIR/.hf_uploaded_checkpoints"
+
+  if [[ "$HF_PUSH_CHECKPOINTS" != "true" ]]; then
+    return 0
+  fi
+
+  if [ ! -d "$OUTPUT_DIR" ]; then
+    return 0
+  fi
+  touch "$sync_db"
+
+  local hf_cmd=""
+  if command -v hf >/dev/null 2>&1; then
+    hf_cmd="hf"
+  elif command -v huggingface-cli >/dev/null 2>&1; then
+    hf_cmd="huggingface-cli"
+  else
+    echo "[ckpt-sync] neither hf nor huggingface-cli is available; skipping checkpoint sync."
+    return 0
+  fi
+
+  while IFS= read -r ckpt_dir; do
+    [ -d "$ckpt_dir" ] || continue
+    local ckpt_name
+    ckpt_name="$(basename "$ckpt_dir")"
+
+    if grep -Fxq "$ckpt_name" "$sync_db"; then
+      continue
+    fi
+
+    echo "[ckpt-sync] uploading checkpoint: $ckpt_name"
+    if "$hf_cmd" upload "$REPO_ID" "$ckpt_dir" "checkpoints/$ckpt_name" --repo-type model --commit-message "Add checkpoint $ckpt_name"
+    then
+      echo "$ckpt_name" >> "$sync_db"
+      echo "[ckpt-sync] uploaded: $ckpt_name"
+    else
+      echo "[ckpt-sync] upload failed for: $ckpt_name"
+    fi
+  done < <(find "$OUTPUT_DIR" -maxdepth 2 -type d \( -path "$OUTPUT_DIR/checkpoints/*" -o -path "$OUTPUT_DIR/checkpoint-*" \) | sort)
+}
+
+run_with_checkpoint_sync() {
+  "${CMD[@]}" &
+  local train_pid=$!
+
+  (
+    set +e
+    while kill -0 "$train_pid" 2>/dev/null; do
+      sync_checkpoints_to_hf
+      sleep "$HF_CHECKPOINT_SYNC_INTERVAL"
+    done
+    sync_checkpoints_to_hf
+  ) &
+  local sync_pid=$!
+
+  wait "$train_pid"
+  local train_status=$?
+  wait "$sync_pid" || true
+  return "$train_status"
+}
+
+if [[ "${1:-}" == "--no-daemon" ]]; then
+  echo "Starting in FOREGROUND..."
+  run_with_checkpoint_sync
 else
     echo "Starting in BACKGROUND..."
     nohup "${CMD[@]}" > "$LOG_FILE" 2>&1 &

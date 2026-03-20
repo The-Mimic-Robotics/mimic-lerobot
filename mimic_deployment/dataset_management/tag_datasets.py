@@ -16,10 +16,11 @@ from pathlib import Path
 # ]
 
 DATASETS_TO_TAG = [
-    "Mimic-Robotics/test2",
-    "Mimic-Robotics/mimic_ttt_full30hz_rgb",
-    "Mimic-Robotics/mimic_ttt_blue_full30hz_rgb",
-    "Mimic-Robotics/mimic_ttt_redx_full30hz_rgb"
+    "Mimic-Robotics/mimic_ttt_redBalanced_30hz",
+    "Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2",
+    "Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v1",
+    "Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2",
+    "Mimic-Robotics/mimic_ttt_redx_30hz_x2_v1"
 ]
 
 def get_dataset_version(repo_id: str) -> str:

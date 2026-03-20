@@ -152,9 +152,9 @@ hf download Mimic-Robotics/mimic_ttt_blue_full30hz_rgb --local-dir .cache/huggin
 Mimic-Robotics/mimic_tictactoe_redx_full30hz
 
 lerobot-edit-dataset \
-  --repo_id Mimic-Robotics/mimic_ttt_15hz \
+  --repo_id Mimic-Robotics/mimic_ttt_redx \
   --operation.type merge \
-  --push_to_hub false \
+  --push_to_hub true \
   --operation.repo_ids "[\
 'Mimic-Robotics/mimic_ttt_blue_15hz', \
 'Mimic-Robotics/mimic_ttt_redx_15hz' \
