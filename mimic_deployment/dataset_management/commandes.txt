@@ -123,7 +123,7 @@ hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v2 ~/.cac
 
 hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 --repo-type dataset
 
-hf upload Mimic-Robotics/mimic_tttt_redx_x2_BL_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 --repo-type dataset
+hf upload Mimic-Robotics/mimic_ttt_redBalanced_15hz ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redBalanced_15hz_rgb --repo-type dataset
 
                        
 hf upload Mimic-Robotics/test3 ~/.cache/huggingface/lerobot/Mimic-Robotics/test2_ --repo-type dataset
