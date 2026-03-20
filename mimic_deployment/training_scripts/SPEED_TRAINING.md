@@ -1,121 +1,139 @@
-# SPEED Cluster Training (Simple, SBATCH-only)
+# SPEED Training (short, SBATCH-only)
 
-This guide is for running training from `speed-submit` using the dedicated script:
-
+Use only:
 - `mimic_deployment/training_scripts/train_manager_speed.sh`
 
-No `srun` mode. No mixed local/SPEED logic. One script dedicated to SPEED.
-
-## 1) Where to run this from
-
-Run training commands from `speed-submit` (not from your `salloc` VS Code server shell).
+## Quick start (next time)
 
 ```bash
 ssh ac_pate@speed.encs.concordia.ca
 cd /home/a/ac_pate/mimic-lerobot
-```
 
-## 2) Activate conda first (required)
-
-Run this before any auth checks:
-
-```bash
 source ~/miniconda3/etc/profile.d/conda.sh 2>/dev/null || true
 source /speed-scratch/$USER/conda/etc/profile.d/conda.sh 2>/dev/null || true
 conda activate lerobot
+
+./mimic_deployment/training_scripts/train_manager_speed.sh \
+   --policy xvla \
+   --dataset-group ttt_3cam_15hz_32ac \
+   --steps 300000 \
+   --checkpoint-freq 50000 \
+   --batch-size 4 \
+   --gpus 1 \
+   --slurm-mem 128G
 ```
 
-If activation fails, your conda path is different; locate `conda.sh` and source it first.
+## Important options (what they mean)
 
-## 3) Auth checks (works even if CLI wrappers are missing)
+- `--policy`: policy folder/script to run (`xvla`, `pi05`, `smolvla`, ...)
+- `--dataset-group`: key from `dataset_groups.py`
+- `--batch-size`: training batch; biggest speed lever before OOM
+- `--gpus`: GPUs requested by SLURM (`#SBATCH --gpus`)
+- `--slurm-mem`: host RAM for the job (not GPU VRAM)
+- `--steps`: total optimization steps
+- `--checkpoint-freq`: checkpoint cadence (every N steps)
+- `--no-follow`: submit and return immediately
+- `--dry-run`: print plan only, no submit
+- `--policy-mode`: `default` (normal), `smoke1k`, `maxbatch` (testing-only)
 
-```bash
-python -m wandb --version
-python -m wandb login
+Defaults now:
+- `--steps 300000`
+- `--checkpoint-freq 50000`
 
-python -m huggingface_hub.commands.huggingface_cli login
-
-test -f ~/.cache/huggingface/token && echo "HF token found"
-test -f ~/.netrc && echo "netrc found"
-```
-
-If `wandb` command is missing, this is normal on some setups; use `python -m wandb ...`.
-
-Optional environment variables:
-
-```bash
-export WANDB_PROJECT="mimic-lerobot"
-export WANDB_ENTITY="mathias1-misc-robotics"
-```
-
-## 4) Make script executable
-
-```bash
-chmod +x mimic_deployment/training_scripts/train_manager_speed.sh
-```
-
-## 5) Simple command (hassle-free)
-
+Override example:
 ```bash
 ./mimic_deployment/training_scripts/train_manager_speed.sh \
-  --policy xvla \
-  --dataset-group redx_full_vlm
+   --policy xvla --dataset-group ttt_3cam_15hz_32ac \
+   --steps 500000 --checkpoint-freq 50000
 ```
 
-What you get:
-- submits with `sbatch`
-- streams the job log in your terminal
-- writes a plain `.log` file in `outputs/logs/`
-- prints job id, dataset group, log path, and W&B URL (when it appears)
-
-## 5) Advanced command (more control)
-
+## Queue monitoring (recommended):
 ```bash
-./mimic_deployment/training_scripts/train_manager_speed.sh \
-  --policy xvla,pi05 \
-  --dataset-group redx_full_vlm,most_recent \
-  --steps 300000 \
-  --batch-size 32 \
-  --gpus 2 \
-  --slurm-mem 256G
-```
-
-## 6) Useful options
-
-- `--list-groups`
-- `--list-policies`
-- `--dry-run`
-- `--no-follow` (submit jobs but do not stream logs in terminal)
-
-## 7) Logs and monitoring
-
-```bash
+# Your jobs only
 squeue -u "$USER"
-ls -lth outputs/logs/*.log | head
+squeue -u "$USER" -o '%.9i %.9P %.18j %.8T %.10M %.6D %R'
+
+# One job with reason
+squeue -j <jobid> -o "%.9i %.9P %.24j %.8T %.10M %.20R"
+
+# Full pt partition snapshot
+squeue -p pt -o "%.9i %.9P %.18j %.8T %.10M %.20R" | head -n 40
+
+# Node states + GPU inventory (pt)
+sinfo -p pt -N -h -o '%N %T %G' | head -n 80
+
+# Exact request/reason for one job
+scontrol show job <jobid> | egrep -o 'JobState=[^ ]+|Reason=[^ ]+|Partition=[^ ]+|TresPerNode=[^ ]+|StdOut=[^ ]+'
 ```
+## GPU choice (80GB most of the time, 20GB for quick tests)
 
-If needed, manually follow a job log:
+Default is 80GB GPU (`--gres gpu:nvidia_a100_7g.80gb:1`).
 
+- 80GB run (preferred):
 ```bash
-tail -f outputs/logs/<job_name>.log
+SLURM_GRES='gpu:nvidia_a100_7g.80gb:1' ./mimic_deployment/training_scripts/train_manager_speed.sh ...
+```
+- 20GB run (faster queue for tests):
+```bash
+SLURM_CONSTRAINT='gpu20' ./mimic_deployment/training_scripts/train_manager_speed.sh ...
 ```
 
-## 8) Common failures
+Clean one-line examples:
+```bash
+SLURM_GRES='gpu:nvidia_a100_7g.80gb:1' ./mimic_deployment/training_scripts/train_manager_speed.sh --policy xvla --dataset-group ttt_3cam_15hz_32ac --steps 300000 --checkpoint-freq 50000 --batch-size 4 --gpus 1 --slurm-mem 128G
 
-1. **W&B run appears then cancels**
-   - ensure token/login is valid on SPEED (`python -m wandb login`)
-   - ensure job log has no auth/network failures
+SLURM_GRES='' SLURM_CONSTRAINT='gpu20' ./mimic_deployment/training_scripts/train_manager_speed.sh --policy xvla --dataset-group ttt_3cam_15hz_32ac --steps 1000 --checkpoint-freq 1000 --batch-size 4 --gpus 1 --slurm-mem 64G
+```
 
-2. **HF access errors**
-   - ensure `python -m huggingface_hub.commands.huggingface_cli login` is done on SPEED
+## Observed SPEED limits (current account/cluster behavior)
 
-3. **`wandb: Command not found` or `huggingface-cli: Command not found`**
-   - activate conda env first (`conda activate lerobot`)
-   - use `python -m ...` forms shown above
+- Max wall time: `7-00:00:00` (partition limit used by manager)
+- Account cap observed: total `gpu=4`, `cpu=32` across running jobs
+- Common stable memory requests used: `128G` / `256G`
+- Batch size is model+dataset dependent (no global max)
 
-4. **OOM**
-   - lower `--batch-size` or `--gpus`
+## Batch-size probing workflow
 
-5. **No logs in terminal**
-   - remove `--no-follow`
-   - check job is in queue and log file exists under `outputs/logs/`
+Normal training (recommended most runs):
+```bash
+./mimic_deployment/training_scripts/train_manager_speed.sh \
+   --policy <policy> --dataset-group <group> \
+   --steps 300000 --checkpoint-freq 50000 --batch-size <known-good>
+```
+
+Testing-only modes (do not use for regular production runs):
+
+For XVLA (already wired in `xvla/train.sh`):
+```bash
+./mimic_deployment/training_scripts/train_manager_speed.sh \
+   --policy-mode maxbatch \
+   --policy xvla --dataset-group ttt_3cam_15hz_32ac --no-follow
+```
+
+For other policies (`pi05`, `smolvla`), to find best batch:
+1. Start a short run (`--steps 1000`, `--checkpoint-freq 1000`) with an aggressive batch guess.
+2. If OOM, lower batch and rerun quickly.
+3. Repeat until stable, then keep ~10% safety margin for long runs.
+4. Use that final value in normal long training (`300k-500k` steps).
+
+Policy-specific note:
+- Keep policy knobs inside each policy folder `mimic_deployment/training_scripts/<policy>/train.sh`.
+- Manager should stay generic (policy, dataset, resources, cadence, mode only).
+
+Pending/log note:
+- If a job is `PENDING`, the stdout log file may not exist yet; `tail -f` will fail until the job starts.
+- Check first with `squeue -j <jobid> -o "%.9i %.9P %.24j %.8T %.10M %.20R"`.
+
+
+## Flow (Mermaid)
+
+```mermaid
+flowchart TD
+      A[Choose policy + dataset-group] --> B[Pick GPU mode\n80GB or gpu20]
+      B --> C[Run train_manager_speed.sh]
+      C --> D[SLURM job starts]
+      D --> E[Policy train.sh builds command]
+      E --> F[Train + save checkpoints]
+      F --> G[Push checkpoints/final model to HF]
+      G --> H[Monitor logs + W&B]
+```
