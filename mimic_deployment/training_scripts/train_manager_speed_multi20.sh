@@ -81,7 +81,7 @@ POLICY_MODE="${POLICY_MODE:-default}"
 SLURM_PARTITION="pt"
 SLURM_CONSTRAINT="${SLURM_CONSTRAINT:-gpu20}"
 SLURM_GPUS="${SLURM_GPUS:-1}"
-SLURM_GRES="${SLURM_GRES-gpu:nvidia_a100_2g.20gb:${SLURM_GPUS}}"
+SLURM_GRES="${SLURM_GRES:-}"
 SLURM_CPUS="${SLURM_CPUS:-8}"
 SLURM_MEM="${SLURM_MEM:-256G}"
 SLURM_TIME="${SLURM_TIME:-3-00:00:00}"
@@ -237,6 +237,10 @@ fi
 if ! [[ "$SLURM_GPUS" =~ ^[1-9][0-9]*$ ]]; then
   echo -e "${RED}Error: --gpus must be a positive integer (>=1).${NC}"
   exit 1
+fi
+
+if [ -z "$SLURM_GRES" ]; then
+  SLURM_GRES="gpu:nvidia_a100_2g.20gb:${SLURM_GPUS}"
 fi
 
 if [ -z "$DATASET_GROUPS" ]; then
