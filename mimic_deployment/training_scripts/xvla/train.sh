@@ -75,6 +75,12 @@ echo "=========================================="
 
 cd "$REPO_ROOT"
 
+LAUNCHER=(python)
+if [[ "${LEROBOT_TORCHRUN_NPROC:-1}" =~ ^[0-9]+$ ]] && [ "${LEROBOT_TORCHRUN_NPROC}" -gt 1 ]; then
+  LAUNCHER=(torchrun --standalone --nproc_per_node="${LEROBOT_TORCHRUN_NPROC}")
+  echo "Distributed launcher: ${LAUNCHER[*]}"
+fi
+
 # === THE FIX ===
 # 1. Removed explicit `input_features` (Let it load from pretrained config)
 # 2. Added `rename_map`: Maps YOUR cameras to PRETRAINED slots.
@@ -82,7 +88,7 @@ cd "$REPO_ROOT"
 #    - left_wrist -> image2 (Secondary)
 #    - right_wrist -> empty_camera_0 (Tertiary slot)
 
-CMD=(python src/lerobot/scripts/lerobot_train.py \
+CMD=("${LAUNCHER[@]}" src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
   --dataset.video_backend=pyav \
   --policy.path="lerobot/xvla-base" \
