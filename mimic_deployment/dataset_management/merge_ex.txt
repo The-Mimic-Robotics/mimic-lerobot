@@ -85,3 +85,29 @@ lerobot-edit-dataset \
 'Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v1', \
 'Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v2'\
 ]"
+
+
+
+lerobot-edit-dataset \
+  --repo_id Mimic-Robotics/mimic_ttt_redx_30hz_x2_ALL \
+  --operation.type merge \
+  --push_to_hub true \
+  --operation.repo_ids "[\
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v3', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v3', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_BR_v2', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_BR_v3', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_TL_v1', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_TL_v2', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_TL_v3', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_ML_v2', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_ML_v3', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_center_v1', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_MR_v1', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_MR_v2', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_TM_v1', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_TM_v2', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v2', \
+'Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v3']"
