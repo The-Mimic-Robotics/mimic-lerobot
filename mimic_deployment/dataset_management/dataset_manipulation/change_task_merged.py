@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from huggingface_hub import hf_hub_download, HfApi, list_repo_files
 
-repo_id = "Mimic-Robotics/mimic_ttt_redx_ALLBAL_15hz"
+repo_id = "Mimic-Robotics/mimic_ttt_redx_ALLBAL_15hz_stable"
 
 # The map of messy strings to clean strings
 task_map = {
