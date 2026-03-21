@@ -122,7 +122,7 @@ groups:
   ttt_lora_2cam:
     - Mimic-Robotics/mimic_ttt_full30hz_rgb
 
-  ttt_3cam_15hz_32ac:
+  ttt_3cam_15hz_32ac_LF:
     - Mimic-Robotics/mimic_ttt_redx_15hz
     - Mimic-Robotics/mimic_ttt_blue_15hz
   
