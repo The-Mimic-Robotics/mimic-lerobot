@@ -37,7 +37,7 @@ DATASETS_TO_TAG = [
 "Mimic-Robotics/mimic_ttt_redx_30hz_x2_TM_v2",
 "Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v1",
 "Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v2",
-"Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v3"
+"Mimic-Robotics/mimic_ttt_redx_15hz_x2"
 ]
 
 def get_dataset_version(repo_id: str) -> str:

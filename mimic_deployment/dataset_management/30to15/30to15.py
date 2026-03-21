@@ -4,8 +4,8 @@ from pathlib import Path
 from huggingface_hub import delete_repo
 from lerobot.datasets.lerobot_dataset import LeRobotDataset
 
-orig_repo_id = "Mimic-Robotics/mimic_ttt_redBalanced_30hz"
-new_repo_id = "Mimic-Robotics/mimic_ttt_redBalanced_15hz"
+orig_repo_id = "Mimic-Robotics/mimic_ttt_redx_30hz_x2_ALL"
+new_repo_id = "Mimic-Robotics/mimic_ttt_redx_15hz_x2"
 
 
 #nohup python 30to15.py > conversion_log.txt 2>&1 &

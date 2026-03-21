@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from huggingface_hub import hf_hub_download, HfApi, list_repo_files
 
-repo_id = "Mimic-Robotics/mimic_ttt_redx_30hz_x2_ALL"
+repo_id = "Mimic-Robotics/mimic_ttt_redx_15hz_x2"
 
 # The exact mapping from the broken strings to your clean target strings
 task_map = {
