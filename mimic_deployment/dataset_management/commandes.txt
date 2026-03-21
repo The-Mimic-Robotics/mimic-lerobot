@@ -108,7 +108,7 @@ mimic_tictactoe_blue_o_handover_top_right_slow_v2
 mimic_tictactoe_red_x_handover_center_slow_v3 
 
 
-hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v1 --repo-type dataset
+hf upload Mimic-Robotics/leftleft ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_LL_v1 --repo-type dataset
 
 
 hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_bottom_left_slow_v2 --repo-type dataset
@@ -123,7 +123,7 @@ hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v2 ~/.cac
 
 hf upload Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_tictactoe_blue_o_handover_top_left_slow_v3 --repo-type dataset
 
-hf upload Mimic-Robotics/mimic_tttt_redx_x2_BL_v1 ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 --repo-type dataset
+hf upload Mimic-Robotics/mimic_ttt_redBalanced_15hz ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redBalanced_15hz_rgb --repo-type dataset
 
                        
 hf upload Mimic-Robotics/test3 ~/.cache/huggingface/lerobot/Mimic-Robotics/test2_ --repo-type dataset
@@ -132,7 +132,7 @@ hf upload Mimic-Robotics/test3 ~/.cache/huggingface/lerobot/Mimic-Robotics/test2
 hf upload Mimic-Robotics/mimic_ttt_blue_full30hz_rgb ~/.cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_blue_full30hz_rgb --repo-type dataset                       
 
 
-huggingface-cli upload Mimic-Robotics/eval_act_14b_50a_100k_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/eval_act_14b_50a_100k_v2 --repo-type model
+hf upload Mimic-Robotics/eval_act_14b_50a_100k_v2 ~/.cache/huggingface/lerobot/Mimic-Robotics/eval_act_14b_50a_100k_v2 --repo-type model
 
 
 
@@ -152,9 +152,9 @@ hf download Mimic-Robotics/mimic_ttt_blue_full30hz_rgb --local-dir .cache/huggin
 Mimic-Robotics/mimic_tictactoe_redx_full30hz
 
 lerobot-edit-dataset \
-  --repo_id Mimic-Robotics/mimic_ttt_15hz \
+  --repo_id Mimic-Robotics/mimic_ttt_redx \
   --operation.type merge \
-  --push_to_hub false \
+  --push_to_hub true \
   --operation.repo_ids "[\
 'Mimic-Robotics/mimic_ttt_blue_15hz', \
 'Mimic-Robotics/mimic_ttt_redx_15hz' \
@@ -181,12 +181,29 @@ hf upload Mimic-Robotics/xvla_ttt_lora_30hz_15e  outputs/train/xvla_augusto-linu
 hf upload Mimic-Robotics/xvla_ttt_15hz_32ac_LF_100k  outputs/train/xvla_odin_ttt_3cam_15hz_32ac_lf_20260319_1835/checkpoints/100000/pretrained_model
  
 
-hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 --repo-type dataset && \
-hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v3 --repo-type dataset && \
-hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v1 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v3 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v3 --repo-type dataset && \
 hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2 --repo-type dataset && \
-hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_v1 --repo-type dataset 
-hf upload Mimic-Robotics/xvla_ttt_nofr_15hz_25ac_3cam_150k outputs/train/xvla_odin_ttt_3cam_15hz_25a_20260315_1800/checkpoints/150000/pretrained_model
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v3 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v3 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BR_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BR_v1 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BR_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BR_v2 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BR_v3 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BR_v3 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_TL_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_LL_v1 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_TL_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_LL_v2 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_TL_v3 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_LL_v3 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_ML_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_ML_v1 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_ML_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_ML_v2 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_ML_v3 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_ML_v3 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_center_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_MM_v1 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_center_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_MM_v2 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_center_v3 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_MM_v3 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_MR_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_MR_v1 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_MR_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_MR_v2 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_TM_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_TM_v1 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_TM_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_TM_v2 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v1 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v2 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v3 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v3 --repo-type dataset 
 
 
 

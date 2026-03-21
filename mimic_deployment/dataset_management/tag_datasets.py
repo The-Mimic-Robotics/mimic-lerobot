@@ -16,10 +16,28 @@ from pathlib import Path
 # ]
 
 DATASETS_TO_TAG = [
-    "Mimic-Robotics/test2",
-    "Mimic-Robotics/mimic_ttt_full30hz_rgb",
-    "Mimic-Robotics/mimic_ttt_blue_full30hz_rgb",
-    "Mimic-Robotics/mimic_ttt_redx_full30hz_rgb"
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v3",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v3",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_BR_v1",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_BR_v2",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_BR_v3",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_TL_v1",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_TL_v2",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_TL_v3",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_ML_v1",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_ML_v2",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_ML_v3",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_center_v1",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_center_v2",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_MR_v1",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_MR_v2",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_TM_v1",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_TM_v2",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v1",
+"Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v2",
+"Mimic-Robotics/mimic_ttt_redx_15hz_x2"
 ]
 
 def get_dataset_version(repo_id: str) -> str:
