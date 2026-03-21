@@ -338,8 +338,8 @@ For comprehensive documentation, see:
 
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy xvla \
-  --dataset-group redx_full_vlm \
-  --batch-size 8
+  --dataset-group ttt_3cam_15hz_32ac_LF \
+  --batch-size 9
 
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy pi05 \
