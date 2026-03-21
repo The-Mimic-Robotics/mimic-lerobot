@@ -116,7 +116,10 @@ For XVLA (already wired in `xvla/train.sh`):
    --policy-mode maxbatch \
    --policy xvla --dataset-group ttt_3cam_15hz_32ac --no-follow
 ```
-
+For Pi 0.5 
+```bash
+cd /home/a/ac_pate/mimic-lerobot && env SKIP_LOCAL_CONDA_CHECK=true OUTPUT_BASE=/speed-scratch/$USER/mimic-lerobot-outputs SLURM_GRES=gpu:nvidia_a100_7g.80gb:1 SLURM_CONSTRAINT= BATCH_CANDIDATES=44,40,36,32,28,24,20,18 RUN_FINAL_AFTER_PROBE=false PROBE_STEPS=120 ./mimic_deployment/training_scripts/train_manager_speed.sh --policy pi05 --dataset-group ttt_red_3cam_15hz_32ac --policy-mode maxbatch --steps 1000 --checkpoint-freq 1000 --no-follow
+```
 For other policies (`pi05`, `smolvla`), to find best batch:
 1. Start a short run (`--steps 1000`, `--checkpoint-freq 1000`) with an aggressive batch guess.
 2. If OOM, lower batch and rerun quickly.

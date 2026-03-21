@@ -496,8 +496,7 @@ export SLURM_GPUS_REQUESTED="${SLURM_GPUS}"
 if [ "${POLICY}" = "xvla" ]; then
   export XVLA_SPEED_MODE="${POLICY_MODE}"
   if [ "${SLURM_GPUS}" -gt 1 ]; then
-    export LEROBOT_TORCHRUN_NPROC="${SLURM_GPUS}"
-    echo "[info] Distributed launch enabled for xvla: nproc_per_node=${SLURM_GPUS}"
+    echo "[info] Distributed launch enabled for xvla via srun tasks: world_size=${SLURM_GPUS}"
   fi
 fi
 if [ "${POLICY}" = "pi05" ]; then
@@ -533,7 +532,15 @@ if command -v nvidia-smi >/dev/null 2>&1; then
   nvidia-smi --query-gpu=index,name,memory.total,mig.mode.current --format=csv,noheader || true
 fi
 
-"${TRAIN_SCRIPT}" --no-daemon
+if [ "${POLICY}" = "xvla" ] && [ "${SLURM_GPUS}" -gt 1 ]; then
+  export MASTER_ADDR="$(hostname)"
+  export MASTER_PORT="${MASTER_PORT:-29500}"
+  echo "[info] Running xvla with srun DDP (tasks=${SLURM_GPUS}, gpus-per-task=1)"
+  srun --ntasks="${SLURM_GPUS}" --ntasks-per-node="${SLURM_GPUS}" --cpus-per-task=1 --tres-per-task=gres/gpu:1 \
+    bash -lc 'export RANK="\${SLURM_PROCID}"; export LOCAL_RANK="\${SLURM_LOCALID}"; export WORLD_SIZE="\${SLURM_NTASKS}"; export MASTER_ADDR="\${MASTER_ADDR}"; export MASTER_PORT="\${MASTER_PORT}"; export LEROBOT_TORCHRUN_NPROC=1; "'"${TRAIN_SCRIPT}"'" --no-daemon'
+else
+  "${TRAIN_SCRIPT}" --no-daemon
+fi
 
 echo "[info] Job finished: \$(date '+%F %T')"
 SBATCH_EOF
