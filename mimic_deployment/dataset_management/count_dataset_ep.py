@@ -4,7 +4,7 @@ from huggingface_hub import hf_hub_download, list_repo_files
 # Replace with your dataset repo ID
 # repo_id = "Mimic-Robotics/mimic_ttt_redBalanced_15hz" 
 # repo_id = "Mimic-Robotics/mimic_ttt_redx_30hz_x2_ALL" 
-repo_id = "Mimic-Robotics/mimic_ttt_redx_15hz_x2"
+repo_id = "Mimic-Robotics/mimic_ttt_redx_ALLBAL_15hz"
 
 
 print(f"Fetching metadata for {repo_id} to analyze tasks...\n")

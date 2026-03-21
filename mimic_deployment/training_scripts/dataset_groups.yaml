@@ -125,9 +125,12 @@ groups:
   ttt_3cam_15hz_32ac:
     - Mimic-Robotics/mimic_ttt_redx_15hz
     - Mimic-Robotics/mimic_ttt_blue_15hz
+  
+  stable_redx_3cam_15hz_32ac:
+    - Mimic-Robotics/mimic_ttt_redx_15hz_x2
 
-  ttt_red_3cam_15hz_32ac:
-    - Mimic-Robotics/mimic_ttt_redx_15hz
+  fancy_redx_3cam_15hz_32ac:
+    - Mimic-Robotics/mimic_ttt_redx_15hz_x2_fancy
     
     
 
