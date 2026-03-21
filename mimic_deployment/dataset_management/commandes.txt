@@ -181,7 +181,7 @@ hf upload Mimic-Robotics/xvla_ttt_lora_30hz_15e  outputs/train/xvla_augusto-linu
 hf upload Mimic-Robotics/xvla_ttt_15hz_32ac_LF_100k  outputs/train/xvla_odin_ttt_3cam_15hz_32ac_lf_20260319_1835/checkpoints/100000/pretrained_model
  
 
-hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v2 --repo-type dataset && \
+hf upload Mimic-Robotics/mimic_ttt_redx_ALLBAL_15hz_stable .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_ALLBAL_15hz --repo-type dataset && \
 hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v3 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BL_v3 --repo-type dataset && \
 hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v2 --repo-type dataset && \
 hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v3 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_BM_v3 --repo-type dataset && \

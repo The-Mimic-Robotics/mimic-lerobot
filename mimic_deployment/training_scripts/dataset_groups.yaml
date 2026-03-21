@@ -127,10 +127,10 @@ groups:
     - Mimic-Robotics/mimic_ttt_blue_15hz
   
   stable_redx_3cam_15hz_32ac:
-    - Mimic-Robotics/mimic_ttt_redx_15hz_x2
+    - Mimic-Robotics/mimic_ttt_redx_ALLBAL_15hz_stable
 
   fancy_redx_3cam_15hz_32ac:
-    - Mimic-Robotics/mimic_ttt_redx_15hz_x2_fancy
+    - Mimic-Robotics/mimic_ttt_redx_ALLBAL_15hz_fancy
     
     
 
