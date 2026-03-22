@@ -501,18 +501,18 @@ export HF_CHECKPOINT_SYNC_INTERVAL="${HF_CHECKPOINT_SYNC_INTERVAL}"
 export POLICY_MODE="${POLICY_MODE}"
 
 # Probe/maxbatch controls (passed through when set in submission env)
-[ -n "${BATCH_CANDIDATES:-}" ] && export BATCH_CANDIDATES="${BATCH_CANDIDATES}"
-[ -n "${PROBE_STEPS:-}" ] && export PROBE_STEPS="${PROBE_STEPS}"
-[ -n "${PROBE_SAVE_FREQ:-}" ] && export PROBE_SAVE_FREQ="${PROBE_SAVE_FREQ}"
-[ -n "${RUN_FINAL_AFTER_PROBE:-}" ] && export RUN_FINAL_AFTER_PROBE="${RUN_FINAL_AFTER_PROBE}"
-[ -n "${FINAL_STEPS:-}" ] && export FINAL_STEPS="${FINAL_STEPS}"
-[ -n "${FINAL_SAVE_FREQ:-}" ] && export FINAL_SAVE_FREQ="${FINAL_SAVE_FREQ}"
-[ -n "${FINAL_BATCH_SIZE:-}" ] && export FINAL_BATCH_SIZE="${FINAL_BATCH_SIZE}"
+[ -n "${BATCH_CANDIDATES:-}" ] && export BATCH_CANDIDATES="${BATCH_CANDIDATES:-}"
+[ -n "${PROBE_STEPS:-}" ] && export PROBE_STEPS="${PROBE_STEPS:-}"
+[ -n "${PROBE_SAVE_FREQ:-}" ] && export PROBE_SAVE_FREQ="${PROBE_SAVE_FREQ:-}"
+[ -n "${RUN_FINAL_AFTER_PROBE:-}" ] && export RUN_FINAL_AFTER_PROBE="${RUN_FINAL_AFTER_PROBE:-}"
+[ -n "${FINAL_STEPS:-}" ] && export FINAL_STEPS="${FINAL_STEPS:-}"
+[ -n "${FINAL_SAVE_FREQ:-}" ] && export FINAL_SAVE_FREQ="${FINAL_SAVE_FREQ:-}"
+[ -n "${FINAL_BATCH_SIZE:-}" ] && export FINAL_BATCH_SIZE="${FINAL_BATCH_SIZE:-}"
 
 # Pi0.5 PEFT/LoRA controls (passed through when set in submission env)
-[ -n "${PI05_USE_PEFT:-}" ] && export PI05_USE_PEFT="${PI05_USE_PEFT}"
-[ -n "${PI05_PEFT_TYPE:-}" ] && export PI05_PEFT_TYPE="${PI05_PEFT_TYPE}"
-[ -n "${PI05_LORA_R:-}" ] && export PI05_LORA_R="${PI05_LORA_R}"
+[ -n "${PI05_USE_PEFT:-}" ] && export PI05_USE_PEFT="${PI05_USE_PEFT:-}"
+[ -n "${PI05_PEFT_TYPE:-}" ] && export PI05_PEFT_TYPE="${PI05_PEFT_TYPE:-}"
+[ -n "${PI05_LORA_R:-}" ] && export PI05_LORA_R="${PI05_LORA_R:-}"
 
 if [ "${POLICY}" = "xvla" ]; then
   export XVLA_SPEED_MODE="${POLICY_MODE}"
