@@ -75,6 +75,21 @@ echo "=========================================="
 
 cd "$REPO_ROOT"
 
+LAUNCHER=(python)
+MIG_MODE=""
+if command -v nvidia-smi >/dev/null 2>&1; then
+  MIG_MODE="$(nvidia-smi --query-gpu=mig.mode.current --format=csv,noheader 2>/dev/null | head -n 1 | xargs || true)"
+fi
+
+if [[ "${LEROBOT_TORCHRUN_NPROC:-1}" =~ ^[0-9]+$ ]] && [ "${LEROBOT_TORCHRUN_NPROC}" -gt 1 ]; then
+  if [ "$MIG_MODE" = "Enabled" ]; then
+    echo "Distributed launcher requested (${LEROBOT_TORCHRUN_NPROC}) but MIG is enabled; falling back to single-process launch to avoid NCCL duplicate-GPU errors."
+  else
+    LAUNCHER=(torchrun --standalone --nproc_per_node="${LEROBOT_TORCHRUN_NPROC}")
+    echo "Distributed launcher: ${LAUNCHER[*]}"
+  fi
+fi
+
 # === THE FIX ===
 # 1. Removed explicit `input_features` (Let it load from pretrained config)
 # 2. Added `rename_map`: Maps YOUR cameras to PRETRAINED slots.
@@ -82,7 +97,7 @@ cd "$REPO_ROOT"
 #    - left_wrist -> image2 (Secondary)
 #    - right_wrist -> empty_camera_0 (Tertiary slot)
 
-CMD=(python src/lerobot/scripts/lerobot_train.py \
+CMD=("${LAUNCHER[@]}" src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
   --dataset.video_backend=pyav \
   --policy.path="lerobot/xvla-base" \
@@ -96,7 +111,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.train_soft_prompts=true \
   --policy.train_policy_transformer=true \
   --policy.freeze_vision_encoder=false \
-  --policy.freeze_language_encoder=true \
+  --policy.freeze_language_encoder=false \
   --policy.dtype=bfloat16 \
   --policy.scheduler_decay_steps="$STEPS" \
   --policy.device=cuda \

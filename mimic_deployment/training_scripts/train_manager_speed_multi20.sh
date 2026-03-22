@@ -1,6 +1,6 @@
 #!/bin/bash
-# SPEED-only Training Manager (SBATCH only)
-# Simple, robust orchestration with readable logs.
+# SPEED Training Manager (Multi-20GB distributed variant)
+# Uses 20GB MIG slices by default and can launch distributed workers when --gpus > 1.
 
 set -euo pipefail
 
@@ -22,7 +22,7 @@ NC='\033[0m'
 usage() {
   cat << EOF
 ${BLUE}═══════════════════════════════════════════════════════════════════${NC}
-${GREEN}SPEED Training Manager (SBATCH only)${NC}
+${GREEN}SPEED Training Manager (Multi-20GB distributed)${NC}
 ${BLUE}═══════════════════════════════════════════════════════════════════${NC}
 
 Usage: $0 [OPTIONS]
@@ -35,9 +35,8 @@ ${YELLOW}Core options:${NC}
   --steps N               Training steps (default: 300000)
   --checkpoint-freq N     Checkpoint frequency in steps (default: 50000)
   --batch-size N          Override batch size
-  --job-tag TAG           Append custom tag to generated job names
   --policy-mode MODE      Policy mode (default|smoke1k|maxbatch), default: default
-  --gpus N                Number of GPUs for SBATCH (default: 1)
+  --gpus N                Number of 20GB MIG slices (default: 1)
   --slurm-mem SIZE        SLURM memory request (default: 256G)
 
 ${YELLOW}Utility:${NC}
@@ -50,14 +49,16 @@ ${YELLOW}Utility:${NC}
   -h, --help              Show help
 
 ${YELLOW}Examples:${NC}
-  # Simple (hassle-free)
-  $0 --policy xvla --dataset-group redx_full_vlm
+  # 1x20GB slice
+  $0 --policy xvla --dataset-group redx_full_vlm --gpus 1
 
-  # More control (GPUs, memory, steps, batch size)
-  $0 --policy xvla,pi05 --dataset-group redx_full_vlm,most_recent --gpus 2 --slurm-mem 256G --steps 300000 --batch-size 32
+  # 4x20GB slices (distributed launch for xvla)
+  $0 --policy xvla --dataset-group redx_full_vlm --gpus 4 --steps 300000 --batch-size 8
 
 ${YELLOW}Notes:${NC}
   - This script always runs on SPEED with SBATCH only.
+  - Defaults to 20GB MIG slices: gpu:nvidia_a100_2g.20gb:N.
+  - For xvla and --gpus > 1, launches torchrun distributed workers automatically.
   - Uses one plain .log file per job (no separate .err file).
   - Default SLURM partition/time are set in-script for simplicity.
 EOF
@@ -68,7 +69,6 @@ DATASET_GROUPS="${DATASET_GROUP:-}"
 STEPS="${STEPS:-}"
 CHECKPOINT_FREQ="${CHECKPOINT_FREQ:-${SAVE_FREQ:-}}"
 BATCH_SIZE="${BATCH_SIZE:-}"
-JOB_TAG="${JOB_TAG:-}"
 PUSH_TO_HUB="${PUSH_TO_HUB:-true}"
 FOLLOW_LOGS=true
 DRY_RUN=false
@@ -79,15 +79,14 @@ POLICY_MODE="${POLICY_MODE:-default}"
 
 # SPEED defaults (kept simple; edit here if cluster policy changes)
 SLURM_PARTITION="pt"
-SLURM_CONSTRAINT="${SLURM_CONSTRAINT:-}"
+SLURM_CONSTRAINT="${SLURM_CONSTRAINT:-gpu20}"
 SLURM_GPUS="${SLURM_GPUS:-1}"
-SLURM_GRES="${SLURM_GRES-gpu:nvidia_a100_7g.80gb:1}"
+SLURM_GRES="${SLURM_GRES:-}"
 SLURM_CPUS="${SLURM_CPUS:-8}"
 SLURM_MEM="${SLURM_MEM:-256G}"
 SLURM_TIME="${SLURM_TIME:-3-00:00:00}"
 HF_PUSH_CHECKPOINTS="${HF_PUSH_CHECKPOINTS:-true}"
 HF_CHECKPOINT_SYNC_INTERVAL="${HF_CHECKPOINT_SYNC_INTERVAL:-180}"
-WANDB_DISABLE_ARTIFACT="${WANDB_DISABLE_ARTIFACT:-false}"
 
 STEPS="${STEPS:-300000}"
 CHECKPOINT_FREQ="${CHECKPOINT_FREQ:-50000}"
@@ -163,10 +162,6 @@ while [[ $# -gt 0 ]]; do
       BATCH_SIZE="$2"
       shift 2
       ;;
-    --job-tag)
-      JOB_TAG="$2"
-      shift 2
-      ;;
     --policy-mode)
       POLICY_MODE="$2"
       shift 2
@@ -239,19 +234,13 @@ if [[ "$POLICY_MODE" != "default" && "$POLICY_MODE" != "smoke1k" && "$POLICY_MOD
   exit 1
 fi
 
-if [[ "$POLICY_MODE" == "smoke1k" ]]; then
-  STEPS="1000"
-  CHECKPOINT_FREQ="1000"
-  WANDB_DISABLE_ARTIFACT="true"
-fi
-
-if [[ "$POLICY_MODE" == "maxbatch" ]]; then
-  WANDB_DISABLE_ARTIFACT="true"
-fi
-
 if ! [[ "$SLURM_GPUS" =~ ^[1-9][0-9]*$ ]]; then
   echo -e "${RED}Error: --gpus must be a positive integer (>=1).${NC}"
   exit 1
+fi
+
+if [ -z "$SLURM_GRES" ]; then
+  SLURM_GRES="gpu:nvidia_a100_2g.20gb:${SLURM_GPUS}"
 fi
 
 if [ -z "$DATASET_GROUPS" ]; then
@@ -290,16 +279,15 @@ done
 mkdir -p "$LOG_DIR" "$TRAIN_DIR"
 
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}SPEED SBATCH Configuration${NC}"
+echo -e "${GREEN}SPEED SBATCH Configuration (Multi-20GB)${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
 echo -e "${YELLOW}Policies:${NC}       $POLICIES (${#POLICY_ARRAY[@]} model(s))"
 echo -e "${YELLOW}Dataset Groups:${NC} $DATASET_GROUPS (${#GROUP_ARRAY[@]} group(s))"
 echo -e "${YELLOW}Steps:${NC}          $STEPS"
 echo -e "${YELLOW}Checkpoint Freq:${NC} $CHECKPOINT_FREQ"
 echo -e "${YELLOW}Batch Size:${NC}     ${BATCH_SIZE:-<policy default>}"
-echo -e "${YELLOW}Job Tag:${NC}        ${JOB_TAG:-<none>}"
 echo -e "${YELLOW}Policy Mode:${NC}    $POLICY_MODE"
-echo -e "${YELLOW}GPUs:${NC}           $SLURM_GPUS"
+echo -e "${YELLOW}20GB Slices:${NC}    $SLURM_GPUS"
 echo -e "${YELLOW}Constraint:${NC}     ${SLURM_CONSTRAINT:-<none>}"
 echo -e "${YELLOW}GRES Override:${NC}  ${SLURM_GRES:-<none>}"
 echo -e "${YELLOW}Output Base:${NC}    $OUTPUT_BASE"
@@ -309,7 +297,6 @@ echo -e "${YELLOW}Conda (xvla):${NC}   $XVLA_CONDA_ENV_NAME"
 echo -e "${YELLOW}Conda (pi05):${NC}   $PI05_CONDA_ENV_NAME"
 echo -e "${YELLOW}Push to Hub:${NC}    $PUSH_TO_HUB"
 echo -e "${YELLOW}Push Checkpoints:${NC} $HF_PUSH_CHECKPOINTS (every ${HF_CHECKPOINT_SYNC_INTERVAL}s)"
-echo -e "${YELLOW}W&B Artifacts:${NC}  ${WANDB_DISABLE_ARTIFACT} (disable_artifact)"
 echo -e "${YELLOW}Follow Logs:${NC}    $FOLLOW_LOGS"
 echo -e "${YELLOW}Summary Log:${NC}    $SUMMARY_LOG"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
@@ -322,7 +309,6 @@ touch "$SUMMARY_LOG"
   echo "Steps=$STEPS"
   echo "CheckpointFreq=$CHECKPOINT_FREQ"
   echo "BatchSize=${BATCH_SIZE:-<policy default>}"
-  echo "JobTag=${JOB_TAG:-<none>}"
   echo "PolicyMode=$POLICY_MODE"
   echo "GPUs=$SLURM_GPUS"
   echo "Constraint=${SLURM_CONSTRAINT:-<none>}"
@@ -335,7 +321,6 @@ touch "$SUMMARY_LOG"
   echo "PushToHub=$PUSH_TO_HUB"
   echo "PushCheckpoints=$HF_PUSH_CHECKPOINTS"
   echo "CheckpointSyncInterval=$HF_CHECKPOINT_SYNC_INTERVAL"
-  echo "WandbDisableArtifact=$WANDB_DISABLE_ARTIFACT"
 } >> "$SUMMARY_LOG"
 
 if [ "$DRY_RUN" = true ]; then
@@ -438,12 +423,7 @@ for GROUP in "${GROUP_ARRAY[@]}"; do
 
     TRAIN_SCRIPT="$SCRIPT_DIR/$POLICY/train.sh"
     BATCH_TAG="${EFFECTIVE_BATCH_SIZE:-auto}"
-    JOB_TAG_CLEAN="$(echo "$JOB_TAG" | tr '[:upper:]' '[:lower:]' | tr ' ' '_' | tr -cd 'a-z0-9_-')"
-    if [ -n "$JOB_TAG_CLEAN" ]; then
-      JOB_NAME="${POLICY}_speed_${DATASET_NAME_CLEAN}_${JOB_TAG_CLEAN}_b${BATCH_TAG}_${TIMESTAMP}"
-    else
-      JOB_NAME="${POLICY}_speed_${DATASET_NAME_CLEAN}_b${BATCH_TAG}_${TIMESTAMP}"
-    fi
+    JOB_NAME="${POLICY}_speed_${DATASET_NAME_CLEAN}_b${BATCH_TAG}_${TIMESTAMP}"
     SLURM_SCRIPT="$LOG_DIR/${JOB_NAME}.slurm.sh"
     JOB_LOG="$LOG_DIR/${JOB_NAME}.log"
 
@@ -502,7 +482,6 @@ export WANDB_START_METHOD="\${WANDB_START_METHOD:-thread}"
 export WANDB_DIR="\${WANDB_DIR:-/speed-scratch/\$USER/wandb}"
 export WANDB_CACHE_DIR="\${WANDB_CACHE_DIR:-/speed-scratch/\$USER/wandb_cache}"
 export WANDB_ARTIFACT_DIR="\${WANDB_ARTIFACT_DIR:-/speed-scratch/\$USER/wandb_artifacts}"
-export WANDB_DISABLE_ARTIFACT="${WANDB_DISABLE_ARTIFACT}"
 export TOKENIZERS_PARALLELISM="\${TOKENIZERS_PARALLELISM:-false}"
 
 export COMPUTER="speed"
@@ -512,25 +491,13 @@ export PUSH_TO_HUB="${PUSH_TO_HUB}"
 export HF_PUSH_CHECKPOINTS="${HF_PUSH_CHECKPOINTS}"
 export HF_CHECKPOINT_SYNC_INTERVAL="${HF_CHECKPOINT_SYNC_INTERVAL}"
 export POLICY_MODE="${POLICY_MODE}"
-
-# Probe/maxbatch controls (passed through when set in submission env)
-[ -n "${BATCH_CANDIDATES:-}" ] && export BATCH_CANDIDATES="${BATCH_CANDIDATES:-}"
-[ -n "${PROBE_STEPS:-}" ] && export PROBE_STEPS="${PROBE_STEPS:-}"
-[ -n "${PROBE_SAVE_FREQ:-}" ] && export PROBE_SAVE_FREQ="${PROBE_SAVE_FREQ:-}"
-[ -n "${RUN_FINAL_AFTER_PROBE:-}" ] && export RUN_FINAL_AFTER_PROBE="${RUN_FINAL_AFTER_PROBE:-}"
-[ -n "${FINAL_STEPS:-}" ] && export FINAL_STEPS="${FINAL_STEPS:-}"
-[ -n "${FINAL_SAVE_FREQ:-}" ] && export FINAL_SAVE_FREQ="${FINAL_SAVE_FREQ:-}"
-[ -n "${FINAL_BATCH_SIZE:-}" ] && export FINAL_BATCH_SIZE="${FINAL_BATCH_SIZE:-}"
-
-# Pi0.5 PEFT/LoRA controls (passed through when set in submission env)
-[ -n "${PI05_USE_PEFT:-}" ] && export PI05_USE_PEFT="${PI05_USE_PEFT:-}"
-[ -n "${PI05_PEFT_TYPE:-}" ] && export PI05_PEFT_TYPE="${PI05_PEFT_TYPE:-}"
-[ -n "${PI05_LORA_R:-}" ] && export PI05_LORA_R="${PI05_LORA_R:-}"
-[ -n "${PI05_FREEZE_VISION_ENCODER:-}" ] && export PI05_FREEZE_VISION_ENCODER="${PI05_FREEZE_VISION_ENCODER:-}"
-[ -n "${PI05_TRAIN_EXPERT_ONLY:-}" ] && export PI05_TRAIN_EXPERT_ONLY="${PI05_TRAIN_EXPERT_ONLY:-}"
+export SLURM_GPUS_REQUESTED="${SLURM_GPUS}"
 
 if [ "${POLICY}" = "xvla" ]; then
   export XVLA_SPEED_MODE="${POLICY_MODE}"
+  if [ "${SLURM_GPUS}" -gt 1 ]; then
+    echo "[info] Distributed launch enabled for xvla via srun tasks: world_size=${SLURM_GPUS}"
+  fi
 fi
 if [ "${POLICY}" = "pi05" ]; then
   export PI05_SPEED_MODE="${POLICY_MODE}"
@@ -565,7 +532,15 @@ if command -v nvidia-smi >/dev/null 2>&1; then
   nvidia-smi --query-gpu=index,name,memory.total,mig.mode.current --format=csv,noheader || true
 fi
 
-"${TRAIN_SCRIPT}" --no-daemon
+if [ "${POLICY}" = "xvla" ] && [ "${SLURM_GPUS}" -gt 1 ]; then
+  export MASTER_ADDR="$(hostname)"
+  export MASTER_PORT="${MASTER_PORT:-29500}"
+  echo "[info] Running xvla with srun DDP (tasks=${SLURM_GPUS}, gpus-per-task=1)"
+  srun --ntasks="${SLURM_GPUS}" --ntasks-per-node="${SLURM_GPUS}" --cpus-per-task=1 --tres-per-task=gres/gpu:1 \
+    bash -lc 'export RANK="\${SLURM_PROCID}"; export LOCAL_RANK="\${SLURM_LOCALID}"; export WORLD_SIZE="\${SLURM_NTASKS}"; export MASTER_ADDR="\${MASTER_ADDR}"; export MASTER_PORT="\${MASTER_PORT}"; export LEROBOT_TORCHRUN_NPROC=1; "'"${TRAIN_SCRIPT}"'" --no-daemon'
+else
+  "${TRAIN_SCRIPT}" --no-daemon
+fi
 
 echo "[info] Job finished: \$(date '+%F %T')"
 SBATCH_EOF
@@ -607,4 +582,3 @@ echo -e "${GREEN}All jobs submitted in sequence.${NC}"
 echo -e "${YELLOW}Summary log:${NC} tail -f $SUMMARY_LOG"
 echo -e "${YELLOW}Queue:${NC}       squeue -u \$USER"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
-
