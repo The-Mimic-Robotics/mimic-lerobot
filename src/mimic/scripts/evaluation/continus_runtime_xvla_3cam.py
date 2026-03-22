@@ -27,24 +27,24 @@ from lerobot.datasets.utils import combine_feature_dicts
 # 1. Map your grid inputs (1-18) to the exact language commands XVLA knows
 TIC_TAC_TOE_MOVES = {
     "0": "wait",
-    "1": "pick red x piece handover place bottom left",
-    "2": "pick red x piece handover place bottom middle",
-    "3": "pick red x piece handover place bottom right",
+    "1": "pick red x handover place bottom left",
+    "2": "pick red x handover place bottom middle",
+    "3": "pick red x handover place bottom right",
     "4": "pick red x handover place middle left",
     "5": "pick red x handover place center",
     "6": "pick red x handover place middle right",
-    "7": "pick red x piece handover place top left",
-    "8": "pick red x piece handover place top middle",
-    "9": "pick red x piece handover place top right",
-    "10": "pick blue o piece handover place bottom left",
-    "11": "pick blue o piece handover place bottom middle",
-    "12": "pick blue o piece handover place bottom right",
+    "7": "pick red x handover place top left",
+    "8": "pick red x handover place top middle",
+    "9": "pick red x handover place top right",
+    "10": "pick blue o handover place bottom left",
+    "11": "pick blue o handover place bottom middle",
+    "12": "pick blue o handover place bottom right",
     "13": "pick blue o handover place middle left",
     "14": "pick blue o handover place center",
     "15": "pick blue o handover place middle right",
-    "16": "pick blue o piece handover place top left",
-    "17": "pick blue o piece handover place top middle",
-    "18": "pick blue o piece handover place top right"
+    "16": "pick blue o handover place top left",
+    "17": "pick blue o handover place top middle",
+    "18": "pick blue o handover place top right"
 }
 
 # Shared state protected by a lock (mutex)
@@ -121,9 +121,13 @@ def main():
     # model_id = "Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_300k"
     
     # model_id = "Mimic-Robotics/xvla_ttt_red_30hz_32ac_100k"
-    model_id = "Mimic-Robotics/xvla_ttt_15hz_32ac_LF_100k"
+    # model_id = "Mimic-Robotics/xvla_ttt_15hz_32ac_LF_100k"
     # model_id = "Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_100k_auguv2"
     # Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_100k_auguv2
+    
+    model_id = "Mimic-Robotics/xvla_ttt_15hz_32ac_iTT_200k"
+    
+
     policy = XVLAPolicy.from_pretrained(model_id)
     policy.to("cuda")
     policy.eval()
