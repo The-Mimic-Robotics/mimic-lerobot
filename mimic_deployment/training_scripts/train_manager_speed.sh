@@ -35,6 +35,7 @@ ${YELLOW}Core options:${NC}
   --steps N               Training steps (default: 300000)
   --checkpoint-freq N     Checkpoint frequency in steps (default: 50000)
   --batch-size N          Override batch size
+  --job-tag TAG           Append custom tag to generated job names
   --policy-mode MODE      Policy mode (default|smoke1k|maxbatch), default: default
   --gpus N                Number of GPUs for SBATCH (default: 1)
   --slurm-mem SIZE        SLURM memory request (default: 256G)
@@ -67,6 +68,7 @@ DATASET_GROUPS="${DATASET_GROUP:-}"
 STEPS="${STEPS:-}"
 CHECKPOINT_FREQ="${CHECKPOINT_FREQ:-${SAVE_FREQ:-}}"
 BATCH_SIZE="${BATCH_SIZE:-}"
+JOB_TAG="${JOB_TAG:-}"
 PUSH_TO_HUB="${PUSH_TO_HUB:-true}"
 FOLLOW_LOGS=true
 DRY_RUN=false
@@ -159,6 +161,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --batch-size)
       BATCH_SIZE="$2"
+      shift 2
+      ;;
+    --job-tag)
+      JOB_TAG="$2"
       shift 2
       ;;
     --policy-mode)
@@ -291,6 +297,7 @@ echo -e "${YELLOW}Dataset Groups:${NC} $DATASET_GROUPS (${#GROUP_ARRAY[@]} group
 echo -e "${YELLOW}Steps:${NC}          $STEPS"
 echo -e "${YELLOW}Checkpoint Freq:${NC} $CHECKPOINT_FREQ"
 echo -e "${YELLOW}Batch Size:${NC}     ${BATCH_SIZE:-<policy default>}"
+echo -e "${YELLOW}Job Tag:${NC}        ${JOB_TAG:-<none>}"
 echo -e "${YELLOW}Policy Mode:${NC}    $POLICY_MODE"
 echo -e "${YELLOW}GPUs:${NC}           $SLURM_GPUS"
 echo -e "${YELLOW}Constraint:${NC}     ${SLURM_CONSTRAINT:-<none>}"
@@ -315,6 +322,7 @@ touch "$SUMMARY_LOG"
   echo "Steps=$STEPS"
   echo "CheckpointFreq=$CHECKPOINT_FREQ"
   echo "BatchSize=${BATCH_SIZE:-<policy default>}"
+  echo "JobTag=${JOB_TAG:-<none>}"
   echo "PolicyMode=$POLICY_MODE"
   echo "GPUs=$SLURM_GPUS"
   echo "Constraint=${SLURM_CONSTRAINT:-<none>}"
@@ -430,7 +438,12 @@ for GROUP in "${GROUP_ARRAY[@]}"; do
 
     TRAIN_SCRIPT="$SCRIPT_DIR/$POLICY/train.sh"
     BATCH_TAG="${EFFECTIVE_BATCH_SIZE:-auto}"
-    JOB_NAME="${POLICY}_speed_${DATASET_NAME_CLEAN}_b${BATCH_TAG}_${TIMESTAMP}"
+    JOB_TAG_CLEAN="$(echo "$JOB_TAG" | tr '[:upper:]' '[:lower:]' | tr ' ' '_' | tr -cd 'a-z0-9_-')"
+    if [ -n "$JOB_TAG_CLEAN" ]; then
+      JOB_NAME="${POLICY}_speed_${DATASET_NAME_CLEAN}_${JOB_TAG_CLEAN}_b${BATCH_TAG}_${TIMESTAMP}"
+    else
+      JOB_NAME="${POLICY}_speed_${DATASET_NAME_CLEAN}_b${BATCH_TAG}_${TIMESTAMP}"
+    fi
     SLURM_SCRIPT="$LOG_DIR/${JOB_NAME}.slurm.sh"
     JOB_LOG="$LOG_DIR/${JOB_NAME}.log"
 
@@ -513,6 +526,8 @@ export POLICY_MODE="${POLICY_MODE}"
 [ -n "${PI05_USE_PEFT:-}" ] && export PI05_USE_PEFT="${PI05_USE_PEFT:-}"
 [ -n "${PI05_PEFT_TYPE:-}" ] && export PI05_PEFT_TYPE="${PI05_PEFT_TYPE:-}"
 [ -n "${PI05_LORA_R:-}" ] && export PI05_LORA_R="${PI05_LORA_R:-}"
+[ -n "${PI05_FREEZE_VISION_ENCODER:-}" ] && export PI05_FREEZE_VISION_ENCODER="${PI05_FREEZE_VISION_ENCODER:-}"
+[ -n "${PI05_TRAIN_EXPERT_ONLY:-}" ] && export PI05_TRAIN_EXPERT_ONLY="${PI05_TRAIN_EXPERT_ONLY:-}"
 
 if [ "${POLICY}" = "xvla" ]; then
   export XVLA_SPEED_MODE="${POLICY_MODE}"

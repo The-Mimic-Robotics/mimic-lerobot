@@ -45,8 +45,8 @@ fi
 
 STEPS="${STEPS:-150000}"
 SAVE_FREQ="${SAVE_FREQ:-10000}"
-ACTION_STEPS="${ACTION_STEPS:-50}" 
-CHUNK_SIZE="${CHUNK_SIZE:-50}"
+ACTION_STEPS="${ACTION_STEPS:-32}" 
+CHUNK_SIZE="${CHUNK_SIZE:-32}"
 
 # ============================================================================
 # RESOLVE DATASET GROUP TO DATASET LIST OR USE SINGLE DATASET

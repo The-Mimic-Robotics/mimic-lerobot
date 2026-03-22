@@ -46,8 +46,8 @@ fi
 
 STEPS="${STEPS:-150000}"
 SAVE_FREQ="${SAVE_FREQ:-20000}"
-ACTION_STEPS="${ACTION_STEPS:-50}" 
-CHUNK_SIZE="${CHUNK_SIZE:-50}"
+ACTION_STEPS="${ACTION_STEPS:-32}" 
+CHUNK_SIZE="${CHUNK_SIZE:-32}"
 PI05_COMPILE_MODEL="${PI05_COMPILE_MODEL:-false}"
 PI05_COMPILE_MODE="${PI05_COMPILE_MODE:-max-autotune}"
 PI05_USE_PEFT="${PI05_USE_PEFT:-false}"
@@ -55,6 +55,8 @@ PI05_PEFT_TYPE="${PI05_PEFT_TYPE:-LORA}"
 PI05_LORA_R="${PI05_LORA_R:-32}"
 PI05_LORA_ALPHA="${PI05_LORA_ALPHA:-64}"
 PI05_LORA_DROPOUT="${PI05_LORA_DROPOUT:-0.05}"
+PI05_FREEZE_VISION_ENCODER="${PI05_FREEZE_VISION_ENCODER:-false}"
+PI05_TRAIN_EXPERT_ONLY="${PI05_TRAIN_EXPERT_ONLY:-true}"
 WANDB_DISABLE_ARTIFACT="${WANDB_DISABLE_ARTIFACT:-false}"
 
 # ============================================================================
@@ -109,6 +111,8 @@ echo "Computer:      $COMPUTER"
 echo "Batch Size:    $BATCH_SIZE"
 echo "Steps:         $STEPS"
 echo "Use PEFT:      $PI05_USE_PEFT"
+echo "Freeze Vision: $PI05_FREEZE_VISION_ENCODER"
+echo "Expert Only:   $PI05_TRAIN_EXPERT_ONLY"
 echo "W&B Artifact:  $WANDB_DISABLE_ARTIFACT"
 echo "Compile Model: $PI05_COMPILE_MODEL ($PI05_COMPILE_MODE)"
 echo "Log File:      $LOG_FILE"
@@ -126,8 +130,8 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.chunk_size="$CHUNK_SIZE" \
     --policy.scheduler_decay_steps="$STEPS" \
   --policy.use_peft=false \
-  --policy.train_expert_only=true \
-    --policy.freeze_vision_encoder=false \
+  --policy.train_expert_only="$PI05_TRAIN_EXPERT_ONLY" \
+    --policy.freeze_vision_encoder="$PI05_FREEZE_VISION_ENCODER" \
     --policy.gradient_checkpointing=true \
     --policy.compile_model="$PI05_COMPILE_MODEL" \
     --policy.compile_mode="$PI05_COMPILE_MODE" \
