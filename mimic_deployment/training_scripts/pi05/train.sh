@@ -45,11 +45,17 @@ else
 fi
 
 STEPS="${STEPS:-150000}"
-SAVE_FREQ="${SAVE_FREQ:-10000}"
+SAVE_FREQ="${SAVE_FREQ:-20000}"
 ACTION_STEPS="${ACTION_STEPS:-50}" 
 CHUNK_SIZE="${CHUNK_SIZE:-50}"
 PI05_COMPILE_MODEL="${PI05_COMPILE_MODEL:-false}"
 PI05_COMPILE_MODE="${PI05_COMPILE_MODE:-max-autotune}"
+PI05_USE_PEFT="${PI05_USE_PEFT:-false}"
+PI05_PEFT_TYPE="${PI05_PEFT_TYPE:-LORA}"
+PI05_LORA_R="${PI05_LORA_R:-32}"
+PI05_LORA_ALPHA="${PI05_LORA_ALPHA:-64}"
+PI05_LORA_DROPOUT="${PI05_LORA_DROPOUT:-0.05}"
+WANDB_DISABLE_ARTIFACT="${WANDB_DISABLE_ARTIFACT:-false}"
 
 # ============================================================================
 # RESOLVE DATASET
@@ -102,6 +108,8 @@ echo "Job Name:      $JOB_NAME"
 echo "Computer:      $COMPUTER"
 echo "Batch Size:    $BATCH_SIZE"
 echo "Steps:         $STEPS"
+echo "Use PEFT:      $PI05_USE_PEFT"
+echo "W&B Artifact:  $WANDB_DISABLE_ARTIFACT"
 echo "Compile Model: $PI05_COMPILE_MODEL ($PI05_COMPILE_MODE)"
 echo "Log File:      $LOG_FILE"
 echo "=========================================="
@@ -118,9 +126,6 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.chunk_size="$CHUNK_SIZE" \
     --policy.scheduler_decay_steps="$STEPS" \
   --policy.use_peft=false \
-#   --peft.type=LORA \
-#   --peft.r=32 \
-#   --peft.alpha=64 \
   --policy.train_expert_only=true \
     --policy.freeze_vision_encoder=false \
     --policy.gradient_checkpointing=true \
@@ -135,7 +140,15 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --save_freq="$SAVE_FREQ" \
   --output_dir="$OUTPUT_DIR" \
   --job_name="$JOB_NAME" \
-  --wandb.enable=true)
+  --wandb.enable=true \
+  --wandb.disable_artifact="$WANDB_DISABLE_ARTIFACT")
+
+if [[ "$PI05_USE_PEFT" == "true" ]]; then
+  CMD+=(
+    --peft.method_type="$PI05_PEFT_TYPE"
+    --peft.r="$PI05_LORA_R"
+  )
+fi
 
 if [[ "${1:-}" == "--no-daemon" ]]; then
     echo "Starting training in FOREGROUND..."

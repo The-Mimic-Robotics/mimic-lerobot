@@ -37,6 +37,7 @@ for raw_batch in "${CANDIDATE_ARRAY[@]}"; do
   set +e
   (
     export PI05_SPEED_MODE="default"
+    export WANDB_DISABLE_ARTIFACT="true"
     export JOB_NAME="$probe_job_name"
     export BATCH_SIZE="$batch"
     export STEPS="$PROBE_STEPS"
@@ -83,6 +84,7 @@ final_job_name="${BASE_JOB_NAME}_maxb${MAX_WORKING_BATCH}_${FINAL_STEPS}steps"
 echo "[pi05-maxbatch] starting final validation run batch=${MAX_WORKING_BATCH} steps=${FINAL_STEPS}"
 
 export PI05_SPEED_MODE="default"
+export WANDB_DISABLE_ARTIFACT="true"
 export JOB_NAME="$final_job_name"
 export BATCH_SIZE="$MAX_WORKING_BATCH"
 export STEPS="$FINAL_STEPS"

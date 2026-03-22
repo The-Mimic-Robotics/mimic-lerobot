@@ -85,6 +85,7 @@ SLURM_MEM="${SLURM_MEM:-256G}"
 SLURM_TIME="${SLURM_TIME:-3-00:00:00}"
 HF_PUSH_CHECKPOINTS="${HF_PUSH_CHECKPOINTS:-true}"
 HF_CHECKPOINT_SYNC_INTERVAL="${HF_CHECKPOINT_SYNC_INTERVAL:-180}"
+WANDB_DISABLE_ARTIFACT="${WANDB_DISABLE_ARTIFACT:-false}"
 
 STEPS="${STEPS:-300000}"
 CHECKPOINT_FREQ="${CHECKPOINT_FREQ:-50000}"
@@ -232,6 +233,16 @@ if [[ "$POLICY_MODE" != "default" && "$POLICY_MODE" != "smoke1k" && "$POLICY_MOD
   exit 1
 fi
 
+if [[ "$POLICY_MODE" == "smoke1k" ]]; then
+  STEPS="1000"
+  CHECKPOINT_FREQ="1000"
+  WANDB_DISABLE_ARTIFACT="true"
+fi
+
+if [[ "$POLICY_MODE" == "maxbatch" ]]; then
+  WANDB_DISABLE_ARTIFACT="true"
+fi
+
 if ! [[ "$SLURM_GPUS" =~ ^[1-9][0-9]*$ ]]; then
   echo -e "${RED}Error: --gpus must be a positive integer (>=1).${NC}"
   exit 1
@@ -291,6 +302,7 @@ echo -e "${YELLOW}Conda (xvla):${NC}   $XVLA_CONDA_ENV_NAME"
 echo -e "${YELLOW}Conda (pi05):${NC}   $PI05_CONDA_ENV_NAME"
 echo -e "${YELLOW}Push to Hub:${NC}    $PUSH_TO_HUB"
 echo -e "${YELLOW}Push Checkpoints:${NC} $HF_PUSH_CHECKPOINTS (every ${HF_CHECKPOINT_SYNC_INTERVAL}s)"
+echo -e "${YELLOW}W&B Artifacts:${NC}  ${WANDB_DISABLE_ARTIFACT} (disable_artifact)"
 echo -e "${YELLOW}Follow Logs:${NC}    $FOLLOW_LOGS"
 echo -e "${YELLOW}Summary Log:${NC}    $SUMMARY_LOG"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
@@ -315,6 +327,7 @@ touch "$SUMMARY_LOG"
   echo "PushToHub=$PUSH_TO_HUB"
   echo "PushCheckpoints=$HF_PUSH_CHECKPOINTS"
   echo "CheckpointSyncInterval=$HF_CHECKPOINT_SYNC_INTERVAL"
+  echo "WandbDisableArtifact=$WANDB_DISABLE_ARTIFACT"
 } >> "$SUMMARY_LOG"
 
 if [ "$DRY_RUN" = true ]; then
@@ -476,6 +489,7 @@ export WANDB_START_METHOD="\${WANDB_START_METHOD:-thread}"
 export WANDB_DIR="\${WANDB_DIR:-/speed-scratch/\$USER/wandb}"
 export WANDB_CACHE_DIR="\${WANDB_CACHE_DIR:-/speed-scratch/\$USER/wandb_cache}"
 export WANDB_ARTIFACT_DIR="\${WANDB_ARTIFACT_DIR:-/speed-scratch/\$USER/wandb_artifacts}"
+export WANDB_DISABLE_ARTIFACT="${WANDB_DISABLE_ARTIFACT}"
 export TOKENIZERS_PARALLELISM="\${TOKENIZERS_PARALLELISM:-false}"
 
 export COMPUTER="speed"
@@ -485,6 +499,20 @@ export PUSH_TO_HUB="${PUSH_TO_HUB}"
 export HF_PUSH_CHECKPOINTS="${HF_PUSH_CHECKPOINTS}"
 export HF_CHECKPOINT_SYNC_INTERVAL="${HF_CHECKPOINT_SYNC_INTERVAL}"
 export POLICY_MODE="${POLICY_MODE}"
+
+# Probe/maxbatch controls (passed through when set in submission env)
+[ -n "${BATCH_CANDIDATES:-}" ] && export BATCH_CANDIDATES="${BATCH_CANDIDATES}"
+[ -n "${PROBE_STEPS:-}" ] && export PROBE_STEPS="${PROBE_STEPS}"
+[ -n "${PROBE_SAVE_FREQ:-}" ] && export PROBE_SAVE_FREQ="${PROBE_SAVE_FREQ}"
+[ -n "${RUN_FINAL_AFTER_PROBE:-}" ] && export RUN_FINAL_AFTER_PROBE="${RUN_FINAL_AFTER_PROBE}"
+[ -n "${FINAL_STEPS:-}" ] && export FINAL_STEPS="${FINAL_STEPS}"
+[ -n "${FINAL_SAVE_FREQ:-}" ] && export FINAL_SAVE_FREQ="${FINAL_SAVE_FREQ}"
+[ -n "${FINAL_BATCH_SIZE:-}" ] && export FINAL_BATCH_SIZE="${FINAL_BATCH_SIZE}"
+
+# Pi0.5 PEFT/LoRA controls (passed through when set in submission env)
+[ -n "${PI05_USE_PEFT:-}" ] && export PI05_USE_PEFT="${PI05_USE_PEFT}"
+[ -n "${PI05_PEFT_TYPE:-}" ] && export PI05_PEFT_TYPE="${PI05_PEFT_TYPE}"
+[ -n "${PI05_LORA_R:-}" ] && export PI05_LORA_R="${PI05_LORA_R}"
 
 if [ "${POLICY}" = "xvla" ]; then
   export XVLA_SPEED_MODE="${POLICY_MODE}"
@@ -564,3 +592,4 @@ echo -e "${GREEN}All jobs submitted in sequence.${NC}"
 echo -e "${YELLOW}Summary log:${NC} tail -f $SUMMARY_LOG"
 echo -e "${YELLOW}Queue:${NC}       squeue -u \$USER"
 echo -e "${BLUE}═══════════════════════════════════════════════════════════════════${NC}"
+

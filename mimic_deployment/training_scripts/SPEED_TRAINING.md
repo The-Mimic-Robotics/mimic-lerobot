@@ -51,10 +51,16 @@ Override example:
 ```bash
 # Your jobs only
 squeue -u "$USER"
-squeue -u "$USER" -o '%.9i %.9P %.18j %.8T %.10M %.6D %R'
+squeue -u "$USER" -o '%.9i %.9P %.40j %.8T %.10M %.6D %R'
 
 # One job with reason
 squeue -j <jobid> -o "%.9i %.9P %.24j %.8T %.10M %.20R"
+
+# One job with explicit wait fields (SubmitTime, EligibleTime, StartTime)
+squeue -j <jobid> -o "%.9i %.8T %.10M %.20V %.20S %.20e %.35R"
+
+# Pending queue position (higher in list = sooner), with priority score and requested GRES
+squeue -p pt -t PENDING --sort=-p -o "%.4t %.10p %.9i %.35j %.30b %.25V %.25S %.30R" | nl -ba
 
 # Full pt partition snapshot
 squeue -p pt -o "%.9i %.9P %.18j %.8T %.10M %.20R" | head -n 40
@@ -64,6 +70,12 @@ sinfo -p pt -N -h -o '%N %T %G' | head -n 80
 
 # Exact request/reason for one job
 scontrol show job <jobid> | egrep -o 'JobState=[^ ]+|Reason=[^ ]+|Partition=[^ ]+|TresPerNode=[^ ]+|StdOut=[^ ]+'
+
+# One-liner ETA by slice size (rough): NOW if idle nodes exist, otherwise earliest running job end time
+bash -lc 'echo "slice idle_nodes running_jobs next_free_estimate"; for g in $(sinfo -p pt -N -h -o "%G" | tr "," "\n" | sed "s/(S:[0-9]\+)//g" | grep -Eo "nvidia_a100_[0-9]+g\.[0-9]+gb" | sort -u); do idle=$(sinfo -p pt -N -h -o "%T|%G" | awk -F"|" -v g="$g" "tolower(\$1) ~ /idle|mix/ && \$2 ~ g {c++} END{print c+0}"); run=$(squeue -p pt -t RUNNING -h -o "%b" | grep -c "$g" || true); next=$(squeue -p pt -t RUNNING -h -o "%e|%b" | awk -F"|" -v g="$g" "\$2 ~ g && \$1 != \"N/A\" {print \$1}" | sort | head -n1); [ -z "$next" ] && next="unknown"; [ "$idle" -gt 0 ] && next="NOW"; printf "%s %s %s %s\n" "$g" "$idle" "$run" "$next"; done'
+
+# TIME format reminder used by squeue fields M/e/S:
+# - D-HH:MM:SS (when >=1 day) or HH:MM:SS or MM:SS
 ```
 ## GPU choice (80GB most of the time, 20GB for quick tests)
 
@@ -118,13 +130,41 @@ For XVLA (already wired in `xvla/train.sh`):
 ```
 For Pi 0.5 
 ```bash
-cd /home/a/ac_pate/mimic-lerobot && env SKIP_LOCAL_CONDA_CHECK=true OUTPUT_BASE=/speed-scratch/$USER/mimic-lerobot-outputs SLURM_GRES=gpu:nvidia_a100_7g.80gb:1 SLURM_CONSTRAINT= BATCH_CANDIDATES=44,40,36,32,28,24,20,18 RUN_FINAL_AFTER_PROBE=false PROBE_STEPS=120 ./mimic_deployment/training_scripts/train_manager_speed.sh --policy pi05 --dataset-group ttt_red_3cam_15hz_32ac --policy-mode maxbatch --steps 1000 --checkpoint-freq 1000 --no-follow
+cd /home/a/ac_pate/mimic-lerobot && env SKIP_LOCAL_CONDA_CHECK=true OUTPUT_BASE=/speed-scratch/$USER/mimic-lerobot-outputs SLURM_GRES=gpu:nvidia_a100_7g.80gb:1 SLURM_CONSTRAINT= SLURM_CPUS=4 SLURM_MEM=128G SLURM_TIME=06:00:00 BATCH_CANDIDATES=44,40,36,32,28,24 RUN_FINAL_AFTER_PROBE=false PROBE_STEPS=120 ./mimic_deployment/training_scripts/train_manager_speed.sh --policy pi05 --dataset-group ttt_3cam_15hz_32ac_LF --policy-mode maxbatch --steps 1000 --checkpoint-freq 1000 --no-follow
+```
+Pi 0.5 LoRA smoke on 20GB (minimal resources):
+```bash
+cd /home/a/ac_pate/mimic-lerobot && env SKIP_LOCAL_CONDA_CHECK=true OUTPUT_BASE=/speed-scratch/$USER/mimic-lerobot-outputs SLURM_GRES=gpu:nvidia_a100_2g.20gb:1 SLURM_CONSTRAINT= SLURM_CPUS=4 SLURM_MEM=128G SLURM_TIME=06:00:00 PI05_USE_PEFT=true PI05_PEFT_TYPE=LORA PI05_LORA_R=16 ./mimic_deployment/training_scripts/train_manager_speed.sh --policy pi05 --dataset-group ttt_3cam_15hz_32ac_LF --policy-mode smoke1k --batch-size 1 --checkpoint-freq 1000 --no-follow
+```
+Pi 0.5 non-LoRA smoke on 20GB (A/B baseline):
+```bash
+cd /home/a/ac_pate/mimic-lerobot && env SKIP_LOCAL_CONDA_CHECK=true OUTPUT_BASE=/speed-scratch/$USER/mimic-lerobot-outputs SLURM_GRES=gpu:nvidia_a100_2g.20gb:1 SLURM_CONSTRAINT= SLURM_CPUS=4 SLURM_MEM=128G SLURM_TIME=06:00:00 PI05_USE_PEFT=false ./mimic_deployment/training_scripts/train_manager_speed.sh --policy pi05 --dataset-group ttt_3cam_15hz_32ac_LF --policy-mode smoke1k --batch-size 1 --checkpoint-freq 1000 --no-follow
 ```
 For other policies (`pi05`, `smolvla`), to find best batch:
 1. Start a short run (`--steps 1000`, `--checkpoint-freq 1000`) with an aggressive batch guess.
 2. If OOM, lower batch and rerun quickly.
 3. Repeat until stable, then keep ~10% safety margin for long runs.
 4. Use that final value in normal long training (`300k-500k` steps).
+
+LoRA / PEFT (minimal):
+- `PEFT` = parameter-efficient fine-tuning (train adapters, not full model).
+- `LoRA` = low-rank adapters injected in target layers.
+- In this repo's `pi05` CLI path, the stable LoRA knobs are `--peft.method_type` and `--peft.r`.
+
+Observed parameter scale from recent runs (same dataset group):
+- `xvla` full unfrozen: `num_learnable_params=879482456`, `num_total_params=879482456`.
+- `pi05` normal (non-LoRA): `num_learnable_params=693422112`, `num_total_params=3616757520`.
+- `pi05` + LoRA (`r=16`): `num_learnable_params=1287168`, `num_total_params=3618044688`.
+
+Interpretation:
+- `xvla` full and `pi05` non-LoRA train hundreds of millions of weights.
+- `pi05` LoRA trains ~1.3M weights (much smaller optimizer/memory footprint).
+- Smaller learnable-parameter count usually helps fitting larger batches, but max batch is still empirical and policy-specific.
+
+One-command `pi05` LoRA example:
+```bash
+cd /home/a/ac_pate/mimic-lerobot && env SKIP_LOCAL_CONDA_CHECK=true OUTPUT_BASE=/speed-scratch/$USER/mimic-lerobot-outputs SLURM_GRES=gpu:nvidia_a100_2g.20gb:1 SLURM_CPUS=4 SLURM_MEM=128G SLURM_TIME=06:00:00 PI05_USE_PEFT=true PI05_PEFT_TYPE=LORA PI05_LORA_R=16 ./mimic_deployment/training_scripts/train_manager_speed.sh --policy pi05 --dataset-group ttt_3cam_15hz_32ac_LF --policy-mode smoke1k --batch-size 1 --checkpoint-freq 1000 --no-follow
+```
 
 Policy-specific note:
 - Keep policy knobs inside each policy folder `mimic_deployment/training_scripts/<policy>/train.sh`.
