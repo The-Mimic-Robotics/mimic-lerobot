@@ -114,9 +114,31 @@ lerobot-edit-dataset \
 
 
 lerobot-edit-dataset \
-  --repo_id Mimic-Robotics/mimic_ttt_redx_ALLBAL_15hz \
+  --repo_id Mimic-Robotics/mimic_ttt_redx_ALLBAL_15hz_stable \
   --operation.type merge \
   --push_to_hub true \
   --operation.repo_ids "[\
-'Mimic-Robotics/mimic_ttt_redx_15hz_x2', \
-'Mimic-Robotics/mimic_ttt_redBalanced_15hz']"
+'Mimic-Robotics/mimic_ttt_redBalanced_15hz', \
+'Mimic-Robotics/mimic_ttt_redx_15hz_x2']"
+
+
+cp -r mimic_ttt_redx_ALLBAL_15hz_stable/ mimic_ttt_redx_15hz_x1
+hf download --repo-type dataset Mimic-Robotics/mimic_ttt_redBalanced_15hz --local-dir .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redBalanced_15hz
+cp -r mimic_ttt_redBalanced_15hz/ mimic_ttt_redx_15hz_x1
+
+hf upload Mimic-Robotics/mimic_ttt_redx_15hz_x1 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_15hz_x1 --repo-type dataset
+
+
+hf download --repo-type dataset Mimic-Robotics/mimic_ttt_redx_15hz_x2 --local-dir .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_15hz_x2
+cp -r mimic_ttt_redx_15hz_x2/ mimic_ttt_redx_15hz_x2d
+
+hf upload Mimic-Robotics/mimic_ttt_redx_15hz_x2d .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_15hz_x2d --repo-type dataset
+
+
+lerobot-edit-dataset \
+  --repo_id Mimic-Robotics/full_ttt_redx_stable \
+  --operation.type merge \
+  --push_to_hub true \
+  --operation.repo_ids "[\
+'Mimic-Robotics/mimic_ttt_redx_15hz_x1', \
+'Mimic-Robotics/mimic_ttt_redx_15hz_x2d']"

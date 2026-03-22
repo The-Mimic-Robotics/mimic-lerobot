@@ -205,5 +205,3 @@ hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v1 .cache/huggingface/lerobot
 hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v2 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v2 --repo-type dataset && \
 hf upload Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v3 .cache/huggingface/lerobot/Mimic-Robotics/mimic_ttt_redx_30hz_x2_TR_v3 --repo-type dataset 
 
-
-

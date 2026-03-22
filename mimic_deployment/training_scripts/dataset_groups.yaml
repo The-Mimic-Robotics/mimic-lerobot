@@ -13,124 +13,17 @@ groups:
     - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8
 
 
-  # Datasets with new hands (improved gripper control)
-  mimic_new_hands:
-    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v2
-    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_with_new_hands_v3
-
-  # Displacement datasets with old hands
-  mimic_old_hands:
-    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v2
-    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v6
-    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v7
-    - Mimic-Robotics/mimic_displacement_to_handover_blue_block_v8
-
-  red_x_handover_and_place_center:
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v2
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v3
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v4
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v5
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v6
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v8
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v9
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v11
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v12
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v13
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v14
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v15
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v16
-
-  red_x_handover_and_place_tictactoe:
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v2
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v3
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v4
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v5
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v6
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v8
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v9
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v11
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v12
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v13
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v14
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v15
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v16
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topleft_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topleft_v2
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v2
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v3
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_toprght_v4
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomleft_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomleft_v2
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomright_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottomright_v2 # - Mimic-Robotics/mimic_tictactoe_red_x_handover_topmiddle_v2
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topmiddle_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topmiddle_v2
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v3
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v4
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v2
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v3
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v4
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v2
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v2
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v2
-    - Mimic-Robotics/mimic_tictactoe_redx_full30hz
-
-
-
-
-  red_x_handover_and_place_tictactoe_slower:
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v2
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v3
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v4
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v5
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v6
-    - Mimic-Robotics/mimic_tictactoe_pick_red_x_handover_place_mm_v8
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topmiddle_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v3
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_topMiddle_v4
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v2
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v3
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleLeft_v4
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_middleRight_v2
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v1
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_bottom_middle_v2
-    - Mimic-Robotics/mimic_tictactoe_red_x_handover_center_slow_v1
-
-
-  redx_full_vlm:
-    - Mimic-Robotics/mimic_ttt_redx_full30hz_rgb
-
-  blueO_full_VLFReeze:
-    - Mimic-Robotics/mimic_ttt_blue_full30hz_rgb
-
-  full_ttt__xvla_NoFr_2cam_32a:
-    - Mimic-Robotics/mimic_ttt_full30hz_rgb
-
-  full_ttt_augusto:
-    - Mimic-Robotics/mimic_ttt_full30hz_rgb
-
-  ttt_2cam_15hz_10a_24c:
-    - Mimic-Robotics/mimic_ttt_15hz
-
-  ttt_lora_2cam:
-    - Mimic-Robotics/mimic_ttt_full30hz_rgb
-
-  ttt_3cam_15hz_32ac_LF:
+  ttt_3cam_15hz_32ac:
     - Mimic-Robotics/mimic_ttt_redx_15hz
     - Mimic-Robotics/mimic_ttt_blue_15hz
   
   stable_redx_3cam_15hz_32ac:
-    - Mimic-Robotics/mimic_ttt_redx_ALLBAL_15hz_stable
+    - Mimic-Robotics/full_ttt_redx_stable
 
-  fancy_redx_3cam_15hz_32ac:
-    - Mimic-Robotics/mimic_ttt_redx_ALLBAL_15hz_fancy
+  cloth_folding_3cam_15hz_32ac:
+    - Mimic-Robotics/mimic_simpleClothFolding_v1
+
+    
     
     
 
