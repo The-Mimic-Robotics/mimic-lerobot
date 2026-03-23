@@ -209,3 +209,4 @@ hf upload Mimic-Robotics/xvla_ttt_15hz_32ac_iTT_200k outputs/train/xvla_augusto-
 
 hf upload Mimic-Robotics/xvla_ttt_15hz_32ac_ITT  outputs/train/xvla_odin_ttt_3cam_15hz_32ac_lf_20260319_1835/checkpoints/100000/pretrained_model
  
+hf upload Mimic-Robotics/smol_StableRed_15hz_32ac_uf_40k  outputs/train/smolvla_augusto-linux_stable_redx_3cam_15hz_32ac_uf_20260322_2105/checkpoints/040000/pretrained_model
