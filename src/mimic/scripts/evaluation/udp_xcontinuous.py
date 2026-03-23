@@ -92,7 +92,7 @@ def main():
     robot = make_robot_from_config(robot_cfg)
     
     print("Loading XVLA weights into the GPU...")
-    model_id = "Mimic-Robotics/xvla_odin_full_ttt__xvla_nofr_2cam_300k"
+    model_id = "Mimic-Robotics/xvla_ttt_15hz_32ac_iTT_200k"
     
     # Load the XVLA policy
     policy = XVLAPolicy.from_pretrained(model_id)
