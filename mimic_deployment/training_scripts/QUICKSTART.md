@@ -305,8 +305,14 @@ For comprehensive documentation, see:
   # used 16gbs of vram
 ./mimic_deployment/training_scripts/train_manager.sh \
   --policy smolvla \
-  --dataset-group blueO_full_VLFReeze \
+  --dataset-group stable_redx_3cam_15hz_32ac \
   --batch-size 48
+# SmolVla with vision Un frozen 
+  # used 16gbs of vram
+./mimic_deployment/training_scripts/train_manager.sh \
+  --policy smolvla \
+  --dataset-group stable_redx_3cam_15hz_32ac_UF \
+  --batch-size 12
 
 # xvla lora
 ./mimic_deployment/training_scripts/train_manager.sh \
