@@ -52,10 +52,10 @@ else
     NUM_WORKERS="${NUM_WORKERS:-4}"
 fi
 
-STEPS="${STEPS:-300000}"
-SAVE_FREQ="${SAVE_FREQ:-10000}"
-ACTION_STEPS="${ACTION_STEPS:-50}"
-CHUNK_SIZE="${CHUNK_SIZE:-50}"
+STEPS="${STEPS:-120000}"
+SAVE_FREQ="${SAVE_FREQ:-40000}"
+ACTION_STEPS="${ACTION_STEPS:-32}"
+CHUNK_SIZE="${CHUNK_SIZE:-32}"
 
 if [ -n "$WANDB_API_KEY" ]; then
     WANDB_ENABLE="${WANDB_ENABLE:-true}"
@@ -194,6 +194,8 @@ CMD=("$TRAIN_PYTHON" src/lerobot/scripts/lerobot_train.py \
   --policy.chunk_size="$CHUNK_SIZE" \
   --policy.train_expert_only=false \
   --policy.freeze_vision_encoder=false \
+  --dataset.image_transforms.enable=true \
+  --policy.use_amp=true \
   --policy.scheduler_decay_steps="$STEPS" \
   --policy.input_features='{
     "observation.images.top": {"shape": [3, 720, 1280], "type": "VISUAL"},
@@ -203,13 +205,8 @@ CMD=("$TRAIN_PYTHON" src/lerobot/scripts/lerobot_train.py \
     "observation.instruction": {"type": "LANGUAGE", "shape": [1]}
   }' \
   --policy.use_peft=false \
-#--policy.use_peft=true \
-#   --peft.type=LORA \
-#   --peft.r=32 \
-#   --peft.alpha=64 \
-#   --peft.dropout=0.05 \
+
   --policy.device=cuda \
-#   --dataset.image_transforms.enable=true \
   --batch_size="$BATCH_SIZE" \
   --num_workers="$NUM_WORKERS" \
   --steps="$STEPS" \
@@ -217,6 +214,13 @@ CMD=("$TRAIN_PYTHON" src/lerobot/scripts/lerobot_train.py \
   --output_dir="$OUTPUT_DIR" \
   --job_name="$JOB_NAME" \
     --wandb.enable="$WANDB_ENABLE")
+
+#--policy.use_peft=true \
+#   --peft.type=LORA \
+#   --peft.r=32 \
+#   --peft.alpha=64 \
+#   --peft.dropout=0.05 \
+#   --dataset.image_transforms.enable=true \
 
 if [[ "$1" == "--no-daemon" ]]; then
     # --- FOREGROUND MODE ---
