@@ -93,8 +93,8 @@ def main():
     robot = make_robot_from_config(robot_cfg)
     
     print("Loading smolVLA weights into the 5070...")
-    # model_id = "Mimic-Robotics/smol_full_ttt_70k"
-    model_id = "Mimic-Robotics/smol_redx_nofr_15hz_32ac_3cam_75k"
+    model_id = "Mimic-Robotics/smol_full_ttt_70k"
+    # model_id = "Mimic-Robotics/smol_redx_nofr_15hz_32ac_3cam_75k"
     
     
  
