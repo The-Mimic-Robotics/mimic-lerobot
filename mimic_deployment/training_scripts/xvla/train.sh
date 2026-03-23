@@ -116,6 +116,7 @@ CMD=("${LAUNCHER[@]}" src/lerobot/scripts/lerobot_train.py \
   --policy.scheduler_decay_steps="$STEPS" \
   --policy.device=cuda \
   --dataset.image_transforms.enable=true \
+  --dataset.image_transforms.random_order=true \
   --batch_size="$BATCH_SIZE" \
   --num_workers="$NUM_WORKERS" \
   --steps="$STEPS" \

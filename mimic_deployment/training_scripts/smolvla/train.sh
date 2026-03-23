@@ -195,6 +195,7 @@ CMD=("$TRAIN_PYTHON" src/lerobot/scripts/lerobot_train.py \
   --policy.train_expert_only=false \
   --policy.freeze_vision_encoder=false \
   --dataset.image_transforms.enable=true \
+  --dataset.image_transforms.random_order=true \
   --policy.use_amp=true \
   --policy.scheduler_decay_steps="$STEPS" \
   --policy.input_features='{
