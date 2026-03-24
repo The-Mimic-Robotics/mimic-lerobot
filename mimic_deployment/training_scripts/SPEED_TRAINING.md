@@ -44,7 +44,7 @@ Override example:
 ```bash
 ./mimic_deployment/training_scripts/train_manager_speed.sh \
    --policy xvla --dataset-group ttt_3cam_15hz_32ac \
-   --steps 500000 --checkpoint-freq 50000 --batch-size 40 --no-follow
+   --steps 100000 --checkpoint-freq 20000 --batch-size 40 --no-follow
 ```
 
 ## Queue monitoring (recommended):

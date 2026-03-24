@@ -27,6 +27,11 @@ SINGLE_DATASET="${SINGLE_DATASET:-}"
 PUSH_TO_HUB="${PUSH_TO_HUB:-true}"
 HF_PUSH_CHECKPOINTS="${HF_PUSH_CHECKPOINTS:-true}"
 HF_CHECKPOINT_SYNC_INTERVAL="${HF_CHECKPOINT_SYNC_INTERVAL:-180}"
+XVLA_POLICY_PATH="${XVLA_POLICY_PATH:-lerobot/xvla-base}"
+XVLA_FREEZE_VISION_ENCODER="${XVLA_FREEZE_VISION_ENCODER:-false}"
+XVLA_FREEZE_LANGUAGE_ENCODER="${XVLA_FREEZE_LANGUAGE_ENCODER:-false}"
+XVLA_TRAIN_POLICY_TRANSFORMER="${XVLA_TRAIN_POLICY_TRANSFORMER:-true}"
+XVLA_TRAIN_SOFT_PROMPTS="${XVLA_TRAIN_SOFT_PROMPTS:-true}"
 
 # === POWER SETTINGS (RTX 3090) ===
 BATCH_SIZE="${BATCH_SIZE:-9}"  # 24GB allows batch 9
@@ -100,7 +105,7 @@ fi
 CMD=("${LAUNCHER[@]}" src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
   --dataset.video_backend=pyav \
-  --policy.path="lerobot/xvla-base" \
+  --policy.path="$XVLA_POLICY_PATH" \
   --policy.repo_id="$REPO_ID" \
   --policy.push_to_hub="$PUSH_TO_HUB" \
   --policy.n_action_steps="$ACTION_STEPS" \
@@ -108,10 +113,10 @@ CMD=("${LAUNCHER[@]}" src/lerobot/scripts/lerobot_train.py \
   --policy.action_mode=auto \
   --policy.max_action_dim=20 \
   --policy.num_image_views=3 \
-  --policy.train_soft_prompts=true \
-  --policy.train_policy_transformer=true \
-  --policy.freeze_vision_encoder=false \
-  --policy.freeze_language_encoder=false \
+  --policy.train_soft_prompts="$XVLA_TRAIN_SOFT_PROMPTS" \
+  --policy.train_policy_transformer="$XVLA_TRAIN_POLICY_TRANSFORMER" \
+  --policy.freeze_vision_encoder="$XVLA_FREEZE_VISION_ENCODER" \
+  --policy.freeze_language_encoder="$XVLA_FREEZE_LANGUAGE_ENCODER" \
   --policy.dtype=bfloat16 \
   --policy.scheduler_decay_steps="$STEPS" \
   --policy.device=cuda \
