@@ -1,5 +1,6 @@
 import time
 import threading
+import socket
 
 from lerobot.robots import make_robot_from_config
 from lerobot.robots.mimic_follower import MimicFollowerConfig
@@ -14,44 +15,51 @@ from lerobot.teleoperators.mimic_leader import MimicLeaderConfig
 from lerobot.datasets.lerobot_dataset import LeRobotDataset
 from lerobot.processor import make_default_processors
 
+# --- UDP Configuration ---
+UDP_IP = "0.0.0.0" 
+UDP_PORT = 5005
+
 # Shared state protected by a lock (mutex)
 current_task = "wait"
 task_lock = threading.Lock()
 
-# Note: Changed to 30 Hz because your dataset is named "30hz". 
-# Running a 30hz dataset at 15hz would cause it to play in slow-motion!
 CONTROL_HZ = 30 
 
-def brain_thread():
-    """This thread handles user input and updates the active task."""
+def udp_listener_thread():
+    """Listens for incoming UDP IDs and updates the task for the replay loop."""
     global current_task
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind((UDP_IP, UDP_PORT))
+    print(f"\n[Network] Robot listening for UDP commands on port {UDP_PORT}...")
+    print(" -> Send '0'-'8' to replay an episode.")
+    print(" -> Send '-1' for Teleoperation.")
+    print(" -> Send 'wait' or 'w' to pause.")
+    
     while True:
-        print("\nCommands:")
-        print(" [0-8] Play Tic-Tac-Toe placement episode (0 to 8)")
-        print(" [-1]  Teleoperation (Human Control)")
-        print(" [w]   Wait / Pause robot")
-        move = input("Enter command: ").strip()
+        data, addr = sock.recvfrom(1024) 
+        move = data.decode('utf-8').strip()
         
         if move == "-1":
             with task_lock:
                 current_task = "teleop"
-            print("> Switched to Teleoperation Mode. Follower mirroring leader arms.")
+            print("\n> [UDP] Switched to Teleoperation Mode. Follower mirroring leader arms.")
             
         elif move in [str(i) for i in range(9)]:
             with task_lock:
                 current_task = f"replay_{move}"
-            print(f"> Replaying episode {move}...")
+            print(f"\n> [UDP] Received '{move}'. Replaying episode {move}...")
             
-        elif move.lower() == "w" or move == "wait":
+        elif move.lower() == "w" or move.lower() == "wait":
             with task_lock:
                 current_task = "wait"
-            print("> Pausing robot.")
+            print("\n> [UDP] Received WAIT command. Pausing robot.")
             
         else:
-            print("> Unknown command. Please try again.")
+            print(f"\n> [UDP] Ignored unknown command: {move}")
 
 def main():
-    global current_task
+    global current_task  # Fix for the local variable error
+
     # ---------------------------------------------------------
     # 1. Configuration & Initialization
     # ---------------------------------------------------------
@@ -103,7 +111,8 @@ def main():
     print("Connecting to Leader...")
     teleop.connect()
     
-    threading.Thread(target=brain_thread, daemon=True).start()
+    # Start the UDP listener instead of the keyboard input thread
+    threading.Thread(target=udp_listener_thread, daemon=True).start()
 
     print(f"\n✅ Ready! Starting control loop at {CONTROL_HZ}Hz. Press Ctrl+C to safely exit.")
     
@@ -154,7 +163,7 @@ def main():
                     # Episode is finished
                     print(f"> Episode {ep_idx} complete. Returning to wait state.")
                     with task_lock:
-                        # Only reset to wait if the user hasn't typed a new command in the meantime
+                        # Only reset to wait if the solver hasn't sent a new command in the meantime
                         if current_task == active_task:
                             current_task = "wait"
                     active_episode = None
