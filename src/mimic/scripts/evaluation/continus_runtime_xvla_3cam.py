@@ -126,14 +126,14 @@ def main():
     # Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_100k_auguv2
     
     # model_id = "Mimic-Robotics/xvla_ttt_15hz_32ac_iTT_200k"
-    model_id = "/home/jupiter/my_downloaded_model/checkpoints/050000/pretrained_model"
+    model_id = "/home/jupiter/my_downloaded_model/checkpoints/020000/pretrained_model"
     
 
     policy = XVLAPolicy.from_pretrained(model_id)
-    policy.to("cuda", dtype=torch.bfloat16) #cahnged that here
-    
-    policy.config.num_denoising_steps = 100
-    policy.config.use_amp = True
+    # policy.to("cuda", dtype=torch.bfloat16) #cahnged that here
+    policy.to("cuda")
+    # policy.config.num_denoising_steps = 50
+    # policy.config.use_amp = True
     
     # policy.config.n_action_steps = 16
     
