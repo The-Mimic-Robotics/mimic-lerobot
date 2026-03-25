@@ -142,3 +142,18 @@ lerobot-edit-dataset \
   --operation.repo_ids "[\
 'Mimic-Robotics/mimic_ttt_redx_15hz_x1', \
 'Mimic-Robotics/mimic_ttt_redx_15hz_x2d']"
+
+
+lerobot-edit-dataset \
+  --repo_id Mimic-Robotics/full_ttt_redx_NEWTASKNAME_v2 \
+  --operation.type merge \
+  --push_to_hub true \
+  --operation.repo_ids "[\
+'Mimic-Robotics/red_x1d', \
+'Mimic-Robotics/red_x2d']"
+
+
+
+
+
+
