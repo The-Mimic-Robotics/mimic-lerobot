@@ -86,7 +86,7 @@ if command -v nvidia-smi >/dev/null 2>&1; then
   MIG_MODE="$(nvidia-smi --query-gpu=mig.mode.current --format=csv,noheader 2>/dev/null | head -n 1 | xargs || true)"
 fi
 
-if [[ "${LEROBOT_TORCHRUN_NPROC:-1}" =~ ^[0-9]+$ ]] && [ "${LEROBOT_TORCHRUN_NPROC}" -gt 1 ]; then
+if [[ "${LEROBOT_TORCHRUN_NPROC:-1}" =~ ^[0-9]+$ ]] && [ "${LEROBOT_TORCHRUN_NPROC:-1}" -gt 1 ]; then
   if [ "$MIG_MODE" = "Enabled" ]; then
     echo "Distributed launcher requested (${LEROBOT_TORCHRUN_NPROC}) but MIG is enabled; falling back to single-process launch to avoid NCCL duplicate-GPU errors."
   else

@@ -481,18 +481,33 @@ class PaliGemmaWithExpertModel(
             # Process all layers with gradient checkpointing if enabled
             for layer_idx in range(num_layers):
                 if use_gradient_checkpointing:
-                    inputs_embeds = torch.utils.checkpoint.checkpoint(
-                        compute_layer_complete,
-                        layer_idx,
-                        inputs_embeds,
+                    # Keep checkpoint inputs tensor-only for better torch.compile / inductor stability.
+                    # Capturing modules and layer_idx in a closure avoids passing non-tensor args.
+                    adarms_cond_1 = adarms_cond[1]
+
+                    def checkpointed_layer(prefix_hidden, suffix_hidden, attn_mask, pos_ids, adarms_1):
+                        outputs = compute_layer_complete(
+                            layer_idx,
+                            [prefix_hidden, suffix_hidden],
+                            attn_mask,
+                            pos_ids,
+                            [None, adarms_1],
+                            paligemma=self.paligemma,
+                            gemma_expert=self.gemma_expert,
+                        )
+                        return outputs[0], outputs[1]
+
+                    out_prefix, out_suffix = torch.utils.checkpoint.checkpoint(
+                        checkpointed_layer,
+                        inputs_embeds[0],
+                        inputs_embeds[1],
                         attention_mask,
                         position_ids,
-                        adarms_cond,
+                        adarms_cond_1,
                         use_reentrant=False,
                         preserve_rng_state=False,
-                        paligemma=self.paligemma,
-                        gemma_expert=self.gemma_expert,
                     )
+                    inputs_embeds = [out_prefix, out_suffix]
                 else:
                     inputs_embeds = compute_layer_complete(
                         layer_idx,
@@ -514,13 +529,19 @@ class PaliGemmaWithExpertModel(
 
             # Apply gradient checkpointing to final norm if enabled
             if use_gradient_checkpointing:
-                outputs_embeds = torch.utils.checkpoint.checkpoint(
-                    compute_final_norms,
-                    inputs_embeds,
-                    adarms_cond,
+                def checkpointed_final_norm(prefix_hidden, suffix_hidden, adarms_1):
+                    outputs = compute_final_norms([prefix_hidden, suffix_hidden], [None, adarms_1])
+                    return outputs[0], outputs[1]
+
+                out_prefix, out_suffix = torch.utils.checkpoint.checkpoint(
+                    checkpointed_final_norm,
+                    inputs_embeds[0],
+                    inputs_embeds[1],
+                    adarms_cond[1],
                     use_reentrant=False,
                     preserve_rng_state=False,
                 )
+                outputs_embeds = [out_prefix, out_suffix]
             else:
                 outputs_embeds = compute_final_norms(inputs_embeds, adarms_cond)
 
@@ -571,7 +592,14 @@ class PI05Pytorch(nn.Module):  # see openpi `PI0Pytorch`
             torch.set_float32_matmul_precision("high")
             self.sample_actions = torch.compile(self.sample_actions, mode=config.compile_mode)
             # Also compile the main forward pass used during training
-            self.forward = torch.compile(self.forward, mode=config.compile_mode)
+            if config.gradient_checkpointing:
+                logging.warning(
+                    "PI05 training forward uses backend='aot_eager' when gradient_checkpointing is enabled "
+                    "to avoid known torch._inductor backward assertion failures."
+                )
+                self.forward = torch.compile(self.forward, backend="aot_eager")
+            else:
+                self.forward = torch.compile(self.forward, mode=config.compile_mode)
 
         msg = """An incorrect transformer version is used, please create an issue on https://github.com/huggingface/lerobot/issues"""
 
@@ -586,16 +614,46 @@ class PI05Pytorch(nn.Module):  # see openpi `PI0Pytorch`
     def gradient_checkpointing_enable(self):
         """Enable gradient checkpointing for memory optimization."""
         self.gradient_checkpointing_enabled = True
-        self.paligemma_with_expert.paligemma.language_model.gradient_checkpointing = True
-        self.paligemma_with_expert.paligemma.vision_tower.gradient_checkpointing = True
+
+        # Prefer official APIs with non-reentrant checkpointing to improve compile compatibility.
+        language_model = self.paligemma_with_expert.paligemma.language_model
+        vision_tower = self.paligemma_with_expert.paligemma.vision_tower
+
+        if hasattr(language_model, "gradient_checkpointing_enable"):
+            language_model.gradient_checkpointing_enable(
+                gradient_checkpointing_kwargs={"use_reentrant": False}
+            )
+        else:
+            language_model.gradient_checkpointing = True
+
+        if hasattr(vision_tower, "gradient_checkpointing_enable"):
+            vision_tower.gradient_checkpointing_enable(
+                gradient_checkpointing_kwargs={"use_reentrant": False}
+            )
+        else:
+            vision_tower.gradient_checkpointing = True
+
+        # Keep expert model checkpointing explicitly enabled for custom dual-stream forward.
         self.paligemma_with_expert.gemma_expert.model.gradient_checkpointing = True
         logging.info("Enabled gradient checkpointing for PI05Pytorch model")
 
     def gradient_checkpointing_disable(self):
         """Disable gradient checkpointing."""
         self.gradient_checkpointing_enabled = False
-        self.paligemma_with_expert.paligemma.language_model.gradient_checkpointing = False
-        self.paligemma_with_expert.paligemma.vision_tower.gradient_checkpointing = False
+
+        language_model = self.paligemma_with_expert.paligemma.language_model
+        vision_tower = self.paligemma_with_expert.paligemma.vision_tower
+
+        if hasattr(language_model, "gradient_checkpointing_disable"):
+            language_model.gradient_checkpointing_disable()
+        else:
+            language_model.gradient_checkpointing = False
+
+        if hasattr(vision_tower, "gradient_checkpointing_disable"):
+            vision_tower.gradient_checkpointing_disable()
+        else:
+            vision_tower.gradient_checkpointing = False
+
         self.paligemma_with_expert.gemma_expert.model.gradient_checkpointing = False
         logging.info("Disabled gradient checkpointing for PI05Pytorch model")
 

@@ -51,7 +51,7 @@ Override example:
 ```bash
 # Your jobs only
 squeue -u "$USER"
-squeue -u "$USER" -o '%.9i %.9P %.40j %.8T %.10M %.6D %R'
+squeue -u "$USER" -o '%.9i %.9P %.50j %.8T %.10M %.6D %R'
 
 # One job with reason
 squeue -j <jobid> -o "%.9i %.9P %.24j %.8T %.10M %.20R"
@@ -128,6 +128,11 @@ For XVLA (already wired in `xvla/train.sh`):
    --policy-mode maxbatch \
    --policy xvla --dataset-group ttt_3cam_15hz_32ac --no-follow
 ```
+For xVLA FINE-TUNNING 
+```bash
+cd /home/a/ac_pate/mimic-lerobot && env SKIP_LOCAL_CONDA_CHECK=true OUTPUT_BASE=/speed-scratch/$USER/mimic-lerobot-outputs SLURM_GRES=gpu:nvidia_a100_7g.80gb:1 SLURM_CPUS=8 SLURM_MEM=256G SLURM_TIME=4-00:00:00 HF_PUSH_CHECKPOINTS=true HF_CHECKPOINT_SYNC_INTERVAL=180 XVLA_POLICY_PATH=Mimic-Robotics/xvla_speed_stable_redx_3cam_15hz_32ac_b40_22_mar_allckpt XVLA_FREEZE_VISION_ENCODER=true XVLA_FREEZE_LANGUAGE_ENCODER=false XVLA_TRAIN_POLICY_TRANSFORMER=true XVLA_TRAIN_SOFT_PROMPTS=true ./mimic_deployment/training_scripts/train_manager_speed.sh --policy xvla --dataset-group stable_redx_3cam_15hz_32ac --steps 50000 --checkpoint-freq 5000 --batch-size 128 --job-tag finetune_actionexp --policy-mode default --no-follow
+```
+
 For Pi 0.5 
 ```bash
 cd /home/a/ac_pate/mimic-lerobot && env SKIP_LOCAL_CONDA_CHECK=true OUTPUT_BASE=/speed-scratch/$USER/mimic-lerobot-outputs SLURM_GRES=gpu:nvidia_a100_7g.80gb:1 SLURM_CONSTRAINT= SLURM_CPUS=4 SLURM_MEM=128G SLURM_TIME=06:00:00 BATCH_CANDIDATES=44,40,36,32,28,24 RUN_FINAL_AFTER_PROBE=false PROBE_STEPS=120 ./mimic_deployment/training_scripts/train_manager_speed.sh --policy pi05 --dataset-group ttt_3cam_15hz_32ac_LF --policy-mode maxbatch --steps 1000 --checkpoint-freq 1000 --no-follow

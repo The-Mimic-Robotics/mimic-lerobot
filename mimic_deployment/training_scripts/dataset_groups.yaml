@@ -18,15 +18,15 @@ groups:
     - Mimic-Robotics/mimic_ttt_blue_15hz
   
   stable_redx_3cam_15hz_32ac:
-    - Mimic-Robotics/full_ttt_redx_stable
+    - Mimic-Robotics/full_ttt_redx_stable_fixed_labels
 
   cloth_folding_3cam_15hz_32ac:
     - Mimic-Robotics/mimic_simpleClothFolding_v1
 
-  stable_redx_3cam_15hz_32ac_UF:
+  stable_redx_3cam_15hz_32ac_old:
     - Mimic-Robotics/full_ttt_redx_stable
 
-    
+      
     
     
 
