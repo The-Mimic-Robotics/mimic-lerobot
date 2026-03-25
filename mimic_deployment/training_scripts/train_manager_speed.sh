@@ -522,15 +522,12 @@ export POLICY_MODE="${POLICY_MODE}"
 [ -n "${FINAL_SAVE_FREQ:-}" ] && export FINAL_SAVE_FREQ="${FINAL_SAVE_FREQ:-}"
 [ -n "${FINAL_BATCH_SIZE:-}" ] && export FINAL_BATCH_SIZE="${FINAL_BATCH_SIZE:-}"
 
-# Pi0.5 PEFT/LoRA controls (passed through when set in submission env)
-[ -n "${PI05_USE_PEFT:-}" ] && export PI05_USE_PEFT="${PI05_USE_PEFT:-}"
-[ -n "${PI05_PEFT_TYPE:-}" ] && export PI05_PEFT_TYPE="${PI05_PEFT_TYPE:-}"
-[ -n "${PI05_LORA_R:-}" ] && export PI05_LORA_R="${PI05_LORA_R:-}"
+# Pi0.5 controls (passed through when set in submission env)
 [ -n "${PI05_FREEZE_VISION_ENCODER:-}" ] && export PI05_FREEZE_VISION_ENCODER="${PI05_FREEZE_VISION_ENCODER:-}"
 [ -n "${PI05_TRAIN_EXPERT_ONLY:-}" ] && export PI05_TRAIN_EXPERT_ONLY="${PI05_TRAIN_EXPERT_ONLY:-}"
+[ -n "${PI05_GRADIENT_CHECKPOINTING:-}" ] && export PI05_GRADIENT_CHECKPOINTING="${PI05_GRADIENT_CHECKPOINTING:-}"
 [ -n "${PI05_COMPILE_MODEL:-}" ] && export PI05_COMPILE_MODEL="${PI05_COMPILE_MODEL:-}"
-[ -n "${PI05_COMPILE_FALLBACK_EAGER:-}" ] && export PI05_COMPILE_FALLBACK_EAGER="${PI05_COMPILE_FALLBACK_EAGER:-}"
-[ -n "${PI05_PRETRAINED_PATH:-}" ] && export PI05_PRETRAINED_PATH="${PI05_PRETRAINED_PATH:-}"
+[ -n "${PI05_COMPILE_MODE:-}" ] && export PI05_COMPILE_MODE="${PI05_COMPILE_MODE:-}"
 
 if [ "${POLICY}" = "xvla" ]; then
   export XVLA_SPEED_MODE="${POLICY_MODE}"

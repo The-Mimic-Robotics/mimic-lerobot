@@ -20,6 +20,11 @@ DATASET_RESOLVER="$REPO_ROOT/mimic_deployment/training_scripts/dataset_groups.py
 # Get computer name from environment or hostname
 COMPUTER="${COMPUTER:-$(hostname)}"
 
+PI0_SPEED_MODE="${PI0_SPEED_MODE:-default}"
+if [[ "$PI0_SPEED_MODE" == "maxbatch" ]]; then
+    exec "$SCRIPT_DIR/train_speed_max_batch_probe.sh" "$@"
+fi
+
 # ============================================================================
 # PARAMETERS (Override via command line arguments)
 # ============================================================================
@@ -47,6 +52,7 @@ STEPS="${STEPS:-150000}"
 SAVE_FREQ="${SAVE_FREQ:-10000}"
 ACTION_STEPS="${ACTION_STEPS:-32}" 
 CHUNK_SIZE="${CHUNK_SIZE:-32}"
+PI0_VIDEO_BACKEND="${PI0_VIDEO_BACKEND:-pyav}"
 
 # ============================================================================
 # RESOLVE DATASET GROUP TO DATASET LIST OR USE SINGLE DATASET
@@ -134,6 +140,7 @@ else
 fi
 echo "Batch Size:    $BATCH_SIZE"
 echo "Num Workers:   $NUM_WORKERS"
+echo "Video Backend: $PI0_VIDEO_BACKEND"
 echo "Steps:         $STEPS"
 echo "Job Name:      $JOB_NAME"
 echo "Output Dir:    $OUTPUT_DIR"
@@ -195,6 +202,7 @@ cd "$REPO_ROOT"
 # common arguments for both modes
 CMD=(python src/lerobot/scripts/lerobot_train.py \
   --dataset.repo_id="$DATASET_REPO_IDS" \
+    --dataset.video_backend="$PI0_VIDEO_BACKEND" \
   --policy.type=pi0 \
   --policy.pretrained_path=lerobot/pi0_base \
   --policy.paligemma_variant="gemma_2b" \
@@ -218,7 +226,7 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --job_name="$JOB_NAME" \
   --wandb.enable=true)
 
-if [[ "$1" == "--no-daemon" ]]; then
+if [[ "${1:-}" == "--no-daemon" ]]; then
     # --- FOREGROUND MODE ---
     echo "Starting training in FOREGROUND..."
     echo "Output will be shown directly in terminal."

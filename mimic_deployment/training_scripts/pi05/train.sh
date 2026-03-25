@@ -51,13 +51,9 @@ SAVE_FREQ="${SAVE_FREQ:-20000}"
 ACTION_STEPS="${ACTION_STEPS:-32}" 
 CHUNK_SIZE="${CHUNK_SIZE:-32}"
 PI05_COMPILE_MODEL="${PI05_COMPILE_MODEL:-true}"
-PI05_COMPILE_FALLBACK_EAGER="${PI05_COMPILE_FALLBACK_EAGER:-true}"
+PI05_COMPILE_MODE="${PI05_COMPILE_MODE:-max-autotune}"
 PI05_PRETRAINED_PATH="${PI05_PRETRAINED_PATH:-lerobot/pi05_base}"
-PI05_USE_PEFT="${PI05_USE_PEFT:-false}"
-PI05_PEFT_TYPE="${PI05_PEFT_TYPE:-LORA}"
-PI05_LORA_R="${PI05_LORA_R:-32}"
-PI05_LORA_ALPHA="${PI05_LORA_ALPHA:-64}"
-PI05_LORA_DROPOUT="${PI05_LORA_DROPOUT:-0.05}"
+PI05_GRADIENT_CHECKPOINTING="${PI05_GRADIENT_CHECKPOINTING:-true}"
 PI05_FREEZE_VISION_ENCODER="${PI05_FREEZE_VISION_ENCODER:-false}"
 PI05_TRAIN_EXPERT_ONLY="${PI05_TRAIN_EXPERT_ONLY:-true}"
 WANDB_DISABLE_ARTIFACT="${WANDB_DISABLE_ARTIFACT:-false}"
@@ -113,20 +109,15 @@ echo "Job Name:      $JOB_NAME"
 echo "Computer:      $COMPUTER"
 echo "Batch Size:    $BATCH_SIZE"
 echo "Steps:         $STEPS"
-echo "Use PEFT:      $PI05_USE_PEFT"
 echo "Freeze Vision: $PI05_FREEZE_VISION_ENCODER"
 echo "Expert Only:   $PI05_TRAIN_EXPERT_ONLY"
 echo "W&B Artifact:  $WANDB_DISABLE_ARTIFACT"
-echo "Compile Model: $PI05_COMPILE_MODEL"
-echo "Compile Fallback Eager: $PI05_COMPILE_FALLBACK_EAGER"
+echo "Compile Model: $PI05_COMPILE_MODEL ($PI05_COMPILE_MODE)"
+echo "Gradient Ckpt: $PI05_GRADIENT_CHECKPOINTING"
 echo "Pretrained Path: $PI05_PRETRAINED_PATH"
 echo "CKPT Sync:     $HF_PUSH_CHECKPOINTS (interval=${HF_CHECKPOINT_SYNC_INTERVAL}s)"
 echo "Log File:      $LOG_FILE"
 echo "=========================================="
-
-if [[ "$PI05_COMPILE_MODEL" == "true" ]] && [[ "$PI05_COMPILE_FALLBACK_EAGER" == "true" ]]; then
-  export TORCHDYNAMO_SUPPRESS_ERRORS=1
-fi
 
 cd "$REPO_ROOT"
 CMD=(python src/lerobot/scripts/lerobot_train.py \
@@ -142,8 +133,9 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --policy.use_peft=false \
   --policy.train_expert_only="$PI05_TRAIN_EXPERT_ONLY" \
     --policy.freeze_vision_encoder="$PI05_FREEZE_VISION_ENCODER" \
-    --policy.gradient_checkpointing=true \
+    --policy.gradient_checkpointing="$PI05_GRADIENT_CHECKPOINTING" \
     --policy.compile_model="$PI05_COMPILE_MODEL" \
+    --policy.compile_mode="$PI05_COMPILE_MODE" \
   --policy.dtype=bfloat16 \
   --policy.device=cuda \
   --dataset.image_transforms.enable=true \
@@ -155,13 +147,6 @@ CMD=(python src/lerobot/scripts/lerobot_train.py \
   --job_name="$JOB_NAME" \
   --wandb.enable=true \
   --wandb.disable_artifact="$WANDB_DISABLE_ARTIFACT")
-
-if [[ "$PI05_USE_PEFT" == "true" ]]; then
-  CMD+=(
-    --peft.method_type="$PI05_PEFT_TYPE"
-    --peft.r="$PI05_LORA_R"
-  )
-fi
 
 sync_checkpoints_to_hf() {
   local sync_db="$OUTPUT_DIR/.hf_uploaded_checkpoints"

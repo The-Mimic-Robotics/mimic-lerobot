@@ -7,11 +7,11 @@ OUTPUT_BASE="${OUTPUT_BASE:-$REPO_ROOT/outputs}"
 LOG_DIR="$OUTPUT_BASE/logs"
 mkdir -p "$LOG_DIR"
 
-BATCH_CANDIDATES="${BATCH_CANDIDATES:-64,56,48,40,32,24,20,16,12,8,6,4,2,1}"
+BATCH_CANDIDATES="${BATCH_CANDIDATES:-128,120,112,104,96,88,80,72,64,56,48,40,32,24,16,8,4,2,1}"
 PROBE_STEPS="${PROBE_STEPS:-120}"
 PROBE_SAVE_FREQ="${PROBE_SAVE_FREQ:-1000}"
 RUN_FINAL_AFTER_PROBE="${RUN_FINAL_AFTER_PROBE:-true}"
-FINAL_STEPS="${FINAL_STEPS:-1000}"
+FINAL_STEPS="${FINAL_STEPS:-600}"
 FINAL_SAVE_FREQ="${FINAL_SAVE_FREQ:-1000}"
 FINAL_BATCH_SIZE="${FINAL_BATCH_SIZE:-}"
 
@@ -55,6 +55,11 @@ for raw_batch in "${CANDIDATE_ARRAY[@]}"; do
 
   if grep -qiE 'torch\.OutOfMemoryError|CUDA out of memory|out of memory' "$probe_log"; then
     echo "[pi05-maxbatch] OOM at batch=${batch}, trying next candidate"
+    continue
+  fi
+
+  if grep -qiE 'InductorError|torch\._inductor|Runtime error during autotuning|No valid triton configs|AssertionError' "$probe_log"; then
+    echo "[pi05-maxbatch] compile/inductor failure at batch=${batch}, trying next candidate"
     continue
   fi
 
