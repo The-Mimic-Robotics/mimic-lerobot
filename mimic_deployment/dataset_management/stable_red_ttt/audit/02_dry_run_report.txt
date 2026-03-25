@@ -1,0 +1,29 @@
+Repo: Mimic-Robotics/full_ttt_redx_stable
+Mode: DRY-RUN
+
+Per-block mapping:
+- ep_0_39: OK | 3 (pick red x handover place center) -> 3 (pick red x handover place center)
+- ep_40_74: OK | 6 (pick red x handover place top left) -> 6 (pick red x handover place top left)
+- ep_75_124: OK | 8 (pick red x handover place top right) -> 8 (pick red x handover place top right)
+- ep_125_164: OK | 0 (pick red x handover place bottom left) -> 0 (pick red x handover place bottom left)
+- ep_165_204: OK | 2 (pick red x handover place bottom right) -> 2 (pick red x handover place bottom right)
+- ep_205_223: OK | 7 (pick red x handover place top middle) -> 7 (pick red x handover place top middle)
+- ep_224_259: OK | 4 (pick red x handover place middle left) -> 4 (pick red x handover place middle left)
+- ep_260_299: OK | 5 (pick red x handover place middle right) -> 5 (pick red x handover place middle right)
+- ep_300_339: OK | 1 (pick red x handover place bottom middle) -> 1 (pick red x handover place bottom middle)
+- ep_340_379: OK | 0 (pick red x handover place bottom left) -> 0 (pick red x handover place bottom left)
+- ep_380_419: OK | 1 (pick red x handover place bottom middle) -> 1 (pick red x handover place bottom middle)
+- ep_420_459: OK | 2 (pick red x handover place bottom right) -> 2 (pick red x handover place bottom right)
+- ep_460_501: OK | 6 (pick red x handover place top left) -> 6 (pick red x handover place top left)
+- ep_502_541: OK | 4 (pick red x handover place middle left) -> 4 (pick red x handover place middle left)
+- ep_542_561: OK | 3 (pick red x handover place center) -> 3 (pick red x handover place center)
+- ep_562_601: OK | 5 (pick red x handover place middle right) -> 5 (pick red x handover place middle right)
+- ep_602_637: OK | 7 (pick red x handover place top middle) -> 7 (pick red x handover place top middle)
+- ep_638_677: OK | 8 (pick red x handover place top right) -> 8 (pick red x handover place top right)
+
+Changed blocks: 0 / 18
+Target episodes: 0
+- data file data/chunk-000/file-000.parquet: rows_to_change=0
+- episodes meta meta/episodes/chunk-000/file-000.parquet: rows_to_change=0
+
+Summary: frame_rows_to_change=0, episode_rows_to_change=0, data_files_touched=0

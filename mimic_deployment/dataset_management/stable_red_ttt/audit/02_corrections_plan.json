@@ -1,0 +1,13 @@
+{
+  "repo": "Mimic-Robotics/full_ttt_redx_stable",
+  "mode": "dry-run",
+  "changed_blocks": [],
+  "summary": {
+    "changed_blocks": 0,
+    "total_blocks": 18,
+    "target_episodes": 0,
+    "frame_rows_to_change": 0,
+    "episode_rows_to_change": 0,
+    "data_files_touched": 0
+  }
+}
