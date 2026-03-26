@@ -159,6 +159,9 @@ class XboxBaseController(BaseController):
                 self.axis_linear_x = teleop['axis_linear']['x']
                 self.axis_linear_y = teleop['axis_linear']['y']
                 self.axis_angular_yaw = teleop['axis_angular']['yaw']
+
+                # Device index
+                self.device_index = config['joy_node']['ros__parameters']['device_id']
         else:
             # Use kwargs or defaults
             max_linear_speed = kwargs.get('max_linear_speed', 0.1)
@@ -171,6 +174,7 @@ class XboxBaseController(BaseController):
             self.axis_linear_x = 1  # Left stick Y (forward/back)
             self.axis_linear_y = 0  # Left stick X (strafe left/right)
             self.axis_angular_yaw = 3  # Right stick X (rotation)
+            self.device_index = kwargs.get('device_index', 0)  # Default to 0
         
         super().__init__(max_linear_speed, max_angular_speed)
         self.max_linear_speed_turbo = max_linear_speed_turbo
@@ -188,11 +192,16 @@ class XboxBaseController(BaseController):
             pygame.init()
             pygame.joystick.init()
             
-            if pygame.joystick.get_count() == 0:
+            joystick_count = pygame.joystick.get_count()
+            if joystick_count == 0:
                 logger.error("No gamepad found")
                 return
             
-            self.joystick = pygame.joystick.Joystick(0)
+            if self.device_index >= joystick_count:
+                logger.error(f"No joystick at device index {self.device_index}. Available: {joystick_count}")
+                return
+
+            self.joystick = pygame.joystick.Joystick(self.device_index)
             self.joystick.init()
             logger.info(f"Connected: {self.joystick.get_name()}")
         except Exception as e:
@@ -261,10 +270,10 @@ class JoystickBaseController(BaseController):
     
     def __init__(self, max_linear_speed: float = 0.1, max_angular_speed: float = 0.2,
                  max_linear_speed_turbo: float = 0.2, max_angular_speed_turbo: float = 0.4,
-                 device_path: str = None, enable_button: int = 6, enable_turbo_button: int = 7,
+                 device_index: int = 0, enable_button: int = 6, enable_turbo_button: int = 7,
                  use_toggle_turbo: bool = True, require_safety_button: bool = False):
         super().__init__(max_linear_speed, max_angular_speed)
-        self.device_index = 0
+        self.device_index = device_index
         self.joystick = None
         self.deadzone = 0.15
         
@@ -418,6 +427,14 @@ def create_base_controller(
     Returns:
         BaseController instance
     """
+    # Parse device_index from device_path if provided
+    device_index = 0
+    if device_path:
+        import re
+        match = re.search(r'js(\d+)', device_path)
+        if match:
+            device_index = int(match.group(1))
+
     if mode == "keyboard":
         return KeyboardBaseController(max_linear_speed, max_angular_speed)
     
@@ -432,7 +449,8 @@ def create_base_controller(
                 max_linear_speed_turbo=max_linear_speed_turbo,
                 max_angular_speed_turbo=max_angular_speed_turbo,
                 enable_button=enable_button if enable_button is not None else 4,  # LB
-                enable_turbo_button=enable_turbo_button if enable_turbo_button is not None else 5  # RB
+                enable_turbo_button=enable_turbo_button if enable_turbo_button is not None else 5,  # RB
+                device_index=device_index
             )
     
     elif mode == "joystick":

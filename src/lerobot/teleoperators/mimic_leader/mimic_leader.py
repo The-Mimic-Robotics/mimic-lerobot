@@ -53,7 +53,7 @@ class MimicLeader(Teleoperator):
         xbox_config_path = None
         if config.base_control_mode == "xbox":
             # Try to find xbox.yaml in the mimic config directory
-            config_dir = Path(__file__).parent.parent.parent / "mimic" / "config"
+            config_dir = Path(__file__).parent.parent.parent.parent / "mimic" / "config"
             xbox_yaml = config_dir / "xbox.yaml"
             if xbox_yaml.exists():
                 xbox_config_path = str(xbox_yaml)
@@ -64,7 +64,7 @@ class MimicLeader(Teleoperator):
             max_linear_speed=config.max_linear_speed,
             max_angular_speed=config.max_angular_speed,
             config_path=xbox_config_path,
-            device_path="/dev/input/js0"  # Default gamepad/joystick path
+            device_path="/dev/input/js2"  # Default gamepad/joystick path
         )
         logger.info(f"Base control mode: {config.base_control_mode}")
 

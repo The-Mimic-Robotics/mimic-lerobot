@@ -18,19 +18,19 @@ teleop_node:
     
     # Speed scaling
     scale_linear:
-      x: 0.1   # 0.1 m/s forward/backward
-      y: 0.1   # 0.1 m/s strafe
+      x: 0.8   # 0.1 m/s forward/backward
+      y: 0.8   # 0.1 m/s strafe
     
     scale_linear_turbo:
-      x: 0.2   # 0.2 m/s with turbo
-      y: 0.2   # 0.2 m/s with turbo
+      x: 0.8   # 0.2 m/s with turbo
+      y: 0.8   # 0.2 m/s with turbo
     
     # Axis mapping for rotation
     axis_angular:
       yaw: 2  # Twist axis or secondary stick - rotation
     
     scale_angular:
-      yaw: 0.1  # 0.2 rad/s rotation
+      yaw: 0.08  # 0.2 rad/s rotation
     
     scale_angular_turbo:
       yaw: 0.2  # 0.2 rad/s with turbo
