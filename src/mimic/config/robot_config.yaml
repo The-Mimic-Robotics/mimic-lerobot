@@ -63,7 +63,7 @@ teleop:
   
   # Base Control Mode
   # base_control_mode: joystick  # Options: keyboard, xbox, joystick
-  base_control_mode: xbox
+  base_control_mode: xbox  # Options: keyboard, xbox, joystick
 
 # Dataset Configuration
 dataset: 

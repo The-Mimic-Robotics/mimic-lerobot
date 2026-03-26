@@ -2,9 +2,9 @@
 # Similar to ROS2 joy_node configuration format  
 # Device: Custom joystick/flight stick at /dev/input/js1
 
-joy_node:
+joy_node:                                                                                                                                                                              
   ros__parameters:
-    device_id: 1           # /dev/input/js1
+    device_id: 0           # /dev/input/js1
     deadzone: 0.05         # Ignore inputs below this threshold
     autorepeat_rate: 20.0  # Hz - rate to republish last command
 
@@ -17,7 +17,7 @@ teleop_node:
       y: 0  # Main stick horizontal - strafe left/right
     
     # Speed scaling
-    scale_linear:
+    scale_linear:  
       x: 0.8   # 0.1 m/s forward/backward
       y: 0.8   # 0.1 m/s strafe
     

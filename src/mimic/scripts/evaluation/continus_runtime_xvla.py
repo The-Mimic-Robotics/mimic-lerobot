@@ -1,9 +1,6 @@
 import time
 import threading
-import torch
-import numpy as np
-
-from lerobot.robots import make_robot_from_config
+import torch 
 from lerobot.robots.mimic_follower import MimicFollowerConfig
 from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
 

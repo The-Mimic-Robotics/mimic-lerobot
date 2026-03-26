@@ -1,3 +1,5 @@
+# HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 HF_DATASETS_OFFLINE=1 python continus_runtime_xvla_3cam.py
+
 import time
 import threading
 import torch
@@ -44,7 +46,8 @@ TIC_TAC_TOE_MOVES = {
     "15": "pick blue o handover place middle right",
     "16": "pick blue o handover place top left",
     "17": "pick blue o handover place top middle",
-    "18": "pick blue o handover place top right"
+    "18": "pick blue o handover place top right",
+    "19": "pick red cloth move left single fold move right store"
 }
 
 # Shared state protected by a lock (mutex)
@@ -113,7 +116,7 @@ def main():
         id="mimic_leader",
         left_arm_port="/dev/arm_left_leader",
         right_arm_port="/dev/arm_right_leader",
-        base_control_mode="keyboard"
+        base_control_mode="xbox"
     )
     teleop = make_teleoperator_from_config(teleop_cfg)
 
@@ -126,7 +129,8 @@ def main():
     # Mimic-Robotics/xvla_ttt_nofr_15hz_32ac_3cam_100k_auguv2
     
     # model_id = "Mimic-Robotics/xvla_ttt_15hz_32ac_iTT_200k"
-    model_id = "/home/jupiter/my_downloaded_model/checkpoints/020000/pretrained_model"
+    # model_id = "/home/jupiter/my_downloaded_model/checkpoints/100000/pretrained_model"
+    model_id = "/home/jupiter/cloth_folding/checkpoints/080000/pretrained_model"
     
 
     policy = XVLAPolicy.from_pretrained(model_id)

@@ -4,3 +4,7 @@ hf download Mimic-Robotics/xvla_speed_ttt_3cam_15hz_32ac_b40_21_mar_allckpt --lo
  hf download Mimic-Robotics/xvla_speed_stable_redx_3cam_15hz_32ac_b40_22_mar_allckpt --local-dir ./my_downloaded_model --local-dir ./my_downloaded_model
 
  hf download Mimic-Robotics/mimic_ttt_redx_15hz_x2d --repo-type dataset --local-dir .cache/huggingface/lerobot/Mimic-Robotics/red_x2
+
+
+
+  hf download Mimic-Robotics/xvla_speed_cloth_folding_3cam_15hz_32ac_b40_24_mar_allckpt --local-dir ./cloth_folding

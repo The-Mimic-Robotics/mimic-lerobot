@@ -160,8 +160,12 @@ class XboxBaseController(BaseController):
                 self.axis_linear_y = teleop['axis_linear']['y']
                 self.axis_angular_yaw = teleop['axis_angular']['yaw']
 
-                # Device index
-                self.device_index = config['joy_node']['ros__parameters']['device_id']
+                # Device index (convert from 1-based device_id if needed)
+                device_index = config['joy_node']['ros__parameters'].get('device_id', 0)
+                if device_index > 0:
+                    # Some configs use 1-based IDs (e.g., js1), pygame expects 0-based
+                    device_index -= 1
+                self.device_index = max(0, device_index)
         else:
             # Use kwargs or defaults
             max_linear_speed = kwargs.get('max_linear_speed', 0.1)
@@ -198,12 +202,16 @@ class XboxBaseController(BaseController):
                 return
             
             if self.device_index >= joystick_count:
-                logger.error(f"No joystick at device index {self.device_index}. Available: {joystick_count}")
-                return
+                # Allow 1-based device_id from config in case users set js1/js2 directly.
+                if 0 <= self.device_index - 1 < joystick_count:
+                    self.device_index -= 1
+                else:
+                    logger.error(f"No joystick at device index {self.device_index}. Available: {joystick_count}")
+                    return
 
             self.joystick = pygame.joystick.Joystick(self.device_index)
             self.joystick.init()
-            logger.info(f"Connected: {self.joystick.get_name()}")
+            logger.info(f"Connected: {self.joystick.get_name()} (index={self.device_index})")
         except Exception as e:
             logger.error(f"Failed to connect gamepad: {e}")
             self.joystick = None
@@ -441,7 +449,7 @@ def create_base_controller(
     elif mode == "xbox":
         # If config_path provided, load from YAML. Otherwise use kwargs
         if config_path:
-            return XboxBaseController(config_path=config_path)
+            return XboxBaseController(config_path=config_path, device_index=device_index)
         else:
             return XboxBaseController(
                 max_linear_speed=max_linear_speed,
