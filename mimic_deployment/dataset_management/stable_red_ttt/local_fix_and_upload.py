@@ -1,5 +1,0 @@
-print("This pipeline is intentionally split into separate scripts:")
-print("1) 01_download_dataset.py")
-print("2) 02_sniff_dataset.py")
-print("3) 03_patch_dataset_local.py")
-print("4) Upload via CLI in UPLOAD.md")

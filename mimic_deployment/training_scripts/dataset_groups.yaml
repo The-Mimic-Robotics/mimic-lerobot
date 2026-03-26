@@ -30,6 +30,9 @@ groups:
   cloth_folding_3cam_15hz_32ac:
     - Mimic-Robotics/mimic_simpleClothFolding_v1
 
+  Fix_stable_redx_3cam_15hz_32ac:
+    - Mimic-Robotics/full_ttt_redx_stable_fixed_short_labels
+
       
     
     
