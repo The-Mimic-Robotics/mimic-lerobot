@@ -1,0 +1,60 @@
+{
+  "source_repo": "Mimic-Robotics/full_ttt_redx_stable_fixed_labels",
+  "target_repo": "Mimic-Robotics/full_ttt_redx_stable_fixed_short_labels",
+  "workdir": "/speed-scratch/ac_pate/hf_work/full_ttt_redx_stable_fixed_short_labels",
+  "patch_summary": {
+    "task_rows_total": 9,
+    "task_rows_changed": 9,
+    "tasks_preview": [
+      {
+        "task_index": 0,
+        "task": "pick red x handover place bottom left"
+      },
+      {
+        "task_index": 1,
+        "task": "pick red x handover place bottom middle"
+      },
+      {
+        "task_index": 2,
+        "task": "pick red x handover place bottom right"
+      },
+      {
+        "task_index": 3,
+        "task": "pick red x handover place center"
+      },
+      {
+        "task_index": 4,
+        "task": "pick red x handover place middle left"
+      },
+      {
+        "task_index": 5,
+        "task": "pick red x handover place middle right"
+      },
+      {
+        "task_index": 6,
+        "task": "pick red x handover place top left"
+      },
+      {
+        "task_index": 7,
+        "task": "pick red x handover place top middle"
+      },
+      {
+        "task_index": 8,
+        "task": "pick red x handover place top right"
+      }
+    ],
+    "codebase_version": "v3.0"
+  },
+  "upload": {
+    "total_local_files": 122,
+    "uploaded": 121,
+    "skipped_existing": 1,
+    "failed": []
+  },
+  "tags": {
+    "before": [],
+    "after": [
+      "v3.0"
+    ]
+  }
+}
