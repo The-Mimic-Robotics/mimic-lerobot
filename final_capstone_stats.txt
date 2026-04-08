@@ -1,0 +1,2881 @@
+commit be84be2bb186ec55d61aea1a8dd62ffd3b9ab017
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Mar 26 17:59:10 2026 -0400
+
+    pygame ymal fix
+
+ mimic_deployment/dataset_management/download.txt     |  6 +++++-
+ .../teleoperators/mimic_leader/base_controllers.py   | 20 ++++++++++++++------
+ src/mimic/config/joystick.yaml                       |  6 +++---
+ src/mimic/config/robot_config.yaml                   |  2 +-
+ .../scripts/evaluation/continus_runtime_xvla.py      |  5 +----
+ .../scripts/evaluation/continus_runtime_xvla_3cam.py | 10 +++++++---
+ src/mimic/scripts/record_cmd_ttt.sh                  |  4 ++--
+ 7 files changed, 33 insertions(+), 20 deletions(-)
+
+commit 28f9122c4faa3051cbffe3342770f56e58e7a2de
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Mar 26 16:09:20 2026 -0400
+
+    [Gabriel] fixed YAML config path to be parsed when running src/mimic/scripts/mimic-teleop
+
+ .../teleoperators/mimic_leader/base_controllers.py | 28 ++++++++++++++++++----
+ .../teleoperators/mimic_leader/mimic_leader.py     |  4 ++--
+ src/mimic/config/joystick.yaml                     | 10 ++++----
+ src/mimic/config/robot_config.yaml                 |  3 ++-
+ src/mimic/config/xbox.yaml                         |  2 +-
+ 5 files changed, 33 insertions(+), 14 deletions(-)
+
+commit 33ec638e04ea44324ff742e8e2490075f5d4cae4
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Thu Mar 26 13:05:49 2026 -0400
+
+    xvla augusto
+
+ .../stable_red_ttt/01_download_dataset.py          |  48 -----
+ .../stable_red_ttt/02_sniff_dataset.py             | 103 ----------
+ .../stable_red_ttt/03_patch_dataset_local.py       | 183 ------------------
+ .../stable_red_ttt/04_verify_fixed_local.py        | 142 --------------
+ .../stable_red_ttt/08_upload_with_bar.py           |  57 ------
+ .../stable_red_ttt/09_clone_to_short_labels.py     | 177 -----------------
+ .../dataset_management/stable_red_ttt/UPLOAD.md    |  21 --
+ .../stable_red_ttt/audit/00_blocks.json            | 142 --------------
+ .../stable_red_ttt/audit/00_structure_report.txt   |  51 -----
+ .../stable_red_ttt/audit/01_human_audit_guide.md   |  47 -----
+ .../stable_red_ttt/audit/02_corrections_plan.json  |  13 --
+ .../stable_red_ttt/audit/02_dry_run_report.txt     |  29 ---
+ .../stable_red_ttt/audit/05_sniff_report.json      | 161 ---------------
+ .../stable_red_ttt/audit/06_patch_report.json      |  44 -----
+ .../stable_red_ttt/audit/07_fix_proof.json         |  16 --
+ .../stable_red_ttt/audit/07_fix_proof.txt          |   7 -
+ .../audit/09_short_labels_report.json              |  60 ------
+ .../stable_red_ttt/audit/_audit_step0.py           | 121 ------------
+ .../dataset_management/stable_red_ttt/config.py    |  15 --
+ .../stable_red_ttt/instruction_normalizer.py       |  60 ------
+ .../stable_red_ttt/local_fix_and_upload.py         |   5 -
+ .../stable_red_ttt/patch_task_indices.py           | 215 ---------------------
+ .../stable_red_ttt/publish_canonical_dataset.py    | 144 --------------
+ .../stable_red_ttt/update_test_prompts_minimal.py  |  37 ----
+ .../training_scripts/dataset_groups.yaml           |   3 +
+ 25 files changed, 3 insertions(+), 1898 deletions(-)
+
+commit ed7bafdbb3632819d9ffa4c6237c15ac850f6745
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Thu Mar 26 00:43:06 2026 -0400
+
+    Task Prompt Reverted for new dataset, and training reordered and i'm crashing out rn
+
+ .../stable_red_ttt/09_clone_to_short_labels.py     | 177 +++++++
+ .../audit/09_short_labels_report.json              |  60 +++
+ .../training_scripts/dataset_groups.yaml           |  10 +-
+ .../train_manager_speed_multi20.sh                 | 584 ---------------------
+ mimic_deployment/training_scripts/working_cmds.txt |   2 +
+ 5 files changed, 246 insertions(+), 587 deletions(-)
+
+commit 441735198f1000f35dcf2195c9e94b524ff1f91e
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Wed Mar 25 18:39:57 2026 -0400
+
+    new dataset, xvla, pi05: updates them all
+
+ .../training_scripts/SPEED_TRAINING.md             |  7 +-
+ .../training_scripts/dataset_groups.yaml           |  6 +-
+ mimic_deployment/training_scripts/working_cmds.txt |  8 +-
+ mimic_deployment/training_scripts/xvla/train.sh    |  2 +-
+ src/lerobot/policies/pi05/modeling_pi05.py         | 90 ++++++++++++++++++----
+ 5 files changed, 89 insertions(+), 24 deletions(-)
+
+commit 4baa8ce414e79b6021c4ec2ea6dde62ab856ad7b
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Wed Mar 25 17:52:42 2026 -0400
+
+    Add split TTT dataset fix pipeline, verification, and HF upload tooling
+
+ .../stable_red_ttt/01_download_dataset.py          |  48 +++++
+ .../stable_red_ttt/02_sniff_dataset.py             | 103 ++++++++++
+ .../stable_red_ttt/03_patch_dataset_local.py       | 183 ++++++++++++++++++
+ .../stable_red_ttt/04_verify_fixed_local.py        | 142 ++++++++++++++
+ .../stable_red_ttt/08_upload_with_bar.py           |  57 ++++++
+ .../dataset_management/stable_red_ttt/UPLOAD.md    |  21 ++
+ .../stable_red_ttt/audit/00_blocks.json            | 142 ++++++++++++++
+ .../stable_red_ttt/audit/00_structure_report.txt   |  51 +++++
+ .../stable_red_ttt/audit/01_human_audit_guide.md   |  47 +++++
+ .../stable_red_ttt/audit/02_corrections_plan.json  |  13 ++
+ .../stable_red_ttt/audit/02_dry_run_report.txt     |  29 +++
+ .../stable_red_ttt/audit/05_sniff_report.json      | 161 +++++++++++++++
+ .../stable_red_ttt/audit/06_patch_report.json      |  44 +++++
+ .../stable_red_ttt/audit/07_fix_proof.json         |  16 ++
+ .../stable_red_ttt/audit/07_fix_proof.txt          |   7 +
+ .../stable_red_ttt/audit/_audit_step0.py           | 121 ++++++++++++
+ .../dataset_management/stable_red_ttt/config.py    |  15 ++
+ .../stable_red_ttt/instruction_normalizer.py       |  60 ++++++
+ .../stable_red_ttt/local_fix_and_upload.py         |   5 +
+ .../stable_red_ttt/patch_task_indices.py           | 215 +++++++++++++++++++++
+ .../stable_red_ttt/publish_canonical_dataset.py    | 144 ++++++++++++++
+ .../stable_red_ttt/update_test_prompts_minimal.py  |  37 ++++
+ 22 files changed, 1661 insertions(+)
+
+commit acb7753bac87cde66a0d3c379b81212f6f26523e
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Wed Mar 25 16:34:37 2026 -0400
+
+    bgr conversion
+
+ .../30to15/run_redx1_conversions.sh                | 60 ++++++++++++++++++++++
+ 1 file changed, 60 insertions(+)
+
+commit 53006f2e21242237834d4c4377b2841e8a727332
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Wed Mar 25 16:26:13 2026 -0400
+
+    converstion
+
+ .../dataset_manipulation/{ => 30to15}/30to15.py    |   0
+ .../dataset_manipulation/30to15/30to15_optimsed.py | 125 ++++++++++++++++++++
+ .../dataset_manipulation/30to15/red_x2.sh          |  44 +++++++
+ .../dataset_manipulation/30to15_optimsed.py        | 127 ---------------------
+ 4 files changed, 169 insertions(+), 127 deletions(-)
+
+commit 7600fb062b24f5c77a87ba7e49655bfccb4f3b2f
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Wed Mar 25 16:14:35 2026 -0400
+
+    30 to 15 optimiser
+
+ mimic_deployment/dataset_management/commandes.txt  |   2 +-
+ .../dataset_manipulation/30to15_optimsed.py        | 127 +++++++++++++++++++++
+ mimic_deployment/dataset_management/download.txt   |   4 +-
+ mimic_deployment/dataset_management/mega_merge.txt |  54 +++++++++
+ mimic_deployment/dataset_management/merge_ex.txt   |  17 ++-
+ 5 files changed, 201 insertions(+), 3 deletions(-)
+
+commit d467693b6bbc9415247d409003eb144d96ff2e48
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Wed Mar 25 02:02:18 2026 -0400
+
+    training scripts: stabilize pi05 compile flow and update probe/finetune commands
+
+ mimic_deployment/training_scripts/pi0/train.sh     | 10 +++++++-
+ mimic_deployment/training_scripts/pi05/train.sh    | 27 +++++-----------------
+ .../pi05/train_speed_max_batch_probe.sh            |  9 ++++++--
+ .../training_scripts/train_manager_speed.sh        |  9 +++-----
+ mimic_deployment/training_scripts/working_cmds.txt |  5 +++-
+ 5 files changed, 29 insertions(+), 31 deletions(-)
+
+commit 80807179898cf557602a98f00b9b5b8d0e856f7f
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Tue Mar 24 20:51:04 2026 -0400
+
+    utils: add W&B artifact recovery uploader for HF
+
+ .../utils_scripts/wandb_artifacts_to_hf.py         | 201 +++++++++++++++++++++
+ 1 file changed, 201 insertions(+)
+
+commit c26f325332f1839707840b2a2e78218b64c53c76
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Tue Mar 24 20:50:59 2026 -0400
+
+    pi05: add checkpoint sync and safer compile runtime
+
+ mimic_deployment/training_scripts/pi05/train.sh    | 83 ++++++++++++++++++++--
+ .../training_scripts/train_manager_speed.sh        |  3 +
+ 2 files changed, 80 insertions(+), 6 deletions(-)
+
+commit bf07a62d6058b1395744d362e2b577ad83b09072
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Mar 24 17:35:51 2026 -0400
+
+    demo code udp
+
+ src/mimic/scripts/demo/ex_udp_semder.py            |  48 +++++
+ .../{evaluation => demo/old}/udp_continues.py      |   0
+ .../{evaluation => demo/old}/udp_xcontinuous.py    |   0
+ src/mimic/scripts/demo/replay_placement.py         |   2 +-
+ src/mimic/scripts/demo/replay_udp.py               | 198 +++++++++++++++++++++
+ 5 files changed, 247 insertions(+), 1 deletion(-)
+
+commit e16a96e309509be253b2694bef3d16d2a119a6b2
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Mar 24 17:13:12 2026 -0400
+
+    replay episodes
+
+ src/mimic/scripts/demo/replay_placement.py | 189 +++++++++++++++++++++++++++++
+ 1 file changed, 189 insertions(+)
+
+commit 310749a6cc6d81d238ff681ec8b8ecf9ea0af0b2
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Mar 24 16:49:56 2026 -0400
+
+    eval policy
+
+ .../scripts/evaluation/continus_runtime_smolvla.py | 210 ++++++++++++++-------
+ .../evaluation/continus_runtime_xvla_3cam.py       |  10 +-
+ src/mimic/scripts/record_cmd_ttt.sh                |   2 +-
+ 3 files changed, 147 insertions(+), 75 deletions(-)
+
+commit d192e43c344589271da8d315addebbd8e85eb3d9
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Tue Mar 24 01:06:53 2026 -0400
+
+    SPEED UPDATE: resubmited pi05 with b64, b80 | added 2 stage language-action then vision trainign script and queued it
+
+ mimic_deployment/training_scripts/SPEED_TRAINING.md |  2 +-
+ mimic_deployment/training_scripts/pi05/train.sh     |  2 +-
+ mimic_deployment/training_scripts/working_cmds.txt  |  7 +++++++
+ mimic_deployment/training_scripts/xvla/train.sh     | 15 ++++++++++-----
+ 4 files changed, 19 insertions(+), 7 deletions(-)
+
+commit 22d15e89293d8f0aac87510776746e04d60b0aee
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Mar 23 11:31:20 2026 -0400
+
+    download commands
+
+ mimic_deployment/dataset_management/download.txt         | 4 ++++
+ src/mimic/scripts/evaluation/continus_runtime_smolvla.py | 2 +-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+commit f51c88660ce2241da672c9a23fea9fbc7727fcff
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Mon Mar 23 11:30:43 2026 -0400
+
+    up
+
+ mimic_deployment/dataset_management/commandes.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 8b7734ecf19deb674cb27f06e5976800106ad42a
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Mar 23 11:24:35 2026 -0400
+
+    eval update
+
+ src/mimic/scripts/evaluation/continus_runtime_smolvla.py   |  4 ++--
+ src/mimic/scripts/evaluation/continus_runtime_xvla_3cam.py | 14 ++++++++++++--
+ src/mimic/scripts/evaluation/udp_xcontinuous.py            |  2 +-
+ 3 files changed, 15 insertions(+), 5 deletions(-)
+
+commit 3d0d96f8b042dbf5b3c6a9eed6a8475d230717d0
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Mon Mar 23 11:08:08 2026 -0400
+
+    added radom jitter
+
+ mimic_deployment/training_scripts/smolvla/train.sh | 1 +
+ mimic_deployment/training_scripts/xvla/train.sh    | 1 +
+ 2 files changed, 2 insertions(+)
+
+commit 5ffba1e1d95b90dc878f1230400bacba7728a699
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Sun Mar 22 20:42:31 2026 -0400
+
+    smol
+
+ mimic_deployment/dataset_management/commandes.txt  |  1 +
+ mimic_deployment/training_scripts/QUICKSTART.md    |  8 +++++++-
+ .../training_scripts/dataset_groups.yaml           |  3 +++
+ mimic_deployment/training_scripts/smolvla/train.sh | 24 +++++++++++++---------
+ 4 files changed, 25 insertions(+), 11 deletions(-)
+
+commit 124ae5b516458f427198cf6958e8a15aaf965551
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sun Mar 22 18:22:20 2026 -0400
+
+    added  dataset.image_transforms.enable=true
+
+ mimic_deployment/dataset_management/commandes.txt  |  3 +++
+ mimic_deployment/training_scripts/xvla/train.sh    |  2 +-
+ .../scripts/evaluation/continus_runtime_xvla.py    |  4 +--
+ .../evaluation/continus_runtime_xvla_3cam.py       | 30 ++++++++++++----------
+ 4 files changed, 23 insertions(+), 16 deletions(-)
+
+commit 7304c417ff9acc9b203f2626c5c201bc3a803142
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Sun Mar 22 17:59:45 2026 -0400
+
+    index on main: 3b543b2 fe
+
+commit 517cc9dff887f945b0f21ee2e7aa1742c940741d
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Sun Mar 22 17:27:30 2026 -0400
+
+    dataset manipulation and dataset.waml update
+
+ mimic_deployment/dataset_management/commandes.txt  |     2 -
+ .../dataset_manipulation/change_task_merged.py     |    63 +-
+ .../dataset_manipulation/conversion_log.txt        | 29701 +++++++++++++++++++
+ .../dataset_manipulation/count_dataset_ep.py       |     6 +-
+ .../dataset_manipulation/fix_x1.py                 |   111 +
+ .../dataset_manipulation/fix_x2.py                 |   124 +
+ .../mimic_ttt_redBalanced_15hz                     |     1 -
+ mimic_deployment/dataset_management/merge_ex.txt   |    28 +-
+ .../training_scripts/dataset_groups.yaml           |   119 +-
+ 9 files changed, 29991 insertions(+), 164 deletions(-)
+
+commit d4e499d12edec2f2bd47a9897b6902a2fcf08c84
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Sun Mar 22 15:05:11 2026 -0400
+
+    pi05 action chuncking at 32, 3 trainings pending
+
+ mimic_deployment/training_scripts/pi0/train.sh          |  4 ++--
+ mimic_deployment/training_scripts/pi05/train.sh         | 12 ++++++++----
+ .../training_scripts/train_manager_speed.sh             | 17 ++++++++++++++++-
+ 3 files changed, 26 insertions(+), 7 deletions(-)
+
+commit e5e732a585b20133b74d775a16863e6e70613ae1
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Sat Mar 21 21:33:19 2026 -0400
+
+    probe -> main training works
+
+ .../training_scripts/train_manager_speed.sh          | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
+
+commit 9ec3a52ddb452076cd749adf42ec1c42cbadc6a1
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Sat Mar 21 20:39:02 2026 -0400
+
+    Latest changes: pi0 probing still not done, big runs pending, LORA configured and tested 2
+
+ cd | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+
+commit b94d9f60f2c161cbbffed38dfce5c7d12f5fea5a
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Sat Mar 21 20:38:14 2026 -0400
+
+    Latest changes: pi0 probing still not done, big runs pending, LORA configured and tested
+
+ cd                                                 |  0
+ .../training_scripts/SPEED_TRAINING.md             | 44 +++++++++++++++++++++-
+ mimic_deployment/training_scripts/pi0/train.sh     |  2 +-
+ mimic_deployment/training_scripts/pi05/train.sh    | 23 ++++++++---
+ .../pi05/train_speed_max_batch_probe.sh            |  2 +
+ .../training_scripts/train_manager_speed.sh        | 29 ++++++++++++++
+ mimic_deployment/training_scripts/xvla/train.sh    |  2 +-
+ 7 files changed, 93 insertions(+), 9 deletions(-)
+
+commit 358f03877f51a0f8f087c5b70610f848cf23067e
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Sat Mar 21 12:47:46 2026 -0400
+
+    PI05 Batch Probing Started, SRUN multi gpu scripts works
+
+ mimic_deployment/training_scripts/SPEED_TRAINING.md         |  5 ++++-
+ .../training_scripts/train_manager_speed_multi20.sh         | 13 ++++++++++---
+ 2 files changed, 14 insertions(+), 4 deletions(-)
+
+commit 76fcab36e02bc9a8317781990646b97d6eef816f
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Fri Mar 20 20:02:40 2026 -0400
+
+    xvla: avoid NCCL duplicate-GPU by skipping torchrun on MIG
+
+ mimic_deployment/training_scripts/xvla/train.sh | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+commit 9e7ee1072a7ab973d6806cadc11cba23443bfded
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Fri Mar 20 19:44:09 2026 -0400
+
+    speed-multi20: derive 20GB GRES from --gpus correctly
+
+ mimic_deployment/training_scripts/train_manager_speed_multi20.sh | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+commit aa73df02f1ba3174e2faea5cb04ea7f441b76da6
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Fri Mar 20 19:41:17 2026 -0400
+
+    speed: add multi20 distributed manager and xvla torchrun support
+
+ .../train_manager_speed_multi20.sh                 | 573 +++++++++++++++++++++
+ mimic_deployment/training_scripts/xvla/train.sh    |   8 +-
+ 2 files changed, 580 insertions(+), 1 deletion(-)
+
+commit 6e5ec26687a1dc5904d5f0868ee1ccbf85102eb8
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Fri Mar 20 19:39:45 2026 -0400
+
+    speed: policy env routing, docs, and conda env snapshots
+
+ conda-envs/lerobot-pi-requirements.txt             | 109 +++++++++
+ conda-envs/lerobot-xvla-requirements.txt           | 272 +++++++++++++++++++++
+ .../training_scripts/SPEED_TRAINING.md             |  37 ++-
+ .../training_scripts/train_manager_speed.sh        |  50 +++-
+ 4 files changed, 454 insertions(+), 14 deletions(-)
+
+commit 02e178aa990140e4e7fe59bd7730640b84283faa
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Fri Mar 20 19:39:37 2026 -0400
+
+    pi05: fix training launcher, add env setup and max-batch probe
+
+ .../training_scripts/pi05/setup_pi05_conda_env.sh  | 84 ++++++++++++++++++++
+ mimic_deployment/training_scripts/pi05/train.sh    | 43 +++++-----
+ .../pi05/train_speed_max_batch_probe.sh            | 91 ++++++++++++++++++++++
+ 3 files changed, 200 insertions(+), 18 deletions(-)
+
+commit 8b000d222d19823fc41af620e95629e4662962c9
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Sat Mar 21 14:46:18 2026 -0400
+
+    dataset managment
+
+ .../{30to15 => dataset_manipulation}/30to15.py     |   4 +-
+ .../{ => dataset_manipulation}/bgr_to_rgb.py       |   0
+ .../change_task_merged.py                          |   2 +-
+ .../{ => dataset_manipulation}/change_task_name.py |   0
+ .../dataset_manipulation/clean_info.py             |  54 ++++++
+ .../clone_rnadom-taskname.py                       |   0
+ .../{ => dataset_manipulation}/count_dataset_ep.py |   5 +-
+ .../dataset_manipulation/fancy_taskchange.py       | 199 +++++++++++++++++++++
+ .../dataset_manipulation/fix_merger.py             | 120 +++++++++++++
+ .../mimic_ttt_redBalanced_15hz                     |   1 +
+ 10 files changed, 380 insertions(+), 5 deletions(-)
+
+commit c31932f99b42dc05e9145fc6dbb808c274f9bb8d
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Sat Mar 21 12:35:53 2026 -0400
+
+    dataset stable
+
+ .../30to15/clone_rnadom-taskname.py                | 178 +++++++++++++++++++++
+ mimic_deployment/dataset_management/commandes.txt  |   2 +-
+ .../training_scripts/dataset_groups.yaml           |   4 +-
+ 3 files changed, 181 insertions(+), 3 deletions(-)
+
+commit 964bf69401a3ada6f187025ac60c7aff8b410fcc
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Sat Mar 21 12:31:50 2026 -0400
+
+    fancy
+
+ .../dataset_management/change_task_merged.py       | 131 +++++++++++++--------
+ .../dataset_management/count_dataset_ep.py         |   2 +-
+ mimic_deployment/dataset_management/merge_ex.txt   |  11 +-
+ .../training_scripts/dataset_groups.yaml           |   7 +-
+ 4 files changed, 95 insertions(+), 56 deletions(-)
+
+commit a389866a54545b62224377911d39551b32a480ad
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sat Mar 21 11:05:39 2026 -0400
+
+    oding train
+
+ mimic_deployment/merging_dataset/commandes.txt        | 3 ++-
+ mimic_deployment/training_scripts/QUICKSTART.md       | 4 ++--
+ mimic_deployment/training_scripts/dataset_groups.yaml | 2 +-
+ mimic_deployment/training_scripts/xvla/train.sh       | 2 +-
+ 4 files changed, 6 insertions(+), 5 deletions(-)
+
+commit 797dc74b2e05e33488d99264b017faa536d98db3
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Sat Mar 21 11:02:19 2026 -0400
+
+    added counting dataset
+
+ .../dataset_management/30to15/30to15.py            |   4 +-
+ .../dataset_management/30to15/30to15_jupiter.py    | 159 ---------------------
+ .../dataset_management/change_task_merged.py       |   2 +-
+ .../dataset_management/count_dataset_ep.py         |   4 +-
+ .../dataset_management/tag_datasets.py             |   2 +-
+ 5 files changed, 7 insertions(+), 164 deletions(-)
+
+commit e6eb34f8618a72f143d919d947f4bcd604c6edc3
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Fri Mar 20 19:50:02 2026 -0400
+
+    Merging and managing dataset update
+
+ .../dataset_management/change_task_merged.py       |  91 +++++++++++++++++++
+ .../dataset_management/change_task_name.py         | 101 +++++++++++++++++++++
+ .../dataset_management/count_dataset_ep.py         |  77 ++++++++++++++++
+ mimic_deployment/dataset_management/merge_ex.txt   |  28 +++++-
+ .../dataset_management/tag_datasets.py             |  27 +++++-
+ 5 files changed, 318 insertions(+), 6 deletions(-)
+
+commit 81064ea348c071568c88bbf5f7c785186d8a5b54
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Fri Mar 20 18:25:32 2026 -0400
+
+    comm
+
+ mimic_deployment/dataset_management/commandes.txt | 29 ++++++++++++++++++-----
+ 1 file changed, 23 insertions(+), 6 deletions(-)
+
+commit 6884ac7d07889547b6afb06a9f7303b9ee499df9
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Fri Mar 20 17:46:16 2026 -0400
+
+    math
+
+ .../dataset_management/30to15/conversion_log.txt         | 16 ----------------
+ .../dataset_management/30to15/conversion_logjup.txt      | 16 ----------------
+ mimic_deployment/dataset_management/bgr_to_rgb.py        |  4 ++--
+ mimic_deployment/dataset_management/commandes.txt        |  2 +-
+ 4 files changed, 3 insertions(+), 35 deletions(-)
+
+commit b7a04255f69f0f7cb6c8f749057701681a63eb1a
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Fri Mar 20 17:38:15 2026 -0400
+
+    jupiter
+
+ mimic_deployment/merging_dataset/commandes.txt             | 2 +-
+ src/mimic/scripts/evaluation/continus_runtime_smolvla.py   | 4 +++-
+ src/mimic/scripts/evaluation/continus_runtime_xvla_3cam.py | 5 ++++-
+ src/mimic/scripts/record_cmd_ttt.sh                        | 2 +-
+ 4 files changed, 9 insertions(+), 4 deletions(-)
+
+commit 94981fd09277d775f7720aba049a5a179881229c
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Fri Mar 20 16:13:54 2026 -0400
+
+    Refresh SPEED training docs
+    
+    Document current SPEED workflow, monitoring commands, GPU selection, defaults, and pending-log behavior. Add a preflight helper and remove stale temp parquet artifact.
+
+ .../training_scripts/SPEED_TRAINING.md             | 166 ++++++++++++---------
+ .../training_scripts/speed_preflight.sh            |  76 ++++++++++
+ temp_tasks_v14.parquet                             | Bin 2256 -> 0 bytes
+ 3 files changed, 168 insertions(+), 74 deletions(-)
+
+commit 3b2bfe83fbe333c92bea6a8f4c6cc42091649a2c
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Fri Mar 20 16:13:37 2026 -0400
+
+    Enhance XVLA training scripts
+    
+    Add smoke and maxbatch modes, richer repo/job naming, and checkpoint sync uploads during training. Keep policy behavior self-contained in XVLA scripts.
+
+ mimic_deployment/training_scripts/xvla/train.sh    | 103 +++++++++++++++++++--
+ .../xvla/train_speed_max_batch_probe.sh            |  90 ++++++++++++++++++
+ .../training_scripts/xvla/train_speed_smoke_1k.sh  |  21 +++++
+ 3 files changed, 204 insertions(+), 10 deletions(-)
+
+commit 1777a0ec41b49b1942d381a10f6b3a29680e237f
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Fri Mar 20 16:12:26 2026 -0400
+
+    Update SPEED manager options
+    
+    Set 80GB default GRES, add checkpoint-freq and policy-mode flags, and keep save-freq as a deprecated alias. Improve job metadata and env pass-through for policy scripts.
+
+ .../training_scripts/train_manager_speed.sh        | 107 ++++++++++++++++++---
+ 1 file changed, 96 insertions(+), 11 deletions(-)
+
+commit d6e9c806f7d98f3693af7fae1bd628383eeda5bb
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Fri Mar 20 12:02:57 2026 -0400
+
+    Restore SPEED_TRAINING.md from commit 08396ff
+
+ .../training_scripts/SPEED_TRAINING.md             | 121 +++++++++++++++++++++
+ 1 file changed, 121 insertions(+)
+
+commit 3ff5dcb3905367f55b5720d387a37931f622229a
+Author: ac_pate <achalypatel3403@gmail.com>
+Date:   Wed Mar 18 21:59:46 2026 -0400
+
+    Keep SPEED training manager only
+
+ .../training_scripts/train_manager_speed.sh        | 455 +++++++++++++++++++++
+ 1 file changed, 455 insertions(+)
+
+commit 266d2d69f0261fdb09b772c0560942d80854671a
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Wed Mar 18 15:49:44 2026 -0400
+
+    tag
+
+ .../dataset_management/30to15/30to15.py            |  4 +-
+ mimic_deployment/dataset_management/bgr_to_rgb.py  |  4 +-
+ mimic_deployment/dataset_management/merge_ex.txt   | 79 ++++++++++++++++++++++
+ .../dataset_management/tag_datasets.py             |  2 +-
+ 4 files changed, 84 insertions(+), 5 deletions(-)
+
+commit 926bdf782ee8474ea7110f6dc3bd909b84d03d9f
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Wed Mar 18 13:22:03 2026 -0400
+
+    dataset amangmenet update
+
+ .../{merging_dataset => dataset_management}/30to15/30to15.py      | 0
+ .../30to15/30to15_jupiter.py                                      | 0
+ .../30to15/conversion_log.txt                                     | 0
+ .../30to15/conversion_logjup.txt                                  | 0
+ .../{merging_dataset => dataset_management}/bgr_to_rgb.py         | 0
+ .../{merging_dataset => dataset_management}/commandes.txt         | 0
+ mimic_deployment/dataset_management/merge_ex.txt                  | 8 ++++++++
+ .../{merging_dataset => dataset_management}/tag_datasets.py       | 0
+ .../CONVERSION_ANALYSIS_FEB_1.md                                  | 0
+ .../CONVERSION_GUIDE.md                                           | 0
+ .../batch_convert_and_combine.py                                  | 0
+ .../batch_convert_datasets.sh                                     | 0
+ .../consolidate_all_datasets.py                                   | 0
+ .../conversion_status.json                                        | 0
+ .../convert_bimanual_FIXED.py                                     | 0
+ .../convert_bimanual_complete.py                                  | 0
+ .../convert_bimanual_to_mobile.py                                 | 0
+ .../{dataset_conversion => old_dataset_conversion}/mimic-replay   | 0
+ .../scan_all_datasets.py                                          | 0
+ 19 files changed, 8 insertions(+)
+
+commit 22c1e4aee6a76f4998773a4ea8718b2f900028c1
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Wed Mar 18 13:19:39 2026 -0400
+
+    command
+
+ mimic_deployment/merging_dataset/commandes.txt   | 4 ++--
+ mimic_deployment/merging_dataset/tag_datasets.py | 9 +++++----
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+commit e12213199c8041df05cf0d529c593d6f986204b8
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Mar 18 10:46:54 2026 -0400
+
+    dataset all red
+
+ mimic_deployment/training_scripts/dataset_groups.yaml | 4 ++++
+ mimic_deployment/training_scripts/xvla/train.sh       | 2 +-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+commit 3eb0789862e0c0cc1d3bad812140d45a6b91a034
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Mar 18 10:43:03 2026 -0400
+
+    merge
+
+ mimic_deployment/training_scripts/dataset_groups.yaml | 3 ---
+ mimic_deployment/training_scripts/xvla/train.sh       | 5 -----
+ 2 files changed, 8 deletions(-)
+
+commit 4458d1db5427d6558c98f22ea2732e890e23441c
+Author: Mathias Desrochers <122413277+BMathi9s@users.noreply.github.com>
+Date:   Wed Mar 18 10:38:22 2026 -0400
+
+    Rename dataset group from ttt_3cam_15hz_25a to ttt_3cam_15hz_32ac
+
+ mimic_deployment/training_scripts/dataset_groups.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit b343864b82b7aa43c4be03121d882b4eba833890
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Mar 17 20:19:41 2026 -0400
+
+    ex uplaud
+
+ mimic_deployment/merging_dataset/commandes.txt             | 12 ++++++++++--
+ src/mimic/scripts/evaluation/continus_runtime_xvla_3cam.py |  7 ++++---
+ 2 files changed, 14 insertions(+), 5 deletions(-)
+
+commit 3b543b214dbe2d9150cd659e4a24a46dca368051
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Tue Mar 17 17:14:52 2026 -0400
+
+    fe
+
+ mimic_deployment/merging_dataset/commandes.txt  | 3 ---
+ mimic_deployment/training_scripts/QUICKSTART.md | 4 ++--
+ 2 files changed, 2 insertions(+), 5 deletions(-)
+
+commit e6763dd2c77f71a19720257557bff37346bafbce
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Mar 16 23:46:31 2026 -0400
+
+    3cam xvla train
+
+ mimic_deployment/merging_dataset/commandes.txt     |  11 +-
+ mimic_deployment/training_scripts/QUICKSTART.md    |   6 +-
+ .../training_scripts/dataset_groups.yaml           |   9 ++
+ mimic_deployment/training_scripts/xvla/train.sh    |  33 +++--
+ .../training_scripts/xvla/train_3cam.sh            | 136 ++++++++++++++++++
+ .../training_scripts/xvla/train_xvla.sh            | 156 ++++++++++++++++++---
+ 6 files changed, 318 insertions(+), 33 deletions(-)
+
+commit 1b636955429a2013175e02163bb5cbe81f6855e3
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Mar 16 22:07:46 2026 -0400
+
+    xvla continus monitoring
+
+ src/mimic/scripts/evaluation/continus_runtime_xvla_3cam.py | 2 +-
+ src/mimic/scripts/record_cmd_ttt.sh                        | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+commit dccb0be9a04919652d7378d8c159c33dc421f7ee
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Mar 16 15:45:14 2026 -0400
+
+    runtime xvla
+
+ .../evaluation/continus_runtime_xvla_3cam.py       | 169 ++++++++++++++-------
+ 1 file changed, 112 insertions(+), 57 deletions(-)
+
+commit 84e7a2897257114bf3002bbb28958f2074c0fe17
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Mar 16 15:22:04 2026 -0400
+
+    xvla continus running
+
+ .../evaluation/continus_runtime_xvla_3cam.py       | 26 +++++++++++-----------
+ src/mimic/scripts/record_cmd_ttt.sh                |  2 +-
+ 2 files changed, 14 insertions(+), 14 deletions(-)
+
+commit ec44f6eaf912d57701f54a038e6e05c636c04595
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Mar 16 15:05:28 2026 -0400
+
+    recoding and eval script
+
+ .../evaluation/continus_runtime_xvla_3cam.py       | 168 +++++++++++++++++++++
+ src/mimic/scripts/evaluation/eval_xvla_cmd_3cam.sh |  23 +++
+ .../evaluation/{xvla_eval.sh => xvla_eval_2cam.sh} |   4 +-
+ src/mimic/scripts/record_cmd_ttt.sh                |  22 +++
+ 4 files changed, 215 insertions(+), 2 deletions(-)
+
+commit 69868892c65ef90b55f789be7139f2f76839dec9
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Mar 16 14:05:54 2026 -0400
+
+    xvla updatye
+
+ src/mimic/scripts/evaluation/continus_runtime_xvla.py | 4 +++-
+ src/mimic/scripts/evaluation/xvla_eval.sh             | 8 ++++----
+ 2 files changed, 7 insertions(+), 5 deletions(-)
+
+commit cde66de6dadae576224a607c98bddd2b95f370cf
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sun Mar 15 15:20:55 2026 -0400
+
+    pu
+
+ MANIFEST.in                                        | 402 +++++++++++++++++++++
+ mimic_deployment/merging_dataset/30to15/30to15.py  |   4 +-
+ .../merging_dataset/30to15/30to15_jupiter.py       | 159 ++++++++
+ .../merging_dataset/30to15/conversion_log.txt      |  17 +-
+ .../merging_dataset/30to15/conversion_logjup.txt   |  16 +
+ mimic_deployment/merging_dataset/commandes.txt     |   2 +-
+ src/mimic/scripts/evaluation/eval_cmd_3cam.sh      |   2 +-
+ src/mimic/scripts/evaluation/udp_xcontinuous.py    | 170 +++++++++
+ src/mimic/scripts/record_cmd.sh                    |   6 +-
+ 9 files changed, 769 insertions(+), 9 deletions(-)
+
+commit 92baf9b242cbc492b1a04ae51a3e19b09421caa7
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Sun Mar 15 03:25:35 2026 -0400
+
+    xvla 15 hz 10a 24 c
+
+ mimic_deployment/merging_dataset/commandes.txt        | 8 +++++---
+ mimic_deployment/training_scripts/QUICKSTART.md       | 9 +++++++++
+ mimic_deployment/training_scripts/dataset_groups.yaml | 4 ++--
+ mimic_deployment/training_scripts/xvla/train.sh       | 6 +++---
+ 4 files changed, 19 insertions(+), 8 deletions(-)
+
+commit 9544411ba6a3ba5f53b19fbd67ecd3123c099798
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Thu Mar 12 23:10:35 2026 -0400
+
+    30to15hz
+
+ mimic_deployment/merging_dataset/30to15/30to15.py  | 94 ++++++++++++++++++++++
+ .../merging_dataset/30to15/conversion_log.txt      |  3 +
+ 2 files changed, 97 insertions(+)
+
+commit a2f229c66778cb81d6aec8cb901ce70b9023148c
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Mar 12 17:11:39 2026 -0400
+
+    resume xvla
+
+ .../training_scripts/xvla/train_resume.sh          | 61 ++++++++++++++++++++++
+ 1 file changed, 61 insertions(+)
+
+commit 5319ecd2a76e96ac2457e4608ee998457a9e9cd4
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Wed Mar 11 23:34:49 2026 -0400
+
+    lora xvla launched
+
+ .../training_scripts/xvla/train_speed.sh           | 126 +++++++++++++++++++++
+ 1 file changed, 126 insertions(+)
+
+commit 741547e916b8999f658bdeb2af9032bf468218e2
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Wed Mar 11 22:31:23 2026 -0400
+
+    xvla lora update
+
+ mimic_deployment/training_scripts/QUICKSTART.md    |  7 +++-
+ mimic_deployment/training_scripts/xvla/train.sh    | 41 +++++++++++++-----
+ .../xvla/{train_default.sh => train_lora.sh}       | 48 ++++++++--------------
+ 3 files changed, 52 insertions(+), 44 deletions(-)
+
+commit f5cc8689f242adba2ee1e569910a1d511b5fb12a
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Wed Mar 11 21:52:25 2026 -0400
+
+    xvla lora
+
+ mimic_deployment/training_scripts/QUICKSTART.md    |   2 +-
+ .../training_scripts/dataset_groups.yaml           |   3 +
+ mimic_deployment/training_scripts/xvla/train.sh    |  48 ++----
+ .../training_scripts/xvla/train_default.sh         | 126 +++++++++++++++
+ .../training_scripts/xvla/train_old.sh             | 177 ---------------------
+ 5 files changed, 145 insertions(+), 211 deletions(-)
+
+commit 39bce170fbae641877636f464b39a14624a2c943
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Mar 10 21:09:30 2026 -0400
+
+    xvla continus support
+
+ .../scripts/evaluation/continus_runtime_smolvla.py |   2 +-
+ .../scripts/evaluation/continus_runtime_xvla.py    | 161 +++++++++++++++++++++
+ src/mimic/scripts/evaluation/xvla_eval.sh          |   8 +-
+ 3 files changed, 166 insertions(+), 5 deletions(-)
+
+commit 27bd5913a3e3d89c044a775559f328ac2703b24f
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Tue Mar 10 12:46:54 2026 -0400
+
+    xvla action 32
+
+ mimic_deployment/training_scripts/QUICKSTART.md       | 2 +-
+ mimic_deployment/training_scripts/dataset_groups.yaml | 2 +-
+ mimic_deployment/training_scripts/xvla/train.sh       | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 20d7ef2865648600cd5b6e2a12ddaaf26991342c
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Tue Mar 10 12:25:24 2026 -0400
+
+    merge
+
+ mimic_deployment/merging_dataset/commandes.txt | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+commit 36f679ba35ad40c924277e9707ea25eb86dcdf18
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Mar 10 12:19:03 2026 -0400
+
+    com
+
+ mimic_deployment/merging_dataset/commandes.txt     |  8 ++-
+ .../scripts/evaluation/continus_runtime_smolvla.py | 66 +++++++++++-----------
+ src/mimic/scripts/evaluation/xvla_eval.sh          |  4 +-
+ src/mimic/scripts/record_cmd.sh                    |  4 +-
+ 4 files changed, 44 insertions(+), 38 deletions(-)
+
+commit 55eb1aed650f849ae23f6599a30b695a6fe5d9a1
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Mar 10 12:17:47 2026 -0400
+
+    xvla vision unfrozen
+
+ mimic_deployment/merging_dataset/commandes.txt        |  6 +++++-
+ mimic_deployment/training_scripts/QUICKSTART.md       | 13 +++++++++++++
+ mimic_deployment/training_scripts/dataset_groups.yaml |  5 ++---
+ mimic_deployment/training_scripts/xvla/train.sh       |  4 ++--
+ 4 files changed, 22 insertions(+), 6 deletions(-)
+
+commit e7df784d5673a89ac20e1d69c4f8fe1645476e62
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Mar 9 13:15:03 2026 -0400
+
+    mimic bot
+
+ src/mimic/scripts/evaluation/udp_continues.py | 207 ++++++++++++++++++++++++++
+ 1 file changed, 207 insertions(+)
+
+commit b61c2a1704abb26497fdbf15c66549ba61f6f186
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Mar 2 15:10:22 2026 -0500
+
+    xv c
+
+ mimic_deployment/training_scripts/dataset_groups.yaml | 2 +-
+ mimic_deployment/training_scripts/xvla/train.sh       | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit a2688b09c6ad7a184ac9c114ea362e59fc9694a8
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Mon Mar 2 15:07:26 2026 -0500
+
+    a
+
+ mimic_deployment/merging_dataset/tag_datasets.py      | 9 ++++++++-
+ mimic_deployment/training_scripts/QUICKSTART.md       | 2 +-
+ mimic_deployment/training_scripts/dataset_groups.yaml | 4 +---
+ 3 files changed, 10 insertions(+), 5 deletions(-)
+
+commit c0dfc0ef3bfd6ccd3b0551953539e9c5bebaf4a2
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Mon Mar 2 14:21:49 2026 -0500
+
+    up
+
+ mimic_deployment/merging_dataset/commandes.txt        | 9 ++++++---
+ mimic_deployment/training_scripts/QUICKSTART.md       | 2 +-
+ mimic_deployment/training_scripts/dataset_groups.yaml | 2 +-
+ 3 files changed, 8 insertions(+), 5 deletions(-)
+
+commit 2251bb437091e5da6b75a0a470ea0b2e3df89d10
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Mar 2 13:50:11 2026 -0500
+
+    eval
+
+ mimic_deployment/merging_dataset/commandes.txt     |  3 ++
+ .../smolvla/continus_runtime_smolvla.py            | 10 ++--
+ .../training_scripts/smolvla/eval_cmd_3cam.sh      | 10 ++--
+ .../scripts/evaluation/continus_runtime_smolvla.py | 55 ++++++++++++++--------
+ src/mimic/scripts/evaluation/eval_cmd.sh           |  4 +-
+ src/mimic/scripts/evaluation/eval_cmd_3cam.sh      |  8 ++--
+ src/mimic/scripts/record_cmd.sh                    |  8 ++--
+ 7 files changed, 60 insertions(+), 38 deletions(-)
+
+commit 0de928f6f9bf5f60fd979e810e81d7ec78627056
+Author: Achal Patel <achalypatel@gmail.com>
+Date:   Fri Feb 27 23:23:42 2026 -0500
+
+    Changes for speed
+
+ mimic_deployment/training_scripts/QUICKSTART.md    |   52 +-
+ .../training_scripts/dataset_groups.yaml           |    3 +
+ mimic_deployment/training_scripts/smolvla/train.sh |   41 +-
+ mimic_deployment/training_scripts/train_manager.sh |   85 +-
+ nohup.out                                          | 1308 --------------------
+ requirements-ubuntu.txt                            |   14 +-
+ 6 files changed, 174 insertions(+), 1329 deletions(-)
+
+commit f7f8cb1d309d0a7353f55d8a151545243713ad14
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Feb 26 19:55:15 2026 -0500
+
+    smol
+
+ mimic_deployment/merging_dataset/commandes.txt     |   6 +-
+ .../smolvla/continus_runtime_smolvla.py            | 161 +++++++++++++++++++++
+ .../training_scripts/smolvla/eval_cmd_3cam.sh      |  23 +++
+ 3 files changed, 189 insertions(+), 1 deletion(-)
+
+commit e4dec872979491e1d42a869b5b8637f83c5c9484
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Feb 26 14:46:06 2026 -0500
+
+    bgr fixed
+
+ src/lerobot/cameras/zed_camera/zed_camera.py | 90 +++++++++++++++++++++-------
+ 1 file changed, 69 insertions(+), 21 deletions(-)
+
+commit 0d89135c618dbdefda1069b055e180c6c76f4b40
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Feb 25 13:36:29 2026 -0500
+
+    language frozen smol vlA
+
+ mimic_deployment/training_scripts/QUICKSTART.md       | 12 +++++++++++-
+ mimic_deployment/training_scripts/dataset_groups.yaml |  2 +-
+ mimic_deployment/training_scripts/smolvla/train.sh    |  6 ++++--
+ 3 files changed, 16 insertions(+), 4 deletions(-)
+
+commit 66e81d568dbfe05f6bd24bb44ebfa1fa235fec4b
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Feb 25 13:18:02 2026 -0500
+
+    nath's change
+
+ examples/so100_to_so100_EE/teleoperate.py          | 32 +++++++++++-----
+ .../robots/so_follower/so_101_follower_arm.json    | 44 ++++++++++++++++++++++
+ 2 files changed, 67 insertions(+), 9 deletions(-)
+
+commit 07229b637eedb8e4a30c3d6c38b88b9e6c98afdf
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Mon Feb 23 23:30:30 2026 -0500
+
+    unfroze smol vla
+
+ mimic_deployment/training_scripts/dataset_groups.yaml | 2 +-
+ mimic_deployment/training_scripts/smolvla/train.sh    | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit fd1ae7693faf86181bbd2f166540bafe761d737d
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Feb 23 13:10:35 2026 -0500
+
+    smol  freeze
+
+ mimic_deployment/merging_dataset/tag_datasets.py      |  6 +++---
+ mimic_deployment/training_scripts/QUICKSTART.md       |  2 +-
+ mimic_deployment/training_scripts/dataset_groups.yaml | 12 ++++++++++--
+ mimic_deployment/training_scripts/smolvla/train.sh    |  2 +-
+ 4 files changed, 15 insertions(+), 7 deletions(-)
+
+commit 1d972796b8b79dec9749a5d60f44a50549a24a7a
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Sun Feb 22 22:05:31 2026 -0500
+
+    smolVla alll unfroze
+
+ mimic_deployment/training_scripts/QUICKSTART.md       | 13 ++++++++++---
+ mimic_deployment/training_scripts/dataset_groups.yaml |  3 +++
+ mimic_deployment/training_scripts/smolvla/train.sh    |  3 +++
+ 3 files changed, 16 insertions(+), 3 deletions(-)
+
+commit aa55bd0f61baeb7696efae969ce1182bc3df5156
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Sun Feb 22 21:31:01 2026 -0500
+
+    smol update blue
+
+ mimic_deployment/training_scripts/QUICKSTART.md    | 6 ++++++
+ mimic_deployment/training_scripts/smolvla/train.sh | 8 ++++----
+ 2 files changed, 10 insertions(+), 4 deletions(-)
+
+commit e0f35f76fe781eeecb8ccab76749bf8ad2fd8abd
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Sun Feb 22 21:05:47 2026 -0500
+
+    coomande
+
+ mimic_deployment/merging_dataset/bgr_to_rgb.py | 6 +++---
+ mimic_deployment/merging_dataset/commandes.txt | 7 ++++---
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+commit 1e2b65e6e30c48b47e26221189ad6d29395f9107
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sun Feb 22 15:24:29 2026 -0500
+
+    brg fix
+
+ mimic_deployment/merging_dataset/bgr_to_rgb.py | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+commit 0bc0668452836e3f8ef0e728d45cd2af3006569b
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Sun Feb 22 15:10:14 2026 -0500
+
+    bgr
+
+ mimic_deployment/merging_dataset/bgr_to_rgb.py | 15 ++++-----------
+ 1 file changed, 4 insertions(+), 11 deletions(-)
+
+commit 09d25497fdd9cf2904bd0b55d615a70a02317cf9
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Sun Feb 22 14:58:52 2026 -0500
+
+    bgr
+
+ mimic_deployment/merging_dataset/bgr_to_rgb.py | 48 +++++++++++++++++---------
+ 1 file changed, 31 insertions(+), 17 deletions(-)
+
+commit a4d882186453046fd7c271e0d470d691c221aaa4
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sun Feb 22 14:48:40 2026 -0500
+
+    merging
+
+ mimic_deployment/merging_dataset/bgr_to_rgb.py |  4 ++--
+ mimic_deployment/merging_dataset/commandes.txt | 12 +++++++++++-
+ 2 files changed, 13 insertions(+), 3 deletions(-)
+
+commit 2834e656a8bb66b56cb6eed2c29f7367ef74f538
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Sun Feb 22 14:34:28 2026 -0500
+
+    brg to rgb
+
+ mimic_deployment/merging_dataset/bgr_to_rgb.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 76b22e2991f984559296c4a063086dd8fdf26a72
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Sun Feb 22 14:33:52 2026 -0500
+
+    brg to rgb dataset
+
+ mimic_deployment/merging_dataset/bgr_to_rgb.py     | 84 ++++++++++++++++++++++
+ mimic_deployment/merging_dataset/commandes.txt     | 20 +++---
+ .../merging_dataset/tag_datasets.py                | 13 ++--
+ .../scripts/evaluation/continus_runtime_smolvla.py |  2 +-
+ 4 files changed, 99 insertions(+), 20 deletions(-)
+
+commit 29331162d14d403a9dbbd4d226fd6ff167160a18
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Fri Feb 20 17:02:25 2026 -0500
+
+    zed cam _v1
+
+ mimic_deployment/merging_dataset/commandes.txt           | 1 +
+ src/lerobot/cameras/zed_camera/zed_camera.py             | 8 ++++++++
+ src/mimic/scripts/evaluation/continus_runtime_smolvla.py | 2 +-
+ 3 files changed, 10 insertions(+), 1 deletion(-)
+
+commit 0c83a8c085aeb9e0b9b8ed1a179c414b134ff67c
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Fri Feb 20 15:56:41 2026 -0500
+
+    smol vla added blue
+
+ src/mimic/scripts/evaluation/continus_runtime_smolvla.py | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+commit afe45b516e876d045237de82caf24eff3fd07202
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Fri Feb 20 15:55:01 2026 -0500
+
+    dataset management
+
+ mimic_deployment/merging_dataset/commandes.txt  | 146 ++++++++++++++++++++++++
+ mimic_deployment/merging_dataset/example.txt    |  44 -------
+ mimic_deployment/training_scripts/QUICKSTART.md |  67 -----------
+ src/mimic/scripts/record_cmd.sh                 |   6 +-
+ 4 files changed, 149 insertions(+), 114 deletions(-)
+
+commit 4d7448f7f0c1bc53f00b7cefedd33b12ead21c09
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Feb 19 22:48:04 2026 -0500
+
+    correct conitnus run vla
+
+ .../{runtime_task.py => continus_runtime_smolvla.py}      | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
+
+commit d23f0132a3c39271f1213ff1b0bac9f73a04f41a
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Feb 19 22:01:07 2026 -0500
+
+    smol vla working in the background
+
+ src/mimic/config/robot_config.yaml           |  2 +-
+ src/mimic/scripts/evaluation/runtime_task.py | 95 ++++++++++++++++++++--------
+ src/mimic/scripts/record_cmd.sh              |  6 +-
+ 3 files changed, 73 insertions(+), 30 deletions(-)
+
+commit 99741239dea8191f3f1a6c228fb7c566fa460805
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Feb 19 15:42:45 2026 -0500
+
+    runtime smol_vla update
+
+ src/mimic/scripts/evaluation/runtime_task.py | 104 +++++++++++++++++++++++++++
+ 1 file changed, 104 insertions(+)
+
+commit 77640ec40bbc11da3d09395aeb2f71d7152778b3
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Feb 19 15:02:32 2026 -0500
+
+    eval
+
+ mimic_deployment/training_scripts/pi0fast/train.sh | 80 +++++++++++-----------
+ src/mimic/scripts/evaluation/eval_cmd_3cam.sh      |  4 +-
+ 2 files changed, 42 insertions(+), 42 deletions(-)
+
+commit 9c5b49b5e057f9a8a25b5b93a02c56ef32d25f88
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Thu Feb 19 02:02:14 2026 -0500
+
+    xvla-fix-2cam
+
+ mimic_deployment/training_scripts/QUICKSTART.md |  9 ++++++++
+ mimic_deployment/training_scripts/xvla/train.sh | 28 ++++++++++++++++++-------
+ 2 files changed, 29 insertions(+), 8 deletions(-)
+
+commit 717e758585ef325218058c281e0e91bc4f90971b
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Feb 19 01:20:03 2026 -0500
+
+    pifast
+
+ mimic_deployment/training_scripts/QUICKSTART.md    |  2 +-
+ mimic_deployment/training_scripts/pi0fast/train.sh | 79 +++++++++++-----------
+ 2 files changed, 41 insertions(+), 40 deletions(-)
+
+commit 852d0149de894bd908c275154688add191a6b1ea
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Feb 19 01:14:33 2026 -0500
+
+    pi0fast
+
+ mimic_deployment/training_scripts/pi0fast/train.sh | 43 ++++++++++++++++++++--
+ 1 file changed, 39 insertions(+), 4 deletions(-)
+
+commit 925cbe23fe306ee1936883454f00cecc177533f6
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Feb 19 01:12:21 2026 -0500
+
+    pi0fast
+
+ mimic_deployment/training_scripts/{pi05fast => pi0fast}/train.sh | 0
+ mimic_deployment/training_scripts/train_manager.sh               | 6 +++---
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 145547e3205bbb593e342ff253191b69e3690462
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Feb 19 01:09:49 2026 -0500
+
+    xvla eval
+
+ src/mimic/scripts/evaluation/eval_cmd_3cam.sh |  4 ++--
+ src/mimic/scripts/evaluation/xvla_eval.sh     | 23 +++++++++++++++++++++++
+ 2 files changed, 25 insertions(+), 2 deletions(-)
+
+commit 92ec3bd7aae11197fe1a651fde28f91bfb8eea68
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Feb 18 17:16:20 2026 -0500
+
+    pi05fast added
+
+ mimic_deployment/training_scripts/QUICKSTART.md    |   7 +-
+ mimic_deployment/training_scripts/pi05/train.sh    |  40 ++---
+ .../training_scripts/pi05fast/train.sh             | 177 +++++++++++++++++++++
+ mimic_deployment/training_scripts/train_manager.sh |   5 +-
+ 4 files changed, 208 insertions(+), 21 deletions(-)
+
+commit 28440ca27654c583399b16f5a55b9a51376b40c9
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Feb 18 16:08:06 2026 -0500
+
+    eval
+
+ mimic_deployment/training_scripts/QUICKSTART.md | 29 ++++++++++++++++++++-----
+ src/mimic/scripts/evaluation/eval_cmd_3cam.sh   |  8 +++----
+ 2 files changed, 27 insertions(+), 10 deletions(-)
+
+commit fb1dd7a916fb1b243a9a1b054758c5f7756d7e62
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Mon Feb 16 17:43:27 2026 -0500
+
+    up
+
+ mimic_deployment/training_scripts/QUICKSTART.md | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit 96615fc12d7d50082ab1949c9bf38b61c8913326
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Feb 16 17:40:40 2026 -0500
+
+    uplaud
+
+ mimic_deployment/training_scripts/QUICKSTART.md | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+commit 48eb3f39dcedb2a97a521bcc05b7e3c30021c845
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Feb 16 15:23:22 2026 -0500
+
+    pi05
+
+ mimic_deployment/training_scripts/QUICKSTART.md |  20 +++-
+ mimic_deployment/training_scripts/pi05/train.sh | 124 ++++++++++--------------
+ 2 files changed, 69 insertions(+), 75 deletions(-)
+
+commit 773f0ae962f946e0e21020a984a58c7134060737
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Mon Feb 16 13:16:06 2026 -0500
+
+    Xvla settings
+
+ mimic_deployment/training_scripts/QUICKSTART.md    |   6 +
+ mimic_deployment/training_scripts/xvla/train.sh    | 198 +++++++--------------
+ .../training_scripts/xvla/train_old.sh             | 177 ++++++++++++++++++
+ 3 files changed, 250 insertions(+), 131 deletions(-)
+
+commit 9d4525817c7f9408fda374a51bf4d086a109fe0b
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sun Feb 15 02:33:54 2026 -0500
+
+    eval cmd
+
+ mimic_deployment/training_scripts/QUICKSTART.md    | 30 +++++++++++++++++++++-
+ src/mimic/scripts/{ => evaluation}/eval_cmd.sh     |  8 +++---
+ .../eval_cmd_3cam.sh}                              | 10 ++++----
+ src/mimic/scripts/record_cmd.sh                    |  8 +++---
+ test.py                                            | 18 +++++++++++++
+ 5 files changed, 60 insertions(+), 14 deletions(-)
+
+commit b929b80b5d9fa40ca888777e667e126b89fd25fe
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Sun Feb 15 02:33:27 2026 -0500
+
+    Merge branch 'main' of https://github.com/The-Mimic-Robotics/mimic-lerobot
+
+ mimic_deployment/training_scripts/QUICKSTART.md |  6 +++---
+ mimic_deployment/training_scripts/act/train.sh  | 20 +++++++++++++++++---
+ 2 files changed, 20 insertions(+), 6 deletions(-)
+
+commit e531d20d2a53f4f98a9e6ce3269e30eccdf0e9dd
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Sat Feb 14 21:29:19 2026 -0500
+
+    act fix
+
+ mimic_deployment/training_scripts/act/train.sh | 84 +++++++++++++++++---------
+ 1 file changed, 54 insertions(+), 30 deletions(-)
+
+commit 7399514a6477fc77a30777873e224e961dfd3611
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Sat Feb 14 20:55:29 2026 -0500
+
+    smolvla finalchange
+
+ fix_dataset.py                                     |  40 ----
+ fix_red_x_datasets.py                              | 129 -------------
+ fix_tag.py                                         |  67 -------
+ from30to15hz.py                                    |  98 ----------
+ media/readme/VLA_architecture.jpg                  | Bin 792640 -> 0 bytes
+ media/readme/lerobot-logo-thumbnail.png            | Bin 164066 -> 0 bytes
+ media/readme/robots_control_video.webp             | Bin 2425850 -> 0 bytes
+ media/readme/so100_video.webp                      | Bin 492230 -> 0 bytes
+ mimic_deployment/training_scripts/QUICKSTART.md    |   5 +-
+ mimic_deployment/training_scripts/act/train.sh     |   2 +-
+ .../training_scripts/dataset_groups.yaml           |   2 +-
+ mimic_deployment/training_scripts/smolvla/train.sh |   8 +-
+ .../training_scripts/smolvla/train_no_vlm.sh       | 210 +++++++++++++++++++++
+ 13 files changed, 221 insertions(+), 340 deletions(-)
+
+commit 9819a55709e8a2de3c155619010071f6a4fbe20d
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sat Feb 14 12:14:11 2026 -0500
+
+    smolvla update
+
+ mimic_deployment/training_scripts/QUICKSTART.md    |   2 +-
+ mimic_deployment/training_scripts/smolvla/train.sh |  16 +-
+ .../training_scripts/smolvla/train_old.sh          | 206 +++++++++++++++++++++
+ 3 files changed, 217 insertions(+), 7 deletions(-)
+
+commit 243a87e5999513f940caa938f39208089d817913
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Fri Feb 13 16:02:17 2026 -0500
+
+    smoll vla text
+
+ mimic_deployment/training_scripts/QUICKSTART.md       | 2 +-
+ mimic_deployment/training_scripts/dataset_groups.yaml | 4 ++--
+ mimic_deployment/training_scripts/smolvla/train.sh    | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 3857f94d53d98a7d36fa372399e1f10745bac1b2
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Fri Feb 13 13:35:31 2026 -0500
+
+    smolval
+
+ mimic_deployment/training_scripts/QUICKSTART.md       | 6 +++---
+ mimic_deployment/training_scripts/dataset_groups.yaml | 3 +++
+ mimic_deployment/training_scripts/smolvla/train.sh    | 6 ++++--
+ 3 files changed, 10 insertions(+), 5 deletions(-)
+
+commit 0902c4767f2acbbcff646aef217165eb710226e3
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Fri Feb 13 13:26:36 2026 -0500
+
+    merging
+
+ fix_tag.py                                      | 67 +++++++++++++++++
+ from30to15hz.py                                 | 98 +++++++++++++++++++++++++
+ mimic_deployment/merging_dataset/example.txt    | 44 +++++++++++
+ mimic_deployment/training_scripts/QUICKSTART.md |  8 +-
+ mimic_deployment/training_scripts/pi0/train.sh  |  8 +-
+ 5 files changed, 217 insertions(+), 8 deletions(-)
+
+commit 08c8bb1671d358466f32247d84ccef0dca8b8ca9
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Wed Feb 11 14:56:01 2026 -0500
+
+    act optimisation
+
+ mimic_deployment/training_scripts/QUICKSTART.md |  18 +++-
+ mimic_deployment/training_scripts/act/train.sh  |   8 ++
+ mimic_deployment/training_scripts/pi0/train.sh  |   2 +
+ src/lerobot/scripts/merge_to_10hz.py            | 128 ++++++++++++++++++++++++
+ src/lerobot/scripts/test.py                     |  27 +++++
+ 5 files changed, 180 insertions(+), 3 deletions(-)
+
+commit 7ecdd55e0c61c0484dc866b8755106a38ccea01b
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Wed Feb 11 02:00:29 2026 -0500
+
+    smolvla fix
+
+ mimic_deployment/training_scripts/QUICKSTART.md    | 4 +---
+ mimic_deployment/training_scripts/smolvla/train.sh | 7 ++++---
+ 2 files changed, 5 insertions(+), 6 deletions(-)
+
+commit 11d46ddfa72ff411f8f8c085ba7958b337db847b
+Author: BMathi9s <eltopchi3@gmail.com>
+Date:   Wed Feb 11 01:43:17 2026 -0500
+
+    smol|Vla added
+
+ fix_dataset.py                                     |  40 ++++
+ mimic_deployment/training_scripts/QUICKSTART.md    |  11 ++
+ mimic_deployment/training_scripts/pi0/train.sh     |   2 +-
+ mimic_deployment/training_scripts/smolvla/train.sh | 203 +++++++++++++++++++++
+ mimic_deployment/training_scripts/train_manager.sh |   7 +-
+ src/lerobot/scripts/lerobot_train.py               |   2 +-
+ 6 files changed, 260 insertions(+), 5 deletions(-)
+
+commit b3a969bd5aba2084c31d42dd75c117b2aa8eecd5
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 10 22:32:29 2026 -0500
+
+    act fix cam
+
+ mimic_deployment/training_scripts/QUICKSTART.md |    6 +-
+ mimic_deployment/training_scripts/act/train.sh  |   13 +-
+ nohup.out                                       | 1308 +++++++++++++++++++++++
+ 3 files changed, 1322 insertions(+), 5 deletions(-)
+
+commit 33d3b861db8824982595c9493d31857046a6f219
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 10 21:06:23 2026 -0500
+
+    lil change
+
+ mimic_deployment/training_scripts/QUICKSTART.md       | 8 +++++---
+ mimic_deployment/training_scripts/act/train.sh        | 1 +
+ mimic_deployment/training_scripts/dataset_groups.yaml | 2 +-
+ src/lerobot/policies/act/configuration_act.py         | 2 +-
+ 4 files changed, 8 insertions(+), 5 deletions(-)
+
+commit f1a1dfc83bf2fcbdae3ce1ccfe38f4e1884179a4
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 10 19:25:35 2026 -0500
+
+    trainning
+
+ mimic_deployment/training_scripts/QUICKSTART.md    | 15 +++++---------
+ .../training_scripts/dataset_groups.yaml           |  2 +-
+ mimic_deployment/training_scripts/pi0/train.sh     | 11 ++++++-----
+ mimic_deployment/training_scripts/train_manager.sh |  3 ++-
+ mimic_deployment/training_scripts/xvla/train.sh    |  4 ++++
+ src/lerobot/policies/pi0/configuration_pi0.py      |  2 ++
+ src/mimic/scripts/eval_cmd copy.sh                 | 23 ++++++++++++++++++++++
+ src/mimic/scripts/eval_cmd.sh                      |  2 +-
+ 8 files changed, 44 insertions(+), 18 deletions(-)
+
+commit 8326d9f128a9ae40d73831fd7873f12dfdcec3fa
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 10 16:48:15 2026 -0500
+
+    time stamp + pi0 modification
+
+ mimic_deployment/training_scripts/QUICKSTART.md    |   9 +-
+ .../training_scripts/dataset_groups.yaml           |   2 +-
+ mimic_deployment/training_scripts/pi0/train.sh     | 104 +++++++++++++---
+ mimic_deployment/training_scripts/train_manager.sh | 132 +++++++++------------
+ 4 files changed, 154 insertions(+), 93 deletions(-)
+
+commit 595960d42897ffddf679e07dff1108d5e408bf33
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 10 13:50:01 2026 -0500
+
+    eval
+
+ mimic_deployment/training_scripts/xvla/eval.sh     | 24 ++++++++++++++++++++--
+ src/lerobot/cameras/zed_camera/zed_camera.py       | 14 +++++++++++--
+ .../policies/xvla/configuration_florence2.py       |  2 +-
+ src/lerobot/policies/xvla/modeling_florence2.py    | 19 ++++++++++++-----
+ src/mimic/scripts/{eval_cmd .sh => eval_cmd.sh}    | 11 +++++-----
+ src/mimic/scripts/record_cmd.sh                    |  8 ++++----
+ 6 files changed, 59 insertions(+), 19 deletions(-)
+
+commit 23481a7fb6fa6276f7735a9afab4adac10538866
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 10 13:46:53 2026 -0500
+
+    trainning update
+
+ fix_red_x_datasets.py                              | 129 +++++++++++++++++++++
+ mimic_deployment/training_scripts/QUICKSTART.md    |  51 +++++++-
+ mimic_deployment/training_scripts/act/train.sh     |   7 +-
+ .../training_scripts/dataset_groups.yaml           |  69 ++++++++++-
+ mimic_deployment/training_scripts/train_manager.sh |  10 ++
+ tag_datasets.py                                    |  82 +++++++++++++
+ temp_tasks_v14.parquet                             | Bin 0 -> 2256 bytes
+ 7 files changed, 344 insertions(+), 4 deletions(-)
+
+commit d98b5862fd4133f2fe22b1292f98d657aaf40403
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sat Feb 7 15:56:44 2026 -0500
+
+    new group
+
+ mimic_deployment/training_scripts/dataset_groups.yaml | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+commit 29e4017717e5997f0c48f7c1f7a41cd81d91ff21
+Author: Mathias Desrochers <122413277+BMathi9s@users.noreply.github.com>
+Date:   Sat Feb 7 15:17:14 2026 -0500
+
+    Add script to fix old dataset task descriptions
+    
+    This script batch fixes task descriptions in datasets from versions 1 to 16 by updating the 'task' column in parquet files on Hugging Face.
+
+ src/mimic/scripts/Fix_old_datasets.py | 76 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 76 insertions(+)
+
+commit 946cbe3f82154ca043ffdddc297a39f3a5439d9a
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 3 16:57:01 2026 -0500
+
+    calibation final
+
+ mimic_deployment/eval_act.sh                       |  2 +-
+ .../so100_leader/mimic_leader_left.json            | 44 ----------------------
+ .../teleoperators/so_leader/mimic_leader_left.json | 32 ++++++++--------
+ src/mimic/config/robot_config.yaml                 |  2 +-
+ 4 files changed, 18 insertions(+), 62 deletions(-)
+
+commit 9f1d77ab13d08f2b7b1acbf82784d1adada9f98a
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 3 15:57:14 2026 -0500
+
+    Fix: Remove duplicate code and simplify pygame implementation
+
+ .../teleoperators/mimic_leader/base_controllers.py | 123 ++++-----------------
+ 1 file changed, 21 insertions(+), 102 deletions(-)
+
+commit 711b1c3d2bda0bd688419f061e63cd3941ac9070
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 3 15:51:03 2026 -0500
+
+    Update base_controllers.py with improvements
+
+ .../teleoperators/mimic_leader/base_controllers.py | 48 +++++++++++++++++-----
+ 1 file changed, 38 insertions(+), 10 deletions(-)
+
+commit 7fdbf9d6cf55907b55dd9e0cd738f7a5aeac640f
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 3 15:47:47 2026 -0500
+
+    training works adn stated
+
+ .../rgb_control/rgb-ssh-monitor-odin.sh            |  69 +++++--------
+ mimic_deployment/training_scripts/act/train.sh     |  10 +-
+ .../training_scripts/dataset_groups.py             |   4 +-
+ .../training_scripts/dataset_groups.yaml           |  10 +-
+ mimic_deployment/training_scripts/groot/train.sh   |   8 +-
+ mimic_deployment/training_scripts/pi0/train.sh     |   9 +-
+ mimic_deployment/training_scripts/pi05/train.sh    |  13 +--
+ mimic_deployment/training_scripts/train_manager.sh |  93 ++++++-----------
+ .../training_scripts/train_manager_old.sh          |   0
+ .../training_scripts/wall_oss/train.sh             |   8 +-
+ mimic_deployment/training_scripts/xvla/train.sh    |  18 ++--
+ .../delete_mobile_bimanual_datasets.py             |   0
+ src/lerobot/cameras/zed_camera/zed_camera.py       |  14 +--
+ .../teleoperators/mimic_leader/base_controllers.py | 115 +++++++--------------
+ 14 files changed, 130 insertions(+), 241 deletions(-)
+
+commit 8d29fc7c5eadbd710686b6e0035e72ee3694d79e
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 3 14:12:49 2026 -0500
+
+    training stuff works
+
+ .../dataset_conversion/CRITICAL_FORMAT_ISSUE.md    |   48 -
+ .../dataset_conversion/DATASET_COMPARISON.md       |  123 -
+ .../dataset_conversion/FINAL_ANSWER.md             |  115 -
+ .../dataset_conversion/QUICK_REFERENCE.md          |   49 -
+ .../dataset_conversion/conversion_status.json      |   34 +
+ .../dataset_conversion/convert_meta_to_v3.py       |   83 -
+ .../dataset_conversion/dataset_scan_results.json   | 2384 --------------------
+ .../dataset_conversion/delete_broken_datasets.py   |   83 -
+ .../dataset_conversion/finish_conversion_steps.py  |   53 -
+ .../dataset_conversion/test_conversion.py          |  102 -
+ .../dataset_conversion/test_converted_format.py    |  119 -
+ .../dataset_conversion/verify_converted_dataset.py |   90 -
+ mimic_deployment/training_scripts/QUICKSTART.md    |  217 ++
+ .../training_scripts/TRAINING_INFRASTRUCTURE.md    |  452 ++++
+ mimic_deployment/training_scripts/act/eval.sh      |   93 +
+ mimic_deployment/training_scripts/act/eval_act.sh  |    0
+ mimic_deployment/training_scripts/act/train.sh     |  165 ++
+ mimic_deployment/training_scripts/act/train_act.sh |    0
+ .../training_scripts/dataset_groups.py             |  131 ++
+ .../training_scripts/dataset_groups.yaml           |   23 +
+ .../training_scripts/dataset_groups_backup.yaml    |  154 ++
+ .../delete_mobile_bimanual_datasets.py             |   77 +
+ mimic_deployment/training_scripts/groot/eval.sh    |   93 +
+ mimic_deployment/training_scripts/groot/train.sh   |  209 ++
+ mimic_deployment/training_scripts/pi0/eval.sh      |   93 +
+ mimic_deployment/training_scripts/pi0/train.sh     |  172 ++
+ mimic_deployment/training_scripts/pi05/eval.sh     |   93 +
+ mimic_deployment/training_scripts/pi05/train.sh    |  168 ++
+ mimic_deployment/training_scripts/train_manager.sh |  431 ++++
+ .../training_scripts/train_manager_old.sh          |  313 +++
+ mimic_deployment/training_scripts/wall_oss/eval.sh |   93 +
+ .../training_scripts/wall_oss/train.sh             |  167 ++
+ mimic_deployment/training_scripts/xvla/eval.sh     |   93 +
+ .../training_scripts/xvla/eval_xvla.sh             |   13 +
+ mimic_deployment/training_scripts/xvla/train.sh    |  177 ++
+ src/lerobot/rl/wandb_utils.py                      |    9 +-
+ .../teleoperators/mimic_leader/base_controllers.py |   17 +-
+ 37 files changed, 3482 insertions(+), 3254 deletions(-)
+
+commit 289d2bd12d4100b4b5ed3a2541b45c5e9a80c666
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 3 00:16:14 2026 -0500
+
+    fix: improve Bluetooth Xbox controller support in pygame
+    
+    - Force pygame/SDL re-initialization when connecting (fixes BLE detection)
+    - Wait 0.5s for Bluetooth controller enumeration
+    - Add connection state checking in get_velocities()
+    - Better error handling for Bluetooth disconnections
+    - Graceful fallback to zero velocities if gamepad drops
+    
+    Fixes: Xbox Bluetooth controller not working while wired connection does
+    This allows the controller to be detected even if it connects after boot.
+
+ .../teleoperators/mimic_leader/base_controllers.py | 106 +++++++++++++--------
+ 1 file changed, 66 insertions(+), 40 deletions(-)
+
+commit b283585996d8d9b572d3f62187f1a16631e9b97e
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 3 00:04:34 2026 -0500
+
+    xbox change
+
+ src/mimic/config/xbox.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 2b5be958a2eb5dbce103a95a039572ab50d0d879
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Tue Feb 3 00:03:22 2026 -0500
+
+    xbox change
+
+ src/mimic/config/robot_config.yaml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit 20cf3959881f9cda9b63af50efe3656900e9f670
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Feb 2 23:58:22 2026 -0500
+
+    rgb odin script chages
+
+ .../rgb_control/rgb-ssh-monitor-odin.sh            | 69 ++++++++++++++--------
+ 1 file changed, 44 insertions(+), 25 deletions(-)
+
+commit 812cc11314df5921572f720d1bde84d33c6741fd
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Feb 2 23:43:02 2026 -0500
+
+    start of training scripts files and general upkeep
+
+ .../rgb_control/rgb-ssh-monitor-jupiter.sh         | 453 ++++++++++++++++++++
+ .../rgb_control/rgb-ssh-monitor-odin.sh            | 474 +++++++++++++++++++++
+ mimic_deployment/training_scripts/act/eval_act.sh  |   0
+ mimic_deployment/training_scripts/act/train_act.sh |   0
+ .../training_scripts/nico/train_pi0.sh             |   5 +
+ .../training_scripts/nico/train_xvla.sh            |  24 ++
+ .../training_scripts/xvla/eval_xvla.sh             |   0
+ .../training_scripts/xvla/train_xvla.sh            |  20 +
+ .../setup_camera_udev.py                           |   0
+ .../{scripts => utils_scripts}/setup_udev_rules.py |   0
+ 10 files changed, 976 insertions(+)
+
+commit 662c3800ab73c1e2f91ffe3a5cf3ee66ecb1b2ce
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Mon Feb 2 21:21:46 2026 -0500
+
+    Create ImageTransforms when resize is specified
+
+ src/lerobot/datasets/factory.py | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+commit 678f19ce36d246ceabd0427c3f941b4fe89eee72
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Mon Feb 2 21:19:38 2026 -0500
+
+    Add mandatory resize option to ImageTransformsConfig
+
+ src/lerobot/datasets/transforms.py | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+commit de8999dc7308436427a86c6564c39c0060b1af74
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Mon Feb 2 21:17:20 2026 -0500
+
+    Fix ffmpeg resize error handling
+
+ resize_datasets.py | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+commit 7570c05c80e9d878f7eec7661b81296b1aed8559
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Mon Feb 2 20:57:40 2026 -0500
+
+    Add script to resize old datasets to 720x1280
+
+ resize_datasets.py | 115 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 115 insertions(+)
+
+commit 1a904ad6d862eaaf2606b31155f7e8e79a3dd222
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Feb 2 18:18:45 2026 -0500
+
+    Converstion script, tested with replay, FIXED ZED CAMERA, EVAL SCRIPT
+
+ .../CONVERSION_ANALYSIS_FEB_1.md                   |  542 +++++
+ .../dataset_conversion/CONVERSION_GUIDE.md         |  141 ++
+ .../dataset_conversion/CRITICAL_FORMAT_ISSUE.md    |   48 +
+ .../dataset_conversion/DATASET_COMPARISON.md       |  123 +
+ .../dataset_conversion/FINAL_ANSWER.md             |  115 +
+ .../dataset_conversion/QUICK_REFERENCE.md          |   49 +
+ .../batch_convert_and_combine.py                   |  261 +++
+ .../dataset_conversion/batch_convert_datasets.sh   |   16 +-
+ .../dataset_conversion/consolidate_all_datasets.py |  276 +++
+ .../dataset_conversion/convert_bimanual_FIXED.py   |  432 ++++
+ .../convert_bimanual_complete.py                   |  484 ++++
+ .../dataset_conversion/convert_meta_to_v3.py       |   83 +
+ .../dataset_conversion/dataset_scan_results.json   | 2384 ++++++++++++++++++++
+ .../dataset_conversion/delete_broken_datasets.py   |   83 +
+ .../dataset_conversion/finish_conversion_steps.py  |   53 +
+ mimic_deployment/dataset_conversion/mimic-replay   |   93 +
+ .../dataset_conversion/scan_all_datasets.py        |  142 ++
+ .../dataset_conversion/test_conversion.py          |  102 +
+ .../dataset_conversion/test_converted_format.py    |  119 +
+ .../dataset_conversion/verify_converted_dataset.py |   90 +
+ mimic_deployment/eval_act.sh                       |  123 +
+ src/lerobot/cameras/zed_camera/zed_camera.py       |    8 +-
+ src/mimic/scripts/eval_cmd .sh                     |    2 +-
+ 23 files changed, 5758 insertions(+), 11 deletions(-)
+
+commit 66f79fbbbd59d85cd93b1093264cc5d6e0b2c9fd
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Feb 2 15:17:30 2026 -0500
+
+    feat: merge upstream LeRobot updates with modernized SO naming
+    
+    This squashed merge brings in 61+ commits from upstream huggingface/lerobot
+    without polluting commit history. All Mimic customizations preserved and
+    modernized to use new naming conventions.
+    
+    ## Upstream Features Integrated:
+    - pi0_fast policy (faster Pi0 variant)
+    - OpenArm robot support
+    - Damiao motors support
+    - ZMQ cameras (network camera transport)
+    - Dataset subtask support
+    - Unitree G1 improvements
+    - Improved OpenCV camera threading with async_read
+    
+    ## SO Robot Naming Modernization:
+    - so100_follower + so101_follower → so_follower (unified)
+    - so100_leader + so101_leader → so_leader (unified)
+    - bi_so100_follower → bi_so_follower
+    - bi_so100_leader → bi_so_leader
+    
+    ## Mimic Customizations Updated:
+    - mimic_follower: Updated to use SOFollower + SOFollowerRobotConfig
+    - mimic_leader: Updated to use SOLeader + SOLeaderTeleopConfig
+    - Calibration files: Copied to new so_follower/so_leader directories
+    - All scripts: Added mimic support with modern naming
+    - ZED camera: Fixed to work with new OpenCV threading model
+      - Added _read_from_hardware() override for SDK path
+      - Background thread now properly uses ZED SDK
+      - Fallback to OpenCV still works if SDK unavailable
+    
+    ## Preserved Custom Code:
+    - src/mimic/ (calibration, config, scripts)
+    - mimic_deployment/ (all deployment tools)
+    - src/lerobot/robots/mimic_follower/
+    - src/lerobot/teleoperators/mimic_leader/
+    - src/lerobot/cameras/zed_camera/
+    - src/lerobot/motors/mecanum_base/
+    - Custom calibration path (src/mimic/calibration)
+    
+    Upstream source: huggingface/lerobot main @ 9c24a096
+    Base commit: b3b55550
+
+ .github/PULL_REQUEST_TEMPLATE.md                   |    9 +-
+ .github/workflows/documentation.yml                |   13 +-
+ .github/workflows/full_tests.yml                   |   13 +-
+ .github/workflows/unbound_deps_tests.yml           |   16 +-
+ CONTRIBUTING.md                                    |    2 +-
+ README.md                                          |   11 +-
+ SECURITY.md                                        |   48 +
+ docs/source/_toctree.yml                           |   16 +-
+ docs/source/async.mdx                              |    3 +-
+ docs/source/cameras.mdx                            |  176 +--
+ docs/source/damiao.mdx                             |  165 +++
+ docs/source/dataset_subtask.mdx                    |  278 ++++
+ docs/source/earthrover_mini_plus.mdx               |   33 +-
+ docs/source/envhub.mdx                             |   41 +-
+ docs/source/envhub_isaaclab_arena.mdx              |    4 +-
+ docs/source/envhub_leisaac.mdx                     |    7 +-
+ docs/source/groot.mdx                              |    8 +-
+ docs/source/il_robots.mdx                          |   20 +-
+ docs/source/integrate_hardware.mdx                 |    2 +-
+ docs/source/lekiwi.mdx                             |    8 +-
+ docs/source/libero.mdx                             |    1 +
+ docs/source/omx.mdx                                |  197 +++
+ docs/source/openarm.mdx                            |  276 ++++
+ docs/source/phone_teleop.mdx                       |   16 +-
+ docs/source/pi0.mdx                                |    6 +
+ docs/source/pi0fast.mdx                            |  246 ++++
+ docs/source/policy_walloss_README.md               |   18 +-
+ docs/source/processors_robots_teleop.mdx           |    6 +-
+ docs/source/reachy2.mdx                            |   53 +-
+ docs/source/sarm.mdx                               |    6 +
+ docs/source/so100.mdx                              |    8 +-
+ docs/source/so101.mdx                              |   21 +-
+ docs/source/unitree_g1.mdx                         |  153 ++-
+ docs/source/using_dataset_tools.mdx                |   19 +-
+ docs/source/walloss.mdx                            |    6 +
+ examples/backward_compatibility/replay.py          |   40 +-
+ examples/lekiwi/evaluate.py                        |   98 +-
+ examples/lekiwi/record.py                          |  101 +-
+ examples/lekiwi/replay.py                          |   40 +-
+ examples/lekiwi/teleoperate.py                     |    2 +-
+ examples/phone_to_so100/evaluate.py                |  100 +-
+ examples/phone_to_so100/record.py                  |  100 +-
+ examples/phone_to_so100/replay.py                  |   47 +-
+ examples/phone_to_so100/teleoperate.py             |    5 +-
+ examples/rtc/eval_with_real_robot.py               |    4 +-
+ examples/so100_to_so100_EE/evaluate.py             |  100 +-
+ examples/so100_to_so100_EE/record.py               |  104 +-
+ examples/so100_to_so100_EE/replay.py               |   46 +-
+ examples/so100_to_so100_EE/teleoperate.py          |    8 +-
+ examples/tutorial/act/act_using_example.py         |    3 +-
+ examples/tutorial/async-inf/robot_client.py        |    3 +-
+ .../tutorial/diffusion/diffusion_using_example.py  |    3 +-
+ examples/tutorial/pi0/using_pi0_example.py         |    3 +-
+ examples/tutorial/rl/hilserl_example.py            |    4 +-
+ examples/tutorial/smolvla/using_smolvla_example.py |    3 +-
+ examples/unitree_g1/gr00t_locomotion.py            |  289 ++---
+ examples/unitree_g1/holosoma_locomotion.py         |  264 ++++
+ pyproject.toml                                     |   25 +-
+ src/lerobot/async_inference/configs.py             |   10 +
+ src/lerobot/async_inference/constants.py           |    4 +-
+ src/lerobot/async_inference/helpers.py             |    5 +-
+ src/lerobot/async_inference/policy_server.py       |    2 +
+ src/lerobot/async_inference/robot_client.py        |   21 +-
+ src/lerobot/cameras/camera.py                      |  100 +-
+ src/lerobot/cameras/opencv/camera_opencv.py        |  182 ++-
+ .../reachy2_camera/configuration_reachy2_camera.py |    8 +-
+ .../cameras/reachy2_camera/reachy2_camera.py       |  236 ++--
+ src/lerobot/cameras/realsense/camera_realsense.py  |  210 ++-
+ src/lerobot/cameras/utils.py                       |    5 +
+ src/lerobot/cameras/zed_camera/zed_camera.py       |   23 +-
+ .../bi_so100_leader => cameras/zmq}/__init__.py    |    8 +-
+ src/lerobot/cameras/zmq/camera_zmq.py              |  389 ++++++
+ src/lerobot/cameras/zmq/configuration_zmq.py       |   47 +
+ src/lerobot/cameras/zmq/image_server.py            |  114 ++
+ src/lerobot/configs/policies.py                    |   12 +-
+ src/lerobot/datasets/aggregate.py                  |  129 +-
+ src/lerobot/datasets/dataset_tools.py              |  688 +++++++++-
+ src/lerobot/datasets/lerobot_dataset.py            |   55 +-
+ src/lerobot/datasets/pipeline_features.py          |    4 +-
+ src/lerobot/datasets/utils.py                      |   22 +-
+ src/lerobot/envs/configs.py                        |    9 +-
+ src/lerobot/envs/libero.py                         |   10 +-
+ src/lerobot/envs/metaworld.py                      |   12 +-
+ src/lerobot/envs/utils.py                          |    3 +-
+ src/lerobot/motors/__init__.py                     |    6 +-
+ src/lerobot/motors/calibration_gui.py              |    2 +-
+ .../so100_leader => motors/damiao}/__init__.py     |    4 +-
+ src/lerobot/motors/damiao/damiao.py                |  833 ++++++++++++
+ src/lerobot/motors/damiao/tables.py                |  209 +++
+ src/lerobot/motors/dynamixel/dynamixel.py          |   11 +-
+ src/lerobot/motors/feetech/feetech.py              |   13 +-
+ src/lerobot/motors/feetech/tables.py               |    1 +
+ src/lerobot/motors/motors_bus.py                   |  133 +-
+ src/lerobot/policies/__init__.py                   |    2 +
+ src/lerobot/policies/act/configuration_act.py      |   23 +-
+ .../policies/diffusion/configuration_diffusion.py  |   23 +-
+ src/lerobot/policies/factory.py                    |   12 +-
+ src/lerobot/policies/groot/configuration_groot.py  |   13 +-
+ src/lerobot/policies/groot/groot_n1.py             |    6 +-
+ src/lerobot/policies/groot/modeling_groot.py       |  132 +-
+ src/lerobot/policies/groot/processor_groot.py      |   28 +-
+ src/lerobot/policies/pi0/configuration_pi0.py      |   10 +-
+ src/lerobot/policies/pi0/modeling_pi0.py           |   11 +
+ src/lerobot/policies/pi05/configuration_pi05.py    |   11 +-
+ src/lerobot/policies/pi05/modeling_pi05.py         |   11 +
+ src/lerobot/policies/pi0_fast/__init__.py          |   21 +
+ .../policies/pi0_fast/configuration_pi0_fast.py    |  162 +++
+ src/lerobot/policies/pi0_fast/modeling_pi0_fast.py | 1353 ++++++++++++++++++++
+ .../policies/pi0_fast/processor_pi0_fast.py        |  177 +++
+ src/lerobot/policies/pretrained.py                 |  164 +++
+ src/lerobot/policies/sac/modeling_sac.py           |   11 +-
+ src/lerobot/policies/sarm/configuration_sarm.py    |    5 +-
+ src/lerobot/policies/sarm/modeling_sarm.py         |    3 +-
+ src/lerobot/policies/smolvla/modeling_smolvla.py   |   22 +
+ src/lerobot/policies/tdmpc/configuration_tdmpc.py  |   26 +-
+ src/lerobot/policies/utils.py                      |    3 +-
+ src/lerobot/policies/vqbet/configuration_vqbet.py  |   23 +-
+ .../policies/wall_x/configuration_wall_x.py        |   13 +-
+ src/lerobot/policies/wall_x/modeling_wall_x.py     |    8 +-
+ src/lerobot/policies/xvla/processor_xvla.py        |   16 +-
+ src/lerobot/processor/__init__.py                  |    6 +-
+ src/lerobot/processor/converters.py                |    9 +-
+ src/lerobot/processor/core.py                      |    2 +-
+ src/lerobot/processor/env_processor.py             |   11 +-
+ src/lerobot/processor/hil_processor.py             |   12 +-
+ src/lerobot/processor/normalize_processor.py       |    4 +-
+ src/lerobot/processor/pipeline.py                  |    6 +-
+ src/lerobot/processor/tokenizer_processor.py       |  316 ++++-
+ src/lerobot/rl/actor.py                            |    6 +-
+ src/lerobot/rl/eval_policy.py                      |    4 +-
+ src/lerobot/rl/gym_manipulator.py                  |   23 +-
+ .../joint_observations_processor.py                |    0
+ src/lerobot/rl/learner.py                          |    7 +-
+ src/lerobot/robots/bi_openarm_follower/__init__.py |   20 +
+ .../bi_openarm_follower/bi_openarm_follower.py     |  175 +++
+ .../config_bi_openarm_follower.py                  |   30 +
+ .../bi_so100_follower/config_bi_so100_follower.py  |   39 -
+ .../{so101_follower => bi_so_follower}/__init__.py |    6 +-
+ .../bi_so_follower.py}                             |   98 +-
+ .../bi_so_follower/config_bi_so_follower.py}       |   14 +-
+ .../robot_earthrover_mini_plus.py                  |   26 +-
+ src/lerobot/robots/hope_jr/hope_jr_arm.py          |   23 +-
+ src/lerobot/robots/hope_jr/hope_jr_hand.py         |   24 +-
+ src/lerobot/robots/koch_follower/koch_follower.py  |   26 +-
+ src/lerobot/robots/lekiwi/lekiwi.py                |   24 +-
+ src/lerobot/robots/lekiwi/lekiwi_client.py         |   41 +-
+ .../robots/mimic_follower/mimic_follower.py        |   12 +-
+ src/lerobot/robots/omx_follower/omx_follower.py    |   26 +-
+ .../__init__.py                                    |    6 +-
+ .../openarm_follower/config_openarm_follower.py    |  122 ++
+ .../robots/openarm_follower/openarm_follower.py    |  348 +++++
+ .../robots/reachy2/configuration_reachy2.py        |   34 +-
+ src/lerobot/robots/reachy2/robot_reachy2.py        |   19 +-
+ src/lerobot/robots/robot.py                        |   38 +-
+ .../robots/so101_follower/config_so101_follower.py |   41 -
+ .../robots/so101_follower/so101_follower.py        |  230 ----
+ src/lerobot/robots/so_follower/__init__.py         |   23 +
+ .../config_so_follower.py}                         |   17 +-
+ .../robot_kinematic_processor.py                   |    3 +-
+ .../so100.mdx => so_follower/so100.md}             |    0
+ .../so101.mdx => so_follower/so101.md}             |    0
+ .../so_follower.py}                                |   46 +-
+ src/lerobot/robots/unitree_g1/config_unitree_g1.py |   18 +-
+ src/lerobot/robots/unitree_g1/g1_utils.py          |   10 +-
+ .../robots/unitree_g1/robot_kinematic_processor.py |  313 +++++
+ src/lerobot/robots/unitree_g1/unitree_g1.py        |  345 +++--
+ src/lerobot/robots/utils.py                        |   18 +-
+ src/lerobot/scripts/lerobot_calibrate.py           |   25 +-
+ src/lerobot/scripts/lerobot_dataset_viz.py         |   14 +-
+ src/lerobot/scripts/lerobot_edit_dataset.py        |  469 ++-----
+ src/lerobot/scripts/lerobot_eval.py                |    4 +-
+ src/lerobot/scripts/lerobot_find_joint_limits.py   |   16 +-
+ src/lerobot/scripts/lerobot_record.py              |   85 +-
+ src/lerobot/scripts/lerobot_replay.py              |   42 +-
+ src/lerobot/scripts/lerobot_setup_can.py           |  360 ++++++
+ src/lerobot/scripts/lerobot_setup_motors.py        |   19 +-
+ src/lerobot/scripts/lerobot_teleoperate.py         |   63 +-
+ src/lerobot/scripts/lerobot_train.py               |  106 +-
+ src/lerobot/scripts/lerobot_train_tokenizer.py     |  604 +++++++++
+ .../teleoperators/bi_openarm_leader/__init__.py    |   20 +
+ .../bi_openarm_leader/bi_openarm_leader.py         |  131 ++
+ .../config_bi_openarm_leader.py}                   |   14 +-
+ .../{so101_leader => bi_so_leader}/__init__.py     |    5 +-
+ .../bi_so_leader.py}                               |   54 +-
+ .../config_bi_so_leader.py}                        |   12 +-
+ .../teleoperators/gamepad/teleop_gamepad.py        |    7 +-
+ .../teleoperators/homunculus/homunculus_arm.py     |   11 +-
+ .../teleoperators/homunculus/homunculus_glove.py   |   11 +-
+ .../teleoperators/keyboard/teleop_keyboard.py      |   40 +-
+ .../teleoperators/koch_leader/koch_leader.py       |   14 +-
+ .../teleoperators/mimic_leader/mimic_leader.py     |   12 +-
+ .../teleoperators/omx_leader/config_omx_leader.py  |    2 +-
+ src/lerobot/teleoperators/omx_leader/omx_leader.py |   24 +-
+ .../openarm_leader}/__init__.py                    |    6 +-
+ .../openarm_leader/config_openarm_leader.py        |   75 ++
+ .../teleoperators/openarm_leader/openarm_leader.py |  225 ++++
+ src/lerobot/teleoperators/phone/teleop_phone.py    |   20 +-
+ .../reachy2_teleoperator/reachy2_teleoperator.py   |   52 +-
+ .../teleoperators/so100_leader/so100_leader.py     |  159 ---
+ src/lerobot/teleoperators/so_leader/__init__.py    |   23 +
+ .../teleoperators/so_leader/config_so_leader.py    |   42 +
+ src/lerobot/teleoperators/so_leader/so100.md       |    1 +
+ src/lerobot/teleoperators/so_leader/so101.md       |    1 +
+ .../so101_leader.py => so_leader/so_leader.py}     |   46 +-
+ src/lerobot/teleoperators/teleoperator.py          |   31 +-
+ src/lerobot/teleoperators/unitree_g1/__init__.py   |   21 +
+ .../teleoperators/unitree_g1/config_unitree_g1.py  |   37 +
+ src/lerobot/teleoperators/unitree_g1/exo_calib.py  |  446 +++++++
+ src/lerobot/teleoperators/unitree_g1/exo_ik.py     |  353 +++++
+ src/lerobot/teleoperators/unitree_g1/exo_serial.py |  119 ++
+ src/lerobot/teleoperators/unitree_g1/unitree_g1.py |  157 +++
+ src/lerobot/teleoperators/utils.py                 |   32 +-
+ src/lerobot/utils/constants.py                     |    7 +
+ src/lerobot/utils/decorators.py                    |   41 +
+ src/lerobot/utils/import_utils.py                  |   27 +-
+ src/lerobot/utils/visualization_utils.py           |   36 +-
+ .../robots/so_follower/mimic_follower_left.json    |   44 +
+ .../robots/so_follower/mimic_follower_right.json   |   44 +
+ .../teleoperators/so_leader/mimic_leader_left.json |   44 +
+ .../so_leader/mimic_leader_right.json              |   44 +
+ src/mimic/config/robot_config.yaml                 |    4 +-
+ tests/async_inference/test_e2e.py                  |   10 +-
+ tests/async_inference/test_policy_server.py        |    2 +-
+ tests/cameras/test_opencv.py                       |  184 ++-
+ tests/cameras/test_reachy2_camera.py               |   52 +-
+ tests/cameras/test_realsense.py                    |  114 +-
+ tests/conftest.py                                  |    1 -
+ tests/datasets/test_aggregate.py                   |  234 ++++
+ tests/datasets/test_dataset_tools.py               |  179 ++-
+ tests/datasets/test_datasets.py                    |  358 ++++++
+ tests/datasets/test_subtask_dataset.py             |  190 +++
+ tests/mocks/mock_robot.py                          |   28 +-
+ tests/mocks/mock_teleop.py                         |   26 +-
+ tests/motors/test_damiao.py                        |   66 +
+ tests/plugins/reachy2_sdk.py                       |   46 -
+ .../pi0_fast/test_pi0_fast_original_vs_lerobot.py  |  504 ++++++++
+ tests/policies/test_sac_policy.py                  |    3 +-
+ tests/processor/test_tokenizer_processor.py        |  465 ++++++-
+ tests/rl/test_actor.py                             |   10 +-
+ tests/rl/test_actor_learner.py                     |    6 +-
+ tests/rl/test_learner_service.py                   |   16 +-
+ tests/robots/test_reachy2.py                       |    2 +
+ tests/robots/test_so100_follower.py                |    4 +-
+ tests/{test_cli.py => test_cli_peft.py}            |    6 +
+ tests/transport/test_transport_utils.py            |   62 +-
+ tests/utils.py                                     |    4 +-
+ tests/utils/test_visualization_utils.py            |    5 +-
+ 247 files changed, 15357 insertions(+), 3248 deletions(-)
+
+commit b3b555502e5d12b95756fae5156878a3f5b37da6
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sun Feb 1 04:06:03 2026 -0500
+
+    MultiDataset Support: Done
+
+ docs/MULTI_DATASET_TRAINING.md                             |  0
+ .../{ => dataset_conversion}/batch_convert_datasets.sh     |  0
+ .../{ => dataset_conversion}/convert_bimanual_to_mobile.py |  0
+ src/lerobot/datasets/utils.py                              | 14 +++++++-------
+ 4 files changed, 7 insertions(+), 7 deletions(-)
+
+commit a23c95b3f6912c48b627ad67b04e620e42998455
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sun Feb 1 01:18:41 2026 -0500
+
+    refactor: move robot calibration from ~/.cache to src/mimic/calibration
+
+ .gitattributes                                     |   6 ++
+ src/lerobot/utils/constants.py                     |   6 +-
+ src/mimic/CALIBRATION_CHANGE.md                    | 108 +++++++++++++++++++++
+ src/mimic/calibration/.gitkeep                     |   0
+ src/mimic/calibration/README.md                    |  48 +++++++++
+ .../robots/so100_follower/mimic_follower_left.json |  44 +++++++++
+ .../so100_follower/mimic_follower_right.json       |  44 +++++++++
+ .../so100_leader/mimic_leader_left.json            |  44 +++++++++
+ .../so100_leader/mimic_leader_right.json           |  44 +++++++++
+ 9 files changed, 342 insertions(+), 2 deletions(-)
+
+commit 5b508a872265a2538141d7a389f65c0c0cbcd6ce
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sat Jan 31 21:41:15 2026 -0500
+
+    fix: resolve mypy type errors in camera and dataset conversion scripts
+
+ src/lerobot/cameras/zed_camera/zed_camera.py       | 14 ++++++++--
+ src/lerobot/datasets/utils.py                      |  2 ++
+ src/mimic/config/robot_config.yaml                 |  4 +--
+ src/mimic/scripts/convert_old_to_mobile_dataset.py |  5 +++-
+ src/mimic/scripts/record_cmd.sh                    |  8 +++---
+ .../train_act_multi_dataset_only_new_arm.sh        | 31 ++++++++++++++++++++++
+ 6 files changed, 55 insertions(+), 9 deletions(-)
+
+commit f4142f0c47618cf78e5f7da409ceff60f0d775e0
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sat Jan 31 21:28:41 2026 -0500
+
+    Remove bimanual-lerobot submodule metadata / convert to normal directory
+
+ bimanual-lerobot | 1 -
+ 1 file changed, 1 deletion(-)
+
+commit 01d409de4a1f332e751958b7d742891d45b860ac
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Jan 29 17:06:14 2026 -0500
+
+    ADDS: setup_udev_rules.py to setup ids on jupiter
+
+ mimic_deployment/scripts/setup_udev_rules.py | 252 +++++++++++++++++++++++++++
+ 1 file changed, 252 insertions(+)
+
+commit 191b5d1885228453ed55704a603257c28c3fb877
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Jan 29 15:59:22 2026 -0500
+
+    Removed Cluttered files
+
+ CONTROLLER_FIXES.md                       | 126 ----------------
+ batch_convert_datasets.py                 | 135 -----------------
+ batch_convert_full.py                     | 239 ------------------------------
+ build_pytorch_sm120.sh                    |  59 --------
+ convert_dataset_dims.py                   | 181 ----------------------
+ inspect_dims.py                           |  19 ---
+ inspect_mobile.py                         |  29 ----
+ mimic_deployment/CHANGES_SUMMARY.md       |  90 -----------
+ mimic_deployment/convert_simple.py        |  79 ----------
+ run_policy.py                             |  75 ----------
+ scripts/__init__.py                       |   0
+ scripts/migration/__init__.py             |   0
+ scripts/migration/batch_convert_mobile.py | 188 -----------------------
+ scripts/migration/fix_dtypes.py           | 205 -------------------------
+ scripts/migration/fix_stats.py            | 147 ------------------
+ scripts/train_act_15d.py                  |  89 -----------
+ tag_dataset.py                            |  40 -----
+ test_multi_dataset.py                     |  83 -----------
+ test_training_simulation.py               |  85 -----------
+ test_xbox_mapping.py                      |  54 -------
+ train_xvla_mobile_bimanual.sh             |  30 ----
+ verify_conversion.py                      | 215 ---------------------------
+ 22 files changed, 2168 deletions(-)
+
+commit b53eb91fb03698f846729d6bb36b5a0d58d9f8ff
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Jan 29 15:42:47 2026 -0500
+
+    Adds __init__.py to cicumvent the failed github actions
+
+ src/lerobot/__init__.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit c04ff79304c0927abc03a8bd95160f9bf1f8a85b
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 22:35:07 2026 -0500
+
+    Revert to temporal ensembling, add 5-degree reach offset to elbows
+
+ run_policy.py | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
+
+commit 04e81212228ea6e3928a8bf58b1a5a54792d3b0b
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 22:30:42 2026 -0500
+
+    Use n_action_steps=5 for more responsive closed-loop control
+
+ run_policy.py | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
+
+commit cf4271236903729707c331efeb310b9d5baf29c5
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 22:25:52 2026 -0500
+
+    Re-enable front camera with ImageNet normalization
+
+ run_policy.py | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+commit 238685c740a9dea2e0e2a80090865de503ddeee6
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 22:21:43 2026 -0500
+
+    Use temporal ensembling for smoother, more stable actions
+
+ run_policy.py | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
+
+commit 142c3705782ca6e757158cb938dfe4ccb60a1729
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 22:17:33 2026 -0500
+
+    Use smaller action steps (10) for more frequent re-prediction, add gripper debug
+
+ run_policy.py | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
+
+commit 355abb5cec3b414e6f26f40dc3be7e0e3b403b32
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 22:14:35 2026 -0500
+
+    Enable temporal ensembling for more responsive policy
+
+ run_policy.py | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
+
+commit 21d36df6b9adb958e62a2b749ec767321a180092
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 22:12:55 2026 -0500
+
+    Add debug output for action queue to diagnose chunking
+
+ run_policy.py | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+commit 57a89affc6c55b3f7618739d8c1136eb28de7929
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 22:09:10 2026 -0500
+
+    Fix normalization: handle zero std, remove broken front camera, use ImageNet for images
+
+ run_policy.py | 179 +++++++++++++++++++++++++++++-----------------------------
+ 1 file changed, 88 insertions(+), 91 deletions(-)
+
+commit 57e3eeae18fe0511acec33adf93a865fad3346e9
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 22:06:53 2026 -0500
+
+    Add normalization stats debug output
+
+ run_policy.py | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+commit 8b096e20a57d8a8eaedc32f8d53fc8a86ef0dcad
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 22:04:34 2026 -0500
+
+    Add debug output to diagnose policy inference
+
+ run_policy.py | 45 ++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 44 insertions(+), 1 deletion(-)
+
+commit c13e7243830ceb785e18d42c6be332f20b28003e
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 22:01:24 2026 -0500
+
+    Resize top/front images to 480x640
+
+ run_policy.py | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+commit 84d4fad5ec1385d035c5bea919f3ecf8c8d46f91
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 21:56:24 2026 -0500
+
+    Use LeRobot inference helpers
+
+ run_policy.py | 68 +++++++++++++++++------------------------------------------
+ 1 file changed, 19 insertions(+), 49 deletions(-)
+
+commit 54d48c74cde882ea36ae5084e7e202d226c2291c
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 21:54:43 2026 -0500
+
+    Add normalization pipeline
+
+ run_policy.py | 38 ++++++++++++++++++++++++++++----------
+ 1 file changed, 28 insertions(+), 10 deletions(-)
+
+commit df87432a800ff41e86f9c7d31dcddff00b8aa8f2
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 21:49:24 2026 -0500
+
+    Fix debug output
+
+ run_policy.py | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+commit 27701598e5a70247542abeec81b93f7965ef8442
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 21:49:10 2026 -0500
+
+    Add state debug output
+
+ run_policy.py | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+commit bc68ffa82ae90a180140ca8cad5ad2ecdb4a715e
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 21:47:28 2026 -0500
+
+    Resize top/front cameras to 480x640
+
+ run_policy.py | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
+
+commit 4a3fd9b26ec94f01dcb863815395aaa686ba8782
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 21:42:45 2026 -0500
+
+    Add camera debug output
+
+ run_policy.py | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+commit 10e6dcf100ecd7b33f52a11ff1881f3997cf7cf3
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 21:26:13 2026 -0500
+
+    Re-enable front camera
+
+ run_policy.py                      |  3 ++-
+ src/mimic/config/robot_config.yaml | 17 ++++++++---------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+
+commit 5cc261dd058ec244706288bab6f73e0870fa35cf
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 21:23:49 2026 -0500
+
+    Add front camera placeholder
+
+ run_policy.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 517d54b0d64b3c04885a0d053f68f621e22d2fdb
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 21:22:39 2026 -0500
+
+    Fix run_policy OpenCV fallback
+
+ run_policy.py | 65 ++++++++++++++++++++++++++++++++++++++++++++---------------
+ 1 file changed, 49 insertions(+), 16 deletions(-)
+
+commit b79c1f7a50ab7c6adacd9ca313ff0a85327ac374
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 21:20:39 2026 -0500
+
+    Force OpenCV fallback for ZED
+
+ src/lerobot/cameras/zed_camera/zed_camera.py | 10 +++-------
+ src/mimic/config/robot_config.yaml           |  4 ++--
+ 2 files changed, 5 insertions(+), 9 deletions(-)
+
+commit 5945fd93ab0b6ce00cedae0939c36cd742d89561
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Wed Jan 28 20:40:22 2026 -0500
+
+    Disable front camera
+
+ src/mimic/config/robot_config.yaml | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+commit beed0899a531df3aeb85a7c2183b1b926d35cfc8
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Jan 28 12:53:28 2026 -0500
+
+    update mathias
+
+ src/mimic/config/robot_config.yaml   | 26 +++++++++++++++-----------
+ src/mimic/scripts/RECORDING_GUIDE.md | 10 ++++++++--
+ src/mimic/scripts/eval_cmd .sh       | 22 ++++++++++++++++++++++
+ src/mimic/scripts/record_cmd.sh      |  8 ++++----
+ 4 files changed, 49 insertions(+), 17 deletions(-)
+
+commit b1bd41eb77eabe8a5764f865bfe741114273d935
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Jan 19 20:12:01 2026 -0500
+
+    joystick test
+
+ mimic_deployment/joystick_ctr/joystick_test.py | 131 +++++++++++++++++++++++++
+ src/commande  for eval                         |   7 +-
+ src/mimic/config/robot_config.yaml             |   2 +-
+ src/mimic/scripts/README.md                    |   9 ++
+ 4 files changed, 147 insertions(+), 2 deletions(-)
+
+commit de6e4a852393f358d2fa5fb8443b3bb888cd1979
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Sat Jan 17 20:26:57 2026 -0500
+
+    add run_policy script
+
+ run_policy.py | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+commit d3dd11f3029c160db655d9241dd28b2ad83b8c3d
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Sat Jan 17 20:23:36 2026 -0500
+
+    script
+
+ .gitignore                                |   1 +
+ batch_convert_datasets.py                 | 135 +++++++++++++++++
+ batch_convert_full.py                     | 239 ++++++++++++++++++++++++++++++
+ bimanual-lerobot                          |   1 +
+ convert_dataset_dims.py                   | 181 ++++++++++++++++++++++
+ inspect_dims.py                           |  19 +++
+ inspect_mobile.py                         |  29 ++++
+ run_policy.py                             |  69 +++++++++
+ scripts/__init__.py                       |   0
+ scripts/migration/__init__.py             |   0
+ scripts/migration/batch_convert_mobile.py | 188 +++++++++++++++++++++++
+ scripts/migration/fix_dtypes.py           | 205 +++++++++++++++++++++++++
+ scripts/migration/fix_stats.py            | 147 ++++++++++++++++++
+ scripts/train_act_15d.py                  |  89 +++++++++++
+ test_multi_dataset.py                     |  83 +++++++++++
+ test_training_simulation.py               |  85 +++++++++++
+ verify_conversion.py                      | 215 +++++++++++++++++++++++++++
+ 17 files changed, 1686 insertions(+)
+
+commit 503e10e3ffe06110d4317962f62fe00ddb450f11
+Author: EMJ-NC <nicholas.charland@emjcapital.ltd>
+Date:   Sat Jan 17 19:27:07 2026 -0500
+
+    resolve multidataset feature format compatibility
+
+ src/lerobot/datasets/lerobot_dataset.py |  4 +++-
+ src/mimic/config/robot_config.yaml      | 31 ++++++++++++-------------------
+ 2 files changed, 15 insertions(+), 20 deletions(-)
+
+commit 98207f1ed2e4579efee1ca097dac1faea8b7c710
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sat Jan 10 21:14:46 2026 -0500
+
+    eval commande
+
+ src/commande  for eval                             | 74 ++++++++++++++++++++++
+ .../teleoperators/mimic_leader/base_controllers.py | 39 ++++++++++--
+ src/mimic/config/joystick.yaml                     |  4 +-
+ 3 files changed, 109 insertions(+), 8 deletions(-)
+
+commit e1bd15a70728a14a9b4821511f061721e70eb83b
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Sat Jan 10 18:13:13 2026 -0500
+
+    lest on computer odin latest
+
+ build_pytorch_sm120.sh                             |  59 +++++
+ docs/DATASET_CONVERSION.md                         | 173 --------------
+ docs/MULTI_DATASET_TRAINING.md                     | 193 ---------------
+ .../batch_convert_datasets.sh                      |   2 +-
+ .../convert_bimanual_to_mobile.py                  |   0
+ mimic_deployment/convert_simple.py                 |  79 +++++++
+ src/lerobot/configs/default.py                     |   2 +-
+ src/lerobot/configs/train.py                       |   3 +-
+ src/lerobot/datasets/factory.py                    |   9 +-
+ src/lerobot/datasets/lerobot_dataset.py            | 119 +++++-----
+ src/lerobot/rl/wandb_utils.py                      |   6 +-
+ src/lerobot/scripts/lerobot_train.py               |   5 +
+ src/mimic/scripts/README.md                        |   0
+ src/mimic/scripts/batch_convert_datasets.py        |   0
+ src/mimic/scripts/convert_old_to_mobile_dataset.py | 259 +++++++++++++++++++++
+ src/mimic/scripts/train_act_multi_dataset.sh       |  32 +++
+ tag_dataset.py                                     |  40 ++++
+ train_xvla_mobile_bimanual.sh                      |  30 +++
+ 18 files changed, 577 insertions(+), 434 deletions(-)
+
+commit 56b683acb577aef57200ce20d45cb0e10fcf63f7
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Jan 8 02:12:42 2026 -0500
+
+    feat(datasets): add bimanual to mobile bimanual conversion tools
+    
+    Dataset Conversion System:
+    - Created convert_bimanual_to_mobile.py for single dataset conversion
+    - Created batch_convert_datasets.sh for converting all 20 handover datasets
+    - Implements zero-padding strategy: 12D → 15D actions (adds 3 base velocities)
+    
+    Conversion Details:
+    - OLD format (v2.1): 12D actions = 6 joints/arm × 2 arms (with grippers)
+    - NEW format (v3.0): 15D actions = 12D arms + 3D base (vx, vy, omega)
+    - Zero-pads base velocities since old robot was stationary
+    - Updates metadata: codebase version, action shape, feature names
+    - Preserves all video files and episode structure
+    
+    Key Features:
+    - Automatic metadata update (v2.1 → v3.0)
+    - Preserves episode structure and statistics
+    - Copies video files unchanged
+    - Pushes converted datasets to HuggingFace Hub
+    - Progress bars for batch processing
+    - Error handling and validation
+    
+    Usage:
+      # Single dataset
+      python3 src/mimic/scripts/convert_bimanual_to_mobile.py \
+        --input-repo-id='Mimic-Robotics/bimanual_blue_block_handover_1' \
+        --output-repo-id='Mimic-Robotics/mobile_bimanual_blue_block_handover_1'
+    
+      # All 20 datasets
+      ./src/mimic/scripts/batch_convert_datasets.sh
+    
+    Documentation:
+    - docs/DATASET_CONVERSION.md - Complete conversion guide
+    - docs/MULTI_DATASET_TRAINING.md - Multi-dataset training guide
+    
+    This enables training ACT models on combined dataset:
+    - ~450 episodes from old bimanual datasets (converted)
+    - ~20+ episodes from new mobile bimanual datasets
+    - Total: ~470+ episodes with consistent 15D action space
+
+ docs/DATASET_CONVERSION.md                      | 173 ++++++++++++++++++++
+ docs/MULTI_DATASET_TRAINING.md                  | 193 ++++++++++++++++++++++
+ src/mimic/scripts/batch_convert_datasets.sh     |  60 +++++++
+ src/mimic/scripts/convert_bimanual_to_mobile.py | 207 ++++++++++++++++++++++++
+ 4 files changed, 633 insertions(+)
+
+commit baff0e24052ae7b74ed01820cddbfa44c358c0bb
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Thu Jan 8 01:59:22 2026 -0500
+
+    feat(datasets): enable multi-dataset training support
+    
+    Multi-Dataset Training Implementation:
+    - Removed NotImplementedError in factory.py to enable multi-dataset training
+    - MultiLeRobotDataset now properly creates and concatenates multiple datasets
+    - Compute delta_timestamps from first dataset and apply to all (assumes compatible structure)
+    
+    Enhanced MultiLeRobotDataset Class:
+    - Added proper metadata merging across all datasets
+    - Implemented global episode indexing to avoid conflicts
+    - Episode indices are remapped globally in __getitem__
+    - Added episode_data_index computation for training compatibility
+    - Added episodes_stats merging with proper offset handling
+    - Exposed unified 'meta' object with merged episode information
+    - Added repo_index_to_id property for reverse lookup
+    
+    Episode Handling Improvements:
+    - Episodes from all datasets are renumbered starting from 0
+    - Global episode offset tracking prevents index collisions
+    - Each sample includes both episode_index (global) and dataset_index
+    - Compatible with existing training pipelines expecting single dataset API
+    
+    Technical Details:
+    - Added 'copy' import for deep copying metadata
+    - Uses get_episode_data_index from utils for training compatibility
+    - Maintains backward compatibility with single-dataset training
+    - Follows same API structure as LeRobotDataset for drop-in replacement
+    
+    Ported from bimanual-lerobot repository with minimal changes to existing codebase.
+    All enhancements are additive and don't modify existing single-dataset functionality.
+    
+    Multi-dataset training can now be used by providing a list of repo_ids in config:
+      dataset.repo_id = ['org/dataset1', 'org/dataset2', 'org/dataset3']
+
+ src/lerobot/datasets/factory.py         | 13 +++++--
+ src/lerobot/datasets/lerobot_dataset.py | 65 +++++++++++++++++++++++++++++++++
+ src/mimic/scripts/record_cmd.sh         | 22 +++++++++++
+ 3 files changed, 97 insertions(+), 3 deletions(-)
+
+commit d2440d42d9c996cf58429a031af29ed83775a51d
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Jan 7 21:14:07 2026 -0500
+
+    feat: switch to pygame, enhance config, improve recording workflow
+    
+    Controller System Improvements:
+    - Migrated from inputs library to pygame for Xbox/joystick control
+    - Implemented proper safety button system (LB=enable, RB=turbo)
+    - Fixed reversed strafe direction (negated axis 0)
+    - Added YAML-based Xbox controller configuration loading
+    - Fixed axis mappings: axis 3 for rotation (not axis 2)
+    - Updated button mappings to match actual Xbox Series controller
+    - Reduced turbo speeds to safer values (0.15 linear, 0.15 angular)
+    
+    Configuration Enhancements:
+    - Consolidated all recording settings in robot_config.yaml
+    - Added 4th camera (front opencv camera) to config
+    - Updated dataset organization and repo_id structure
+    - Reduced reset_time_s from 10s to 3s
+    - Added push_to_hub flag for automatic HuggingFace upload
+    - Improved task description for blue block handover task
+    
+    Recording Script Improvements:
+    - Complete rewrite with help system and validation
+    - Added --resume and --clean flags for dataset management
+    - Improved error messages with actionable suggestions
+    - Added X display environment variables for pynput support
+    - Better YAML parsing with proper error handling
+    - Fixed missing REPO_ID and PUSH_TO_HUB extractions
+    - Added dataset existence checks with helpful prompts
+    
+    Replay Script Enhancements:
+    - Auto-detects most recent dataset if --repo not specified
+    - Auto-selects highest episode number if --episode not specified
+    - Added X display environment variables for camera preview
+    - Made all arguments optional for easier usage
+    
+    Documentation:
+    - Added RECORDING_GUIDE.md with comprehensive examples
+    - Added task_prompts.yaml with VLA-optimized task descriptions
+    - Created CONTROLLER_FIXES.md documenting safety button implementation
+    - Moved deployment docs to mimic_deployment/ directory
+    - Added setup_camera_udev.py for interactive camera configuration
+    - Created test_xbox_mapping.py for axis mapping verification
+    
+    Testing:
+    - Removed obsolete test_base.py
+    - Added new Xbox controller mapping test script
+    
+    Fixes:
+    - Fixed camera JSON escaping in mimic-record script
+    - Fixed task description quoting issues
+    - Fixed missing variable extractions in parse_yaml
+    - Fixed YAML config path resolution in MimicLeader
+    
+    This commit represents a major refinement of the recording and control
+    systems, with focus on usability, safety, and proper pygame integration.
+
+ CONTROLLER_FIXES.md                                | 126 ++++++++
+ mimic_deployment/CHANGES_SUMMARY.md                |  90 ++++++
+ {docs => mimic_deployment}/RECENT_UPDATES.md       |   0
+ {docs => mimic_deployment}/SETUP_GUIDES.md         |   0
+ mimic_deployment/scripts/setup_camera_udev.py      | 171 ++++++++++
+ .../teleoperators/mimic_leader/base_controllers.py | 316 +++++++++++--------
+ .../teleoperators/mimic_leader/mimic_leader.py     |  14 +
+ src/mimic/config/robot_config.yaml                 |  29 +-
+ src/mimic/config/task_prompts.yaml                 |  71 +++++
+ src/mimic/config/xbox.yaml                         |  14 +-
+ src/mimic/scripts/RECORDING_GUIDE.md               | 161 ++++++++++
+ src/mimic/scripts/mimic-record                     | 349 ++++++++++++++++-----
+ src/mimic/scripts/mimic-replay                     |  56 +++-
+ test_base.py                                       |  32 --
+ test_xbox_mapping.py                               |  54 ++++
+ 15 files changed, 1234 insertions(+), 249 deletions(-)
+
+commit d242cb9db841883713aa805a2e64af2618101b83
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Jan 7 17:47:45 2026 -0500
+
+    docs: add comprehensive summary of recent updates
+    
+    - Document all major changes from Jan 7, 2026 work session
+    - Include camera improvements (ZED SDK, GStreamer fix, MJPEG)
+    - Document base control system and configuration workflow
+    - List all 7 commits with descriptions
+    - Add performance metrics and configuration examples
+    - Provide quick reference for system status and next steps
+
+ docs/RECENT_UPDATES.md | 151 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 151 insertions(+)
+
+commit aa727da277f66ccf56d856821e214ecc699136ee
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Jan 7 17:45:55 2026 -0500
+
+    docs: consolidate setup guides and remove legacy documentation
+    
+    - Create unified SETUP_GUIDES.md with all essential information
+    - Include SSH GUI display setup (DISPLAY=:1)
+    - Include GitHub account management guide
+    - Document persistent USB device mapping (udev rules)
+    - Add camera configuration and troubleshooting
+    - Add quick start commands and workflow
+    - Remove scattered documentation files from mimic_deployment/
+    - Remove outdated mimc_doplyment folder (typo)
+    - Clean up temporary test files and screenshots
+
+ docs/SETUP_GUIDES.md                         | 258 +++++++++++++++++++++++++++
+ mimc_doplyment/FIX_old_dataset.md            | 107 -----------
+ mimc_doplyment/User_guide.md                 | 166 -----------------
+ mimc_doplyment/implementation.md             |  32 ----
+ mimc_doplyment/screenshot/image.png          | Bin 47823 -> 0 bytes
+ mimc_doplyment/screenshot/test_camera.py     |  78 --------
+ mimc_doplyment/screenshot/test_zed_camera.py |  46 -----
+ 7 files changed, 258 insertions(+), 429 deletions(-)
+
+commit 75bc7e1ad5dab6e476137aeebab410483a1577bb
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Jan 7 17:44:47 2026 -0500
+
+    feat(scripts): add configuration and wrapper scripts
+    
+    - Add robot_config.yaml for centralized robot configuration
+    - Add controller configs: xbox.yaml, joystick.yaml, keyboard.yaml (ROS2 joy_node format)
+    - Add wrapper scripts: mimic-teleop, mimic-record, mimic-replay
+    - Scripts automatically load YAML configs and build command-line arguments
+    - Simplify workflow: './src/mimic/scripts/mimic-teleop' instead of long Python commands
+
+ src/mimic/config/joystick.yaml      | 132 ++++++++++++++++++++
+ src/mimic/config/keyboard.yaml      |  50 ++++++++
+ src/mimic/config/xbox.yaml          |  95 +++++++++++++++
+ src/mimic/scripts/WORKFLOW_GUIDE.md | 234 ++++++++++++++++++++++++++++++++++++
+ src/mimic/scripts/mimic-record      | 128 ++++++++++++++++++++
+ src/mimic/scripts/mimic-replay      |  84 +++++++++++++
+ src/mimic/scripts/mimic-teleop      |  89 ++++++++++++++
+ 7 files changed, 812 insertions(+)
+
+commit 7e81c023a74eb99ce4e9c9c6d7d874a46ec4bdad
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Jan 7 17:44:32 2026 -0500
+
+    feat(teleop): integrate base control with bimanual leader
+    
+    - Add base_control_mode configuration (keyboard/xbox/joystick)
+    - Integrate base controller with SO-100 bimanual arm teleoperation
+    - Combine arm actions with base velocity commands
+    - Add max_linear_speed and max_angular_speed parameters
+
+ .../teleoperators/mimic_leader/mimic_leader.py     | 116 +++++----------------
+ 1 file changed, 25 insertions(+), 91 deletions(-)
+
+commit 8f1269b5fc81c15934395f2147bbff373a6aee8b
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Jan 7 17:43:45 2026 -0500
+
+    feat(teleop): add base controller system for mecanum platform
+    
+    - Implement abstract BaseController interface
+    - Add KeyboardBaseController with WASD+QE controls
+    - Add XboxBaseController with joystick support
+    - Add JoystickBaseController for alternative gamepads
+    - Fix Xbox controller connection to use devices[0] directly
+    - Support configurable linear/angular speeds and deadzone
+
+ .../teleoperators/mimic_leader/base_controllers.py | 340 +++++++++++++++++++++
+ 1 file changed, 340 insertions(+)
+
+commit 38bd1229fc794b874d67dadba693ac0a4b62a3e8
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Jan 7 17:42:53 2026 -0500
+
+    feat(config): optimize camera and performance settings
+    
+    - Add MJPEG compression (fourcc: MJPG) for wrist cameras to reduce USB bandwidth
+    - Set camera warmup_s to 0 to eliminate 9-second startup delay
+    - Configure ZED camera with serial number 23081456 for robust identification
+    - Set ZED to HD720 (1280×720) resolution
+    - USB bandwidth optimization: MJPEG reduces ~350 Mbps to <100 Mbps
+
+ src/mimic/config/robot_config.yaml | 76 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 76 insertions(+)
+
+commit 66c47ebbc82d40a7b2ba6c7cca95e5e400bed8dd
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Jan 7 17:42:42 2026 -0500
+
+    feat(cameras): add ZED SDK integration with OpenCV fallback
+    
+    - Implement hybrid ZedCamera class using pyzed.sl SDK when available
+    - Auto-detect ZED SDK availability at import time
+    - Use serial number for robust camera identification (S/N: 23081456)
+    - Support HD720 (1280×720) resolution via SDK
+    - Fallback to OpenCV with stereo cropping when SDK unavailable
+    - Add proper thread cleanup to prevent segfaults on disconnect
+    - Initialize parent threading infrastructure for async_read support
+
+ src/lerobot/cameras/zed_camera/zed_camera.py | 234 +++++++++++++++++++--------
+ 1 file changed, 170 insertions(+), 64 deletions(-)
+
+commit 0df3c3216d8b7e15a08c336f31da20b986e0c677
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Wed Jan 7 17:42:29 2026 -0500
+
+    fix(cameras): disable GStreamer backend for OpenCV cameras
+    
+    - Set OPENCV_VIDEOIO_PRIORITY_GSTREAMER=0 to prevent timeout issues
+    - Critical fix from bimanual-lerobot repository
+    - Resolves camera connection failures and frame grab timeouts
+
+ src/lerobot/cameras/opencv/camera_opencv.py | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+commit 6f9f9b67357b0d3e2ab090113042e509415a9f8f
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Tue Jan 6 03:10:38 2026 -0500
+
+    tn last changes on that repo
+
+ mimc_doplyment/implementation.md | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+commit 9304b1ca00739c8bcac2cd79eb659a9b3aa73908
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Tue Jan 6 02:23:16 2026 -0500
+
+    possible fix for the previsous dataset
+
+ mimc_doplyment/FIX_old_dataset.md           | 107 ++++++++++++++++++++++++++++
+ mimc_doplyment/User_guide.md                |  65 +++++++++++++++--
+ mimc_doplyment/implementation.md            |   7 ++
+ src/lerobot/scripts/lerobot_calibrate.py    |   1 +
+ src/lerobot/scripts/lerobot_find_cameras.py |   1 +
+ src/lerobot/scripts/lerobot_record.py       |   1 +
+ 6 files changed, 175 insertions(+), 7 deletions(-)
+
+commit 0a8953443143ac76107048afbb4c691577bec394
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Tue Jan 6 01:26:02 2026 -0500
+
+    Zed camera full sopport
+
+ mimc_doplyment/User_guide.md                       | 29 +++++++++++++++++++---
+ mimc_doplyment/implementation.md                   |  2 +-
+ src/lerobot/cameras/utils.py                       |  4 +--
+ src/lerobot/cameras/zed_camera/__init__.py         |  2 +-
+ .../cameras/zed_camera/{zed.py => zed_camera.py}   |  2 +-
+ src/lerobot/scripts/lerobot_teleoperate.py         |  1 +
+ 6 files changed, 31 insertions(+), 9 deletions(-)
+
+commit c719c5a1c2d78df0ee24e9c42ade52bcf0197ae7
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Tue Jan 6 01:07:19 2026 -0500
+
+    added zed camera
+
+ src/lerobot/cameras/utils.py               |   4 ++
+ src/lerobot/cameras/zed_camera/__init__.py |   7 ++
+ src/lerobot/cameras/zed_camera/zed.py      | 101 +++++++++++++++++++++++++++++
+ 3 files changed, 112 insertions(+)
+
+commit 5b029fa938bf624b18ce8d5c1cb5c1808ef5a91a
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Tue Jan 6 00:50:25 2026 -0500
+
+    camera
+
+ mimc_doplyment/User_guide.md                       | 94 ++++++++++++++++++++++
+ mimc_doplyment/implementation.md                   |  5 ++
+ mimc_doplyment/screenshot/test_camera.py           | 78 ++++++++++++++++++
+ mimc_doplyment/screenshot/test_zed_camera.py       | 46 +++++++++++
+ .../mimic_leader/config_mimic_leader.py            |  6 +-
+ 5 files changed, 226 insertions(+), 3 deletions(-)
+
+commit fb160802555c36458a99c3fc00c2cf1ac7ad5d2b
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Mon Jan 5 22:45:46 2026 -0500
+
+    leader arm set up
+
+ mimc_doplyment/implementation.md                   |   7 +-
+ src/lerobot/scripts/lerobot_setup_motors.py        |   1 +
+ src/lerobot/teleoperators/mimic_leader/__init__.py |   6 +
+ .../mimic_leader/config_mimic_leader.py            |  25 +++
+ .../teleoperators/mimic_leader/mimic_leader.py     | 207 +++++++++++++++++++++
+ src/lerobot/teleoperators/utils.py                 |   4 +
+ 6 files changed, 249 insertions(+), 1 deletion(-)
+
+commit f0014586eedf1c268396ab2271fc4981b09033a3
+Author: BMathi9s <eltopchi1@gmail.com>
+Date:   Mon Jan 5 22:09:23 2026 -0500
+
+    t
+
+ mimc_doplyment/implementation.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 6089bbb5700ba5244b5336ca2a4b323220762085
+Author: BMathi9s <achalypatel3403@gmail.com>
+Date:   Mon Jan 5 22:08:32 2026 -0500
+
+    follower
+
+ mimc_doplyment/implementation.md    |  11 +++++++++++
+ mimc_doplyment/screenshot/image.png | Bin 0 -> 47823 bytes
+ 2 files changed, 11 insertions(+)
+
+commit f412201b46b371fc6c8836f42709c8007bed8e6c
+Author: mathias <achalypatel3403@gmail.com>
+Date:   Mon Jan 5 22:05:20 2026 -0500
+
+    mimic follower
+
+ src/lerobot/robots/mimic_follower/__init__.py      |  18 ++
+ .../robots/mimic_follower/config_mimic_follower.py |  26 +++
+ .../robots/mimic_follower/mimic_follower.py        | 199 +++++++++++++++++++++
+ src/lerobot/robots/utils.py                        |   4 +
+ src/lerobot/scripts/lerobot_calibrate.py           |   2 +
+ src/lerobot/scripts/lerobot_find_joint_limits.py   |   2 +
+ src/lerobot/scripts/lerobot_record.py              |   2 +
+ src/lerobot/scripts/lerobot_replay.py              |   1 +
+ src/lerobot/scripts/lerobot_setup_motors.py        |   2 +
+ src/lerobot/scripts/lerobot_teleoperate.py         |   2 +
+ 10 files changed, 258 insertions(+)
+
+commit f02ca44f3f5db5ea79a8720c55812bb8f2c1331b
+Author: ac-pate <achalypatel3403@gmail.com>
+Date:   Mon Jan 5 21:27:58 2026 -0500
+
+    add mecanum base driver
+
+ src/lerobot/motors/mecanum_base/__init__.py |   3 +
+ src/lerobot/motors/mecanum_base/mecanum.py  | 133 ++++++++++++++++++++++++++++
+ test_base.py                                |  32 +++++++
+ 3 files changed, 168 insertions(+)

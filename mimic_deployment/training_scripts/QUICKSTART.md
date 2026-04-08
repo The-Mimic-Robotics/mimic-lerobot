@@ -298,8 +298,7 @@ For comprehensive documentation, see:
 # xvla vf -- 22.2GB
   ./mimic_deployment/training_scripts/train_manager.sh \
   --policy xvla \
-  --dataset-group ttt_lora_2cam_15hz \
-  --batch-size 12
+  --dataset-group Fix_stable_redx_3cam_15hz_32ac 
 
   # SmolVla with vision frozen all enabled
   # used 16gbs of vram
@@ -307,6 +306,8 @@ For comprehensive documentation, see:
   --policy smolvla \
   --dataset-group stable_redx_3cam_15hz_32ac \
   --batch-size 48
+
+
 # SmolVla with vision Un frozen 
   # used 16gbs of vram
 ./mimic_deployment/training_scripts/train_manager.sh \
